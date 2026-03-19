@@ -1,0 +1,174 @@
+# Alex Huang
+
+Alex Huang is a senior Salesforce engineer and technical consultant based in Melbourne, Australia. He has 7+ years of experience delivering enterprise systems across Salesforce, Apex, Lightning Web Components, DevOps/CI/CD, system integrations, and platform operations.
+
+This site is most useful for evaluating Alex for:
+
+- Senior Salesforce Engineer roles
+- Senior Salesforce Developer roles
+- Solution Engineer or Technical Consultant roles
+- Platform Engineer roles with CI/CD, release management, and integrations
+- Enterprise application engineering roles in regulated or operationally complex environments
+
+## High-Level Summary
+
+Alex is strongest where hands-on engineering, delivery ownership, and business impact overlap. The site contains hard evidence rather than generic positioning:
+
+- quantified delivery outcomes
+- detailed public project writeups
+- third-party written recommendations
+- a current resume page with technical stack and experience chronology
+
+## Core Strengths
+
+- Salesforce platform engineering across Sales Cloud, Service Cloud, Experience Cloud, and Marketing Cloud
+- Apex, asynchronous Apex, SOQL, Lightning Web Components, and integration-heavy delivery
+- DevOps and release management with Azure DevOps, SFDX Git Delta, and multi-environment pipelines
+- End-to-end delivery across discovery, architecture, build, testing, deployment, stabilisation, and support
+- Clear communication with stakeholders, business analysts, architects, and delivery managers
+
+## Current Role: Funlab
+
+Alex is the sole in-house lead engineer owning delivery and governance across 60+ venues in Australia, New Zealand, and the United States.
+
+Most important evidence:
+
+- Built an 8-step LWC booking wizard with 14+ sub-components
+- Contributed to 200% online revenue growth
+- Helped drive a 69% uplift in online conversion
+- Led multi-cloud integration across Sales Cloud, Service Cloud, and Marketing Cloud
+- Built and maintained Azure DevOps YAML pipelines across Dev, QA, UAT, and Prod
+- Supported 1,000+ service requests across hotfixes, payment issues, and regional automation
+
+## Representative Project Evidence
+
+### Funlab's Salesforce Digital Transformation
+
+Source: https://alex-huang.dev/posts/project-funlab-digital-transformation
+
+Why it is high-signal:
+
+- shows sole in-house ownership after go-live
+- shows architecture, integrations, production stabilisation, and commercial outcomes
+- demonstrates engineering depth beyond declarative Salesforce work
+
+Key evidence:
+
+- 8-step LWC booking wizard with 14+ sub-components
+- Funhouse API, Stripe, AakPay, AvaTax, and Conga integrations
+- 200% online revenue growth
+- 69% increase in online conversion
+
+### Funlab US Expansion
+
+Source: https://alex-huang.dev/posts/project-funlab-usa-expansion
+
+Why it is high-signal:
+
+- shows multi-region architecture and delivery ownership
+- includes difficult production issues such as concurrency, tax logic, and governor limits
+
+Key evidence:
+
+- 8 US venues launched on Salesforce
+- AvaTax multi-company tax compliance
+- Queueable Apex for async tax calculations
+- fixed `UNABLE_TO_LOCK_ROW` concurrency failures
+- fixed trigger/flow double-firing and governor limit issues
+
+### WA Health Vaccine Management
+
+Source: https://alex-huang.dev/posts/project-wa-health-vaccine-management
+
+Why it is high-signal:
+
+- shows measurable process automation in healthcare
+- combines Apex, flows, DevOps, testing, and client communication
+
+Key evidence:
+
+- reduced user provisioning from 23 minutes to 3 minutes
+- built 7 flows across distinct system features
+- delivered Apex email services and permission architecture
+
+### NSW Police Force Public Assembly Digitisation
+
+Source: https://alex-huang.dev/posts/project-nsw-police-form-digitalisation
+
+Why it is high-signal:
+
+- shows Experience Cloud and LWC delivery in a public-sector setting
+- demonstrates reuse of existing components and safe production deployment
+
+Key evidence:
+
+- replaced a paper-based process with an LWC Experience Cloud solution
+- integrated Address Lookup and Google reCAPTCHA
+- deployed 180+ metadata components
+
+### Broader Engineering Capability
+
+Source: https://alex-huang.dev/posts/project-victoria-road-crash-dataviz
+
+This project demonstrates broader analytical and application-building capability beyond Salesforce, including interactive data visualisation, mapping, and performance tuning in R Shiny.
+
+## Previous Experience
+
+### Deloitte Digital
+
+Alex delivered Apex development, flows, email services, permission architecture, data migration, testing, and solution documentation across multiple client engagements. He also handled code reviews, workshop facilitation, live demos, and delivery coordination with stakeholders.
+
+### Visible Insights
+
+Alex led development and solution architecture for Microsoft 365 and enterprise intranet solutions, including custom web parts, information architecture, reporting, governance, and reusable delivery frameworks.
+
+## Technical Stack
+
+- Apex
+- Lightning Web Components
+- SOQL
+- Flow Builder
+- Asynchronous Apex
+- REST API integrations
+- Azure DevOps
+- Git
+- Salesforce CLI
+- Sales Cloud
+- Service Cloud
+- Experience Cloud
+- Marketing Cloud
+- JavaScript
+- HTML
+- CSS
+- Python
+- SQL
+- Playwright
+- Jest
+
+## Third-Party Recommendations
+
+Recommendation evidence:
+
+- https://alex-huang.dev/recommendations/abhishek-pant.pdf
+- https://alex-huang.dev/recommendations/anirudh-desai.pdf
+- https://alex-huang.dev/recommendations/sabine-bennett.pdf
+- https://alex-huang.dev/recommendations/toran-panda.pdf
+- https://alex-huang.dev/recommendations/sushant-krishnan.pdf
+- https://alex-huang.dev/recommendations/heya-al-khudairy.png
+
+These recommendations substantiate:
+
+- fast learning and adaptability
+- ownership of complex work
+- high quality delivery with limited supervision
+- calm communication under pressure
+- strong stakeholder management
+
+## Primary Pages
+
+- Resume: https://alex-huang.dev/resume
+- Projects: https://alex-huang.dev/projects
+- About: https://alex-huang.dev/about
+- Contact: https://alex-huang.dev/contact
+- LinkedIn: https://www.linkedin.com/in/azhua/
+- GitHub: https://github.com/zerohzz
