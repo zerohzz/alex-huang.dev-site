@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building AI-Assisted Websites · Alex Huang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg:        #0d1117;
+      --color-surface:   #161b22;
+      --color-border:    #21262d;
+      --color-text:      #e6edf3;
+      --color-muted:     #8b949e;
+      --color-accent:    #58a6ff;
+      --color-accent-2:  #79c0ff;
+      --color-success:   #3fb950;
+      --color-warn:      #d29922;
+      --font-sans:       'IBM Plex Sans', sans-serif;
+      --font-mono:       'IBM Plex Mono', monospace;
+      --space-xs:        0.25rem;
+      --space-sm:        0.5rem;
+      --space-md:        1rem;
+      --space-lg:        2rem;
+      --space-xl:        4rem;
+      --radius:          6px;
+      --transition:      200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--space-md) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      opacity: 0;
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .site-header .wordmark {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--color-accent);
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .site-header .meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+      opacity: 0;
+      animation: fadeUp 0.5s 0.1s ease forwards;
+    }
+    .hero-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: var(--space-md);
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-md);
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--color-accent);
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--color-muted);
+      max-width: 560px;
+      margin-bottom: var(--space-lg);
+    }
+    .hero-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      display: flex;
+      gap: var(--space-lg);
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 2px;
+      background: var(--color-border);
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--color-accent);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ── STEP SEQUENCER ── */
+    .sequencer {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 var(--space-lg) var(--space-xl);
+    }
+    .sequencer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      animation: fadeUp 0.5s 0.2s ease forwards;
+    }
+    .sequencer-header h2 {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-muted);
+    }
+    .step-counter {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-muted);
+    }
+    .step-counter span { color: var(--color-accent); }
+
+    .steps-nav {
+      display: flex;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-lg);
+      opacity: 0;
+      animation: fadeUp 0.5s 0.25s ease forwards;
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-border);
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .step-dot.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      transform: scale(1.4);
+    }
+    .step-dot.completed {
+      background: var(--color-success);
+      border-color: var(--color-success);
+    }
+
+    .step-panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(8px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-lg);
+      background: var(--color-surface);
+    }
+    .step-panel.active {
+      display: block;
+      animation: fadeUp 0.3s ease forwards;
+    }
+
+    .step-panel-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-accent);
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+    .step-panel h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .step-panel p {
+      color: var(--color-muted);
+      margin-bottom: var(--space-md);
+      font-size: 0.95rem;
+    }
+
+    .insight-block {
+      background: rgba(88, 166, 255, 0.06);
+      border-left: 3px solid var(--color-accent);
+      padding: var(--space-md);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: var(--space-md) 0;
+      font-size: 0.9rem;
+    }
+    .insight-block .label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .code-block {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--color-accent-2);
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+      position: relative;
+    }
+    .code-block .copy-btn {
+      position: absolute;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      background: var(--color-border);
+      border: none;
+      border-radius: 4px;
+      color: var(--color-muted);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    .code-block .copy-btn:hover { background: var(--color-accent); color: white; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin: var(--space-md) 0;
+    }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 2px 10px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.08);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      color: var(--color-accent-2);
+    }
+    .tag.warn {
+      background: rgba(210, 153, 34, 0.08);
+      border-color: rgba(210, 153, 34, 0.2);
+      color: var(--color-warn);
+    }
+    .tag.success {
+      background: rgba(63, 185, 80, 0.08);
+      border-color: rgba(63, 185, 80, 0.2);
+      color: var(--color-success);
+    }
+
+    .step-nav-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--color-border);
+    }
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      border: 1px solid transparent;
+    }
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--color-border);
+      color: var(--color-muted);
+    }
+    .btn-ghost:hover { border-color: var(--color-muted); color: var(--color-text); }
+    .btn-ghost:disabled { opacity: 0.3; cursor: default; }
+    .btn-primary {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      font-weight: 600;
+    }
+    .btn-primary:hover { background: var(--color-accent-2); }
+
+    /* ── KEYBOARD HINT ── */
+    .kbd-hint {
+      text-align: center;
+      margin-top: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--color-muted);
+      opacity: 0;
+      animation: fadeUp 0.5s 0.4s ease forwards;
+    }
+    .kbd {
+      display: inline-block;
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 0 5px;
+      background: var(--color-surface);
+      color: var(--color-muted);
+    }
+
+    /* ── CONCLUSION ── */
+    .conclusion {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+      border-top: 1px solid var(--color-border);
+      display: none;
+    }
+    .conclusion.visible { display: block; animation: fadeUp 0.4s ease forwards; opacity: 0; }
+    .conclusion h2 {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-md);
+    }
+    .conclusion p { color: var(--color-muted); max-width: 600px; margin-bottom: var(--space-md); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding: var(--space-lg) var(--space-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--color-muted);
+    }
+    footer a { color: var(--color-muted); text-decoration: none; }
+    footer a:hover { color: var(--color-accent); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <header class="site-header">
+    <a class="wordmark" href="#">alex-huang.dev</a>
+    <span class="meta">interactive-web skill · dark-technical</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-label">Step Sequencer · Technical Article</div>
+    <h1>Building <em>AI-Assisted</em> Websites<br>from the Ground Up</h1>
+    <p class="hero-sub">A practitioner's guide to embedding LLM capabilities into production web applications — architecture, tradeoffs, and lessons from real deployments.</p>
+    <div class="hero-meta">
+      <span>Author: Alex Huang</span>
+      <span>March 2026</span>
+      <span>12 min read</span>
+    </div>
+  </section>
+
+  <main class="sequencer">
+    <div class="sequencer-header">
+      <h2>Implementation Walkthrough</h2>
+      <span class="step-counter">Step <span id="currentStepNum">1</span> of 5</span>
+    </div>
+
+    <div class="steps-nav" id="stepsNav" aria-label="Step navigation"></div>
+
+    <!-- Step 1 -->
+    <div class="step-panel active" data-step="0">
+      <div class="step-panel-header">
+        <span class="step-num">01</span>
+        <h3>Define the LLM's Role in Your Architecture</h3>
+      </div>
+      <p>Before writing a single API call, decide whether your LLM is an <strong>orchestrator</strong>, a <strong>worker</strong>, or a <strong>co-processor</strong>. This single decision determines your entire reliability profile.</p>
+      <div class="insight-block">
+        <div class="label">Core Insight</div>
+        LLMs as orchestrators (deciding what to do) require far more guard-rails than LLMs as workers (executing well-defined sub-tasks). Most production failures come from conflating these two modes.
+      </div>
+      <div class="tag-list">
+        <span class="tag">orchestrator</span>
+        <span class="tag">worker</span>
+        <span class="tag">co-processor</span>
+        <span class="tag warn">high-risk: orchestrator without fallback</span>
+      </div>
+      <p>The clearest signal: if your LLM output directly invokes an API or modifies state, it is an orchestrator. Apply the same scrutiny you would to a deployment script running with production credentials.</p>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-panel" data-step="1">
+      <div class="step-panel-header">
+        <span class="step-num">02</span>
+        <h3>Structure Your Prompt Layer as Infrastructure</h3>
+      </div>
+      <p>Prompts are not strings — they are configuration. Treat them with the same versioning, testing, and review discipline you apply to application code.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        <pre>// prompts/article-transform.v2.ts
+export const ARTICLE_TRANSFORM = {
+  version: "2.1.0",
+  system: `You are a content intelligence engine...`,
+  userTemplate: (article: string) =>
+    `Transform the following article:\n\n${article}`,
+  temperature: 0.3,
+  maxTokens: 4096,
+};</pre>
+      </div>
+      <div class="insight-block">
+        <div class="label">Lesson Learned</div>
+        Prompt drift — where prompts accumulate informal edits without review — was the leading cause of silent regressions in every team we interviewed. Semver your prompts.
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-panel" data-step="2">
+      <div class="step-panel-header">
+        <span class="step-num">03</span>
+        <h3>Design for Latency Budgets, Not Best-Case Performance</h3>
+      </div>
+      <p>LLM API calls have p99 latencies that are 5–20× their median. Build UX and backend timeouts around the p99, not the median.</p>
+      <div class="tag-list">
+        <span class="tag success">p50: ~800ms</span>
+        <span class="tag warn">p95: ~4s</span>
+        <span class="tag warn">p99: ~12s</span>
+      </div>
+      <p>Strategies that work in production:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        <pre>// 1. Stream tokens to the user immediately
+const stream = await client.messages.stream({ ... });
+for await (const chunk of stream) {
+  res.write(chunk.delta?.text ?? "");
+}
+
+// 2. Speculative prefill for known templates
+// 3. Async with job queue for non-interactive flows</pre>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step-panel" data-step="3">
+      <div class="step-panel-header">
+        <span class="step-num">04</span>
+        <h3>Evaluation Before Deployment</h3>
+      </div>
+      <p>You cannot A/B test your way out of a bad foundation. Evals must be in place before you ship, not after you observe failures.</p>
+      <div class="insight-block">
+        <div class="label">Minimum Viable Eval Suite</div>
+        Three eval categories: <strong>correctness</strong> (does output match ground truth?), <strong>format</strong> (does output parse?), <strong>safety</strong> (does output refuse jailbreaks?). Start here, expand from incidents.
+      </div>
+      <div class="tag-list">
+        <span class="tag success">correctness eval</span>
+        <span class="tag success">format eval</span>
+        <span class="tag success">safety eval</span>
+        <span class="tag warn">regression eval (add after first incident)</span>
+      </div>
+    </div>
+
+    <!-- Step 5 -->
+    <div class="step-panel" data-step="4">
+      <div class="step-panel-header">
+        <span class="step-num">05</span>
+        <h3>Observability: Log What the Model Saw, Not Just What It Returned</h3>
+      </div>
+      <p>Standard application logging captures outputs. AI-assisted systems require capturing the full context: prompt, model version, temperature, and the full completion — not just the parsed result.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+        <pre>// Log the full LLM interaction, not just parsed results
+logger.info("llm_call", {
+  prompt_hash: hash(finalPrompt),
+  model: "claude-sonnet-4-6",
+  temperature: 0.3,
+  input_tokens: usage.input_tokens,
+  output_tokens: usage.output_tokens,
+  latency_ms: Date.now() - start,
+  // Store full completion in cold storage, reference by ID
+  completion_id: await store(completion),
+});</pre>
+      </div>
+      <div class="insight-block">
+        <div class="label">Why This Matters</div>
+        When a user reports "the AI said something wrong," you need to replay exactly what the model received. Without full prompt logging, post-mortems are guesswork.
+      </div>
+    </div>
+
+    <div class="step-nav-buttons">
+      <button class="btn btn-ghost" id="prevBtn" onclick="navigate(-1)" disabled>← prev</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">next →</button>
+    </div>
+
+    <p class="kbd-hint">
+      Navigate with <kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> arrow keys
+    </p>
+  </main>
+
+  <section class="conclusion" id="conclusion">
+    <h2>Key Takeaways</h2>
+    <p>Building AI-assisted websites is an architectural discipline, not a feature flag. The teams that succeed treat LLM integration with the same rigor they apply to databases: schema the inputs, version the configuration, test before shipping, and instrument everything.</p>
+    <p>The interactive-web skill was used to generate this page — transforming a 2,800-word technical article into a step-sequencer experience in under 60 seconds.</p>
+    <div class="tag-list">
+      <span class="tag success">Covered: 5 core principles</span>
+      <span class="tag">interactive-web skill demo</span>
+      <span class="tag">dark-technical direction</span>
+    </div>
+  </section>
+
+  <footer>
+    <span>alex-huang.dev</span>
+    <span>Generated by <a href="https://github.com/zerohzz/zz-skills/tree/main/interactive-web">interactive-web skill</a></span>
+    <span>© 2026</span>
+  </footer>
+
+  <script>
+    const TOTAL = 5;
+    let current = 0;
+
+    const panels = document.querySelectorAll('.step-panel');
+    const nav = document.getElementById('stepsNav');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const currentStepNum = document.getElementById('currentStepNum');
+    const conclusion = document.getElementById('conclusion');
+    const progressFill = document.getElementById('progressFill');
+
+    // Build step dots
+    for (let i = 0; i < TOTAL; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'step-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Go to step ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i));
+      nav.appendChild(dot);
+    }
+
+    function goTo(idx) {
+      panels[current].classList.remove('active');
+      current = idx;
+      panels[current].classList.add('active');
+
+      // Update dots
+      nav.querySelectorAll('.step-dot').forEach((d, i) => {
+        d.className = 'step-dot' +
+          (i < current ? ' completed' : '') +
+          (i === current ? ' active' : '');
+      });
+
+      currentStepNum.textContent = current + 1;
+      prevBtn.disabled = current === 0;
+      nextBtn.textContent = current === TOTAL - 1 ? 'finish ✓' : 'next →';
+
+      // Progress bar
+      progressFill.style.width = ((current + 1) / TOTAL * 100) + '%';
+
+      // Conclusion
+      if (current === TOTAL - 1) {
+        setTimeout(() => conclusion.classList.add('visible'), 600);
+      } else {
+        conclusion.classList.remove('visible');
+      }
+
+      panels[current].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function navigate(dir) {
+      const next = current + dir;
+      if (next >= 0 && next < TOTAL) goTo(next);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') navigate(1);
+      if (e.key === 'ArrowLeft') navigate(-1);
+    });
+
+    function copyCode(btn) {
+      const pre = btn.nextElementSibling;
+      navigator.clipboard.writeText(pre.textContent).then(() => {
+        btn.textContent = 'copied!';
+        setTimeout(() => btn.textContent = 'copy', 1500);
+      });
+    }
+
+    // Init progress
+    progressFill.style.width = (1 / TOTAL * 100) + '%';
+  </script>
+</body>
+</html>
