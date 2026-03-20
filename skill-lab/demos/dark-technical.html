@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attention Is All You Need — Interactive Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #080c14;
+    --bg-surface: #0d1526;
+    --bg-elevated: #131d30;
+    --bg-overlay: #1a2640;
+    --border: #1e3050;
+    --border-bright: #2a4070;
+    --accent-primary: #00d4e8;
+    --accent-secondary: #4da6ff;
+    --accent-green: #00ff9d;
+    --accent-amber: #ffb347;
+    --accent-red: #ff5f6d;
+    --text-primary: #e8edf5;
+    --text-secondary: #8a9bb8;
+    --text-muted: #506080;
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.5rem;
+    --space-2xl: 4rem;
+    --radius-sm: 3px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,212,232,0.012) 2px,
+      rgba(0,212,232,0.012) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Layout ── */
+  .app-shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-xl) 0 var(--space-lg);
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    padding: 0 var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-xl);
+  }
+
+  .sidebar-logo .chip {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--accent-primary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(0,212,232,0.08);
+    border: 1px solid rgba(0,212,232,0.2);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    margin-bottom: var(--space-sm);
+  }
+
+  .sidebar-logo .paper-id {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .nav-section-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 var(--space-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .nav-items {
+    list-style: none;
+    padding: 0;
+    flex: 1;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 9px var(--space-lg);
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    transition: all var(--transition);
+    position: relative;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  .nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(0,212,232,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--accent-primary);
+    border-left-color: var(--accent-primary);
+    background: rgba(0,212,232,0.07);
+    font-weight: 500;
+  }
+
+  .nav-item .nav-num {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    width: 16px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .nav-item.active .nav-num {
+    color: var(--accent-primary);
+    opacity: 0.6;
+  }
+
+  /* ── Main content ── */
+  .main-content {
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  /* ── Sections ── */
+  .section {
+    display: none;
+    padding: var(--space-2xl) var(--space-2xl) var(--space-2xl);
+    max-width: 900px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .section.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Section header ── */
+  .section-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .section-tag::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: var(--accent-primary);
+    opacity: 0.6;
+  }
+
+  .section-title {
+    font-family: var(--font-sans);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-md);
+  }
+
+  .section-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+
+  .card-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Overview section ── */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-primary), transparent);
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    line-height: 1;
+    margin-bottom: var(--space-xs);
+  }
+
+  .stat-unit {
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.03em;
+  }
+
+  .stat-context {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+  }
+
+  .claim-block {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    position: relative;
+  }
+
+  .claim-block blockquote {
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--text-primary);
+    line-height: 1.7;
+    padding-left: var(--space-lg);
+    border-left: 2px solid var(--accent-primary);
+  }
+
+  .claim-source {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+    padding-left: var(--space-lg);
+  }
+
+  /* Authors */
+  .author-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+
+  .author-chip {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--bg-overlay);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── Architecture section ── */
+  .arch-diagram {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    font-family: var(--font-mono);
+  }
+
+  .arch-flow {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    min-height: 500px;
+  }
+
+  .arch-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .arch-col-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+    font-family: var(--font-mono);
+  }
+
+  .arch-block {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .arch-block:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+    background: rgba(0,212,232,0.06);
+  }
+
+  .arch-block.highlight {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: rgba(0,212,232,0.08);
+  }
+
+  .arch-block.green {
+    border-color: rgba(0,255,157,0.4);
+    color: var(--accent-green);
+    background: rgba(0,255,157,0.05);
+  }
+
+  .arch-block.amber {
+    border-color: rgba(255,179,71,0.4);
+    color: var(--accent-amber);
+    background: rgba(255,179,71,0.05);
+  }
+
+  .arch-block .block-formula {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+    font-family: var(--font-mono);
+  }
+
+  .arch-times {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: center;
+    font-family: var(--font-mono);
+    border: 1px dashed var(--border);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    align-self: flex-end;
+    margin-bottom: 4px;
+  }
+
+  .arch-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    gap: 2px;
+  }
+
+  .arch-vline {
+    flex: 1;
+    width: 1px;
+    background: var(--border-bright);
+    position: relative;
+  }
+
+  .arch-cross {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    font-family: var(--font-sans);
+  }
+
+  /* Tooltip / detail panel */
+  .detail-panel {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-top: var(--space-lg);
+    min-height: 80px;
+    transition: all 0.25s ease;
+  }
+
+  .detail-panel-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+  }
+
+  .detail-panel-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-sm);
+    font-family: var(--font-mono);
+  }
+
+  .detail-panel-body {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  .detail-panel .formula {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    color: var(--accent-primary);
+    margin: var(--space-sm) 0;
+    display: inline-block;
+  }
+
+  /* ── Attention section ── */
+  .attention-tabs {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .attn-tab {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    margin-bottom: -1px;
+  }
+
+  .attn-tab:hover { color: var(--text-secondary); }
+  .attn-tab.active {
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+  }
+
+  .attn-panel {
+    display: none;
+    animation: fadeIn 0.25s ease;
+  }
+
+  .attn-panel.active { display: block; }
+
+  .formula-box {
+    background: var(--bg-base);
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    position: relative;
+  }
+
+  .formula-main {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    color: var(--accent-primary);
+    letter-spacing: 0.04em;
+  }
+
+  .formula-annotation {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+    font-family: var(--font-mono);
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+  }
+
+  .legend-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .legend-sym {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--accent-secondary);
+    font-weight: 600;
+  }
+
+  .legend-name {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .legend-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .heads-viz {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-sm);
+    margin: var(--space-lg) 0;
+  }
+
+  .head-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .head-card:hover, .head-card.lit {
+    border-color: var(--accent-primary);
+    background: rgba(0,212,232,0.07);
+  }
+
+  .head-num {
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    color: var(--accent-primary);
+    font-weight: 600;
+    opacity: 0.4;
+    transition: opacity var(--transition);
+  }
+
+  .head-card.lit .head-num {
+    opacity: 1;
+  }
+
+  .head-label {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .head-info {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-sm);
+    min-height: 40px;
+    text-align: left;
+    display: none;
+  }
+
+  .head-card.lit .head-info {
+    display: block;
+  }
+
+  /* ── Complexity section ── */
+  .complexity-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-bottom: var(--space-xl);
+  }
+
+  .complexity-table th {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .complexity-table td {
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    color: var(--text-secondary);
+    transition: all var(--transition);
+  }
+
+  .complexity-table tr:hover td {
+    background: rgba(0,212,232,0.04);
+    color: var(--text-primary);
+  }
+
+  .complexity-table .winner {
+    color: var(--accent-green);
+    font-weight: 600;
+  }
+
+  .complexity-table .layer-name {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  /* ── Results section ── */
+  .results-chart {
+    margin-bottom: var(--space-xl);
+  }
+
+  .chart-row {
+    margin-bottom: var(--space-md);
+  }
+
+  .chart-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+
+  .chart-model {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .chart-score {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+  }
+
+  .chart-bar-track {
+    background: var(--bg-elevated);
+    border-radius: 2px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .chart-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  .chart-bar.transformer { background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); }
+  .chart-bar.prev-best { background: rgba(138,155,184,0.4); }
+  .chart-bar.ensemble { background: rgba(138,155,184,0.25); }
+
+  .chart-section-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+  }
+
+  .training-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .training-stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    text-align: center;
+  }
+
+  .training-stat .val {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--accent-secondary);
+    margin-bottom: 4px;
+  }
+
+  .training-stat .label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* ── Ablation section ── */
+  .ablation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  .ablation-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .ablation-item:hover {
+    border-color: var(--accent-primary);
+  }
+
+  .ablation-param {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    margin-bottom: var(--space-xs);
+  }
+
+  .ablation-best {
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+  }
+
+  .ablation-note {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  /* ── Footer ── */
+  .section-footer {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-meta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .footer-link {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,212,232,0.3);
+    padding-bottom: 1px;
+    transition: all var(--transition);
+  }
+
+  .footer-link:hover {
+    color: var(--text-primary);
+    border-bottom-color: var(--text-primary);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .app-shell { grid-template-columns: 1fr; }
+    .sidebar {
+      position: static;
+      height: auto;
+      flex-direction: row;
+      padding: var(--space-md);
+      overflow-x: auto;
+    }
+    .sidebar-logo { display: none; }
+    .nav-section-label { display: none; }
+    .nav-items { display: flex; flex-direction: row; gap: 4px; }
+    .nav-item { white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; padding: 8px 12px; }
+    .nav-item.active { border-left: none; border-bottom-color: var(--accent-primary); }
+    .section { padding: var(--space-lg); }
+    .overview-grid, .legend-grid, .heads-viz, .training-grid, .ablation-grid { grid-template-columns: 1fr 1fr; }
+    .arch-flow { grid-template-columns: 1fr 40px 1fr; }
+  }
+
+  /* ── Utilities ── */
+  .mono { font-family: var(--font-mono); }
+  .text-accent { color: var(--accent-primary); }
+  .text-muted { color: var(--text-muted); }
+  .text-green { color: var(--accent-green); }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+    display: inline-block;
+  }
+  .badge-cyan { color: var(--accent-primary); border-color: rgba(0,212,232,0.3); background: rgba(0,212,232,0.06); }
+  .badge-green { color: var(--accent-green); border-color: rgba(0,255,157,0.3); background: rgba(0,255,157,0.06); }
+  .badge-amber { color: var(--accent-amber); border-color: rgba(255,179,71,0.3); background: rgba(255,179,71,0.06); }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar nav -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="chip">arXiv:1706.03762</div>
+      <div class="paper-id">cs.CL / cs.LG · 2017</div>
+    </div>
+    <div class="nav-section-label">Sections</div>
+    <ul class="nav-items">
+      <li class="nav-item active" data-section="overview">
+        <span class="nav-num">01</span> Overview
+      </li>
+      <li class="nav-item" data-section="architecture">
+        <span class="nav-num">02</span> Architecture
+      </li>
+      <li class="nav-item" data-section="attention">
+        <span class="nav-num">03</span> Attention
+      </li>
+      <li class="nav-item" data-section="complexity">
+        <span class="nav-num">04</span> Why Self-Attention
+      </li>
+      <li class="nav-item" data-section="results">
+        <span class="nav-num">05</span> Results
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- ── SECTION: Overview ── -->
+    <section class="section active" id="overview">
+      <div class="section-header">
+        <div class="section-tag">Overview</div>
+        <h1 class="section-title">Attention Is All You Need</h1>
+        <p class="section-desc">
+          A new sequence transduction architecture based entirely on attention mechanisms —
+          dispensing with recurrence and convolutions entirely.
+        </p>
+      </div>
+
+      <div class="claim-block">
+        <blockquote>
+          "The Transformer is the first transduction model relying entirely on self-attention to compute
+          representations of its input and output without using sequence-aligned RNNs or convolutions."
+        </blockquote>
+        <div class="claim-source">Vaswani et al., 2017 · Abstract</div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="stat-card">
+          <div class="stat-value">28.4 <span class="stat-unit">BLEU</span></div>
+          <div class="stat-label">EN→DE · WMT 2014</div>
+          <div class="stat-context">+2 BLEU over previous best ensemble</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">41.8 <span class="stat-unit">BLEU</span></div>
+          <div class="stat-label">EN→FR · WMT 2014</div>
+          <div class="stat-context">Single model, outperforms all prior ensembles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3.5 <span class="stat-unit">days</span></div>
+          <div class="stat-label">Big model training time</div>
+          <div class="stat-context">8× NVIDIA P100 GPUs · 300k steps</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8 <span class="stat-unit">heads</span></div>
+          <div class="stat-label">Parallel attention heads</div>
+          <div class="stat-context">d_k = d_v = 64 per head · d_model = 512</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Core Contributions</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);">
+          <div style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;">
+            <span class="badge badge-cyan">Arch</span>
+            <div>
+              <div style="font-size:0.82rem;color:var(--text-primary);font-weight:500;margin-bottom:3px;">Pure Attention</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);">No recurrence, no convolutions — attention all the way</div>
+            </div>
+          </div>
+          <div style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;">
+            <span class="badge badge-green">Perf</span>
+            <div>
+              <div style="font-size:0.82rem;color:var(--text-primary);font-weight:500;margin-bottom:3px;">Parallelization</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);">O(1) sequential ops vs O(n) for RNNs</div>
+            </div>
+          </div>
+          <div style="padding:var(--space-sm) 0;display:flex;align-items:flex-start;gap:10px;">
+            <span class="badge badge-cyan">Mech</span>
+            <div>
+              <div style="font-size:0.82rem;color:var(--text-primary);font-weight:500;margin-bottom:3px;">Multi-Head Attention</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);">Attend to different subspaces simultaneously</div>
+            </div>
+          </div>
+          <div style="padding:var(--space-sm) 0;display:flex;align-items:flex-start;gap:10px;">
+            <span class="badge badge-amber">Enc</span>
+            <div>
+              <div style="font-size:0.82rem;color:var(--text-primary);font-weight:500;margin-bottom:3px;">Positional Encoding</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);">Sinusoidal functions inject sequence order</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Authors</div>
+        <div class="author-list">
+          <span class="author-chip">Ashish Vaswani</span>
+          <span class="author-chip">Noam Shazeer</span>
+          <span class="author-chip">Niki Parmar</span>
+          <span class="author-chip">Jakob Uszkoreit</span>
+          <span class="author-chip">Llion Jones</span>
+          <span class="author-chip">Aidan N. Gomez</span>
+          <span class="author-chip">Łukasz Kaiser</span>
+          <span class="author-chip">Illia Polosukhin</span>
+        </div>
+        <div style="margin-top:var(--space-md);display:flex;gap:var(--space-sm);">
+          <span class="badge badge-cyan">cs.CL</span>
+          <span class="badge badge-cyan">cs.LG</span>
+          <span style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);margin-left:4px;line-height:1.8;">Submitted June 12, 2017 · v7 Aug 2023</span>
+        </div>
+      </div>
+
+      <div class="section-footer">
+        <span class="footer-meta">interactive explainer · arXiv:1706.03762</span>
+        <a href="https://arxiv.org/abs/1706.03762" class="footer-link" target="_blank">arxiv.org/abs/1706.03762 →</a>
+      </div>
+    </section>
+
+    <!-- ── SECTION: Architecture ── -->
+    <section class="section" id="architecture">
+      <div class="section-header">
+        <div class="section-tag">Architecture</div>
+        <h1 class="section-title">Encoder–Decoder Stack</h1>
+        <p class="section-desc">
+          The Transformer stacks N=6 identical layers in both encoder and decoder.
+          Click any block below to inspect its role and parameters.
+        </p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-flow">
+
+          <!-- Encoder column -->
+          <div class="arch-column">
+            <div class="arch-col-label">Encoder ×6</div>
+            <div class="arch-block green" data-detail="embed" style="width:100%;">
+              Input Embeddings + Positional Encoding
+              <div class="block-formula">scale × √d_model</div>
+            </div>
+            <div class="arch-block" data-detail="norm" style="width:100%;">
+              Layer Norm
+            </div>
+            <div class="arch-block highlight" data-detail="self-attn" style="width:100%;">
+              Multi-Head Self-Attention
+              <div class="block-formula">h=8 heads · d_k=64</div>
+            </div>
+            <div class="arch-block" data-detail="add" style="width:100%;">
+              Add &amp; Norm (Residual)
+            </div>
+            <div class="arch-block" data-detail="ffn" style="width:100%;">
+              Feed-Forward Network
+              <div class="block-formula">FFN(x) = max(0, xW₁+b₁)W₂+b₂</div>
+            </div>
+            <div class="arch-block" data-detail="add" style="width:100%;">
+              Add &amp; Norm (Residual)
+            </div>
+            <div class="arch-times">× 6</div>
+          </div>
+
+          <!-- Center arrows -->
+          <div class="arch-arrow">
+            <div style="height:120px;"></div>
+            <div class="arch-cross" style="font-size:1.4rem;color:var(--accent-secondary);">⇄</div>
+            <div class="arch-vline"></div>
+            <div style="font-size:0.58rem;color:var(--text-muted);text-align:center;padding:4px;letter-spacing:.05em;">Keys<br>&amp;<br>Values<br>from<br>encoder</div>
+            <div class="arch-vline"></div>
+          </div>
+
+          <!-- Decoder column -->
+          <div class="arch-column">
+            <div class="arch-col-label">Decoder ×6</div>
+            <div class="arch-block green" data-detail="embed" style="width:100%;">
+              Output Embeddings + Positional Encoding
+              <div class="block-formula">right-shifted outputs</div>
+            </div>
+            <div class="arch-block" data-detail="norm" style="width:100%;">
+              Layer Norm
+            </div>
+            <div class="arch-block amber" data-detail="masked-attn" style="width:100%;">
+              Masked Multi-Head Self-Attention
+              <div class="block-formula">causal mask · no future</div>
+            </div>
+            <div class="arch-block" data-detail="add" style="width:100%;">
+              Add &amp; Norm (Residual)
+            </div>
+            <div class="arch-block highlight" data-detail="cross-attn" style="width:100%;">
+              Multi-Head Cross-Attention
+              <div class="block-formula">Q from decoder · K,V from encoder</div>
+            </div>
+            <div class="arch-block" data-detail="add" style="width:100%;">
+              Add &amp; Norm (Residual)
+            </div>
+            <div class="arch-block" data-detail="ffn" style="width:100%;">
+              Feed-Forward Network
+              <div class="block-formula">d_ff = 2048</div>
+            </div>
+            <div class="arch-block" data-detail="add" style="width:100%;">
+              Add &amp; Norm (Residual)
+            </div>
+            <div class="arch-times">× 6</div>
+            <div class="arch-block green" data-detail="output" style="width:100%;margin-top:auto;">
+              Linear + Softmax → Output
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail panel -->
+      <div class="detail-panel" id="arch-detail">
+        <div class="detail-panel-label">Block Inspector</div>
+        <div class="detail-panel-title">↑ Click a block to inspect</div>
+        <div class="detail-panel-body" id="arch-detail-body">Select any component in the architecture diagram above to see its role, dimensions, and key design choices.</div>
+      </div>
+
+      <div class="card" style="margin-top:var(--space-lg);">
+        <div class="card-title">Hyperparameters</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-sm);">
+          <div style="text-align:center;padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--accent-primary);font-weight:600;">512</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-mono);">d_model</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--accent-primary);font-weight:600;">8</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-mono);">heads</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--accent-primary);font-weight:600;">2048</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-mono);">d_ff</div>
+          </div>
+          <div style="text-align:center;padding:var(--space-sm);">
+            <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--accent-primary);font-weight:600;">6</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);font-family:var(--font-mono);">N layers</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION: Attention ── -->
+    <section class="section" id="attention">
+      <div class="section-header">
+        <div class="section-tag">Mechanism</div>
+        <h1 class="section-title">Attention Mechanisms</h1>
+        <p class="section-desc">
+          Two variants work together: Scaled Dot-Product for efficiency, Multi-Head for expressiveness.
+        </p>
+      </div>
+
+      <div class="attention-tabs">
+        <div class="attn-tab active" data-tab="sdpa">Scaled Dot-Product</div>
+        <div class="attn-tab" data-tab="multihead">Multi-Head</div>
+        <div class="attn-tab" data-tab="positional">Positional Encoding</div>
+      </div>
+
+      <!-- SDPA -->
+      <div class="attn-panel active" id="tab-sdpa">
+        <div class="formula-box">
+          <div class="formula-main">Attention(Q, K, V) = softmax( QKᵀ / √d_k ) · V</div>
+          <div class="formula-annotation">Scaled dot-product — the scaling factor √d_k prevents vanishing gradients in softmax</div>
+        </div>
+        <div class="legend-grid">
+          <div class="legend-item">
+            <div class="legend-sym">Q</div>
+            <div class="legend-name">Queries</div>
+            <div class="legend-desc">What we're looking for</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-sym">K</div>
+            <div class="legend-name">Keys</div>
+            <div class="legend-desc">What we're indexing over</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-sym">V</div>
+            <div class="legend-name">Values</div>
+            <div class="legend-desc">What we retrieve</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:var(--space-lg);">
+          <div class="card-title">Why Scale by √d_k ?</div>
+          <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.7;">
+            For large values of d_k, the dot products grow large in magnitude, pushing the softmax into regions with extremely small gradients. The scaling factor <span class="mono text-accent">1/√d_k</span> counteracts this. With d_k=64, the scale factor is 0.125. The authors suspect additive attention outperforms dot product at large dimensions precisely due to this gradient issue.
+          </p>
+        </div>
+      </div>
+
+      <!-- Multi-Head -->
+      <div class="attn-panel" id="tab-multihead">
+        <div class="formula-box">
+          <div class="formula-main">MultiHead(Q,K,V) = Concat(head₁,...,headₕ)Wᴼ</div>
+          <div class="formula-annotation" style="margin-top:8px;">where headᵢ = Attention(QWᵢQ, KWᵢK, VWᵢV)</div>
+        </div>
+        <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-lg);">
+          Instead of one attention function on d_model=512 dimensions, run h=8 parallel heads each on d_k=d_v=64 dimensions. Each head can attend to different positional and semantic aspects simultaneously.
+        </p>
+        <div class="card-title" style="margin-bottom:var(--space-sm);font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent-primary);">8 Attention Heads — click to explore</div>
+        <div class="heads-viz">
+          <div class="head-card" data-head="1">
+            <div class="head-num">H1</div>
+            <div class="head-label">head_1</div>
+            <div class="head-info">Often attends to local context — nearby tokens in the sequence.</div>
+          </div>
+          <div class="head-card" data-head="2">
+            <div class="head-num">H2</div>
+            <div class="head-label">head_2</div>
+            <div class="head-info">Can capture long-range syntactic dependencies across the sentence.</div>
+          </div>
+          <div class="head-card" data-head="3">
+            <div class="head-num">H3</div>
+            <div class="head-label">head_3</div>
+            <div class="head-info">May specialize in coreference — tracking which noun a pronoun refers to.</div>
+          </div>
+          <div class="head-card" data-head="4">
+            <div class="head-num">H4</div>
+            <div class="head-label">head_4</div>
+            <div class="head-info">Sometimes attends to the end of sentence or structural markers.</div>
+          </div>
+          <div class="head-card" data-head="5">
+            <div class="head-num">H5</div>
+            <div class="head-label">head_5</div>
+            <div class="head-info">Learns position-relative patterns complementary to positional encodings.</div>
+          </div>
+          <div class="head-card" data-head="6">
+            <div class="head-num">H6</div>
+            <div class="head-label">head_6</div>
+            <div class="head-info">May focus on semantic similarity regardless of position.</div>
+          </div>
+          <div class="head-card" data-head="7">
+            <div class="head-num">H7</div>
+            <div class="head-label">head_7</div>
+            <div class="head-info">Can attend broadly across the sentence for global context.</div>
+          </div>
+          <div class="head-card" data-head="8">
+            <div class="head-num">H8</div>
+            <div class="head-label">head_8</div>
+            <div class="head-info">Works alongside H1–7 to form a rich, multi-perspective representation.</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:var(--space-md);">
+          <div class="card-title">Projection Dimensions</div>
+          <div style="display:flex;gap:var(--space-xl);align-items:center;flex-wrap:wrap;">
+            <div>
+              <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">d_model</div>
+              <div style="font-family:var(--font-mono);font-size:1.5rem;color:var(--accent-secondary);font-weight:600;">512</div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:1.5rem;color:var(--text-muted);">=</div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">h heads</div>
+              <div style="font-family:var(--font-mono);font-size:1.5rem;color:var(--accent-primary);font-weight:600;">8</div>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:1.5rem;color:var(--text-muted);">×</div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">d_k per head</div>
+              <div style="font-family:var(--font-mono);font-size:1.5rem;color:var(--accent-green);font-weight:600;">64</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Positional Encoding -->
+      <div class="attn-panel" id="tab-positional">
+        <div class="formula-box">
+          <div class="formula-main">PE(pos, 2i) = sin(pos / 10000^(2i/d_model))</div>
+          <div class="formula-annotation" style="margin-top:6px;">PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-lg);">
+          <div class="card">
+            <div class="card-title">Why sinusoidal?</div>
+            <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+              The sinusoidal form allows the model to attend to relative positions: for any fixed offset k, PE(pos+k) can be represented as a linear function of PE(pos). The model can learn to use this property.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">Extrapolation</div>
+            <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+              The sinusoidal encoding can generalize to sequence lengths longer than those seen during training — an advantage over purely learned positional embeddings.
+            </p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:var(--space-md);">
+          <div class="card-title">Learned vs Sinusoidal</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+            The authors found nearly identical results using learned positional embeddings. Sinusoidal was chosen as it requires no additional parameters and may extrapolate better to unseen lengths. Both embed position as additive signal on top of the token embedding.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION: Complexity ── -->
+    <section class="section" id="complexity">
+      <div class="section-header">
+        <div class="section-tag">Analysis</div>
+        <h1 class="section-title">Why Self-Attention?</h1>
+        <p class="section-desc">
+          Three metrics motivate replacing recurrence with self-attention: computational complexity, parallelizability, and path length for learning long-range dependencies.
+        </p>
+      </div>
+
+      <table class="complexity-table">
+        <thead>
+          <tr>
+            <th>Layer Type</th>
+            <th>Complexity / Layer</th>
+            <th>Sequential Ops</th>
+            <th>Max Path Length</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="layer-name winner">Self-Attention</td>
+            <td class="winner">O(n² · d)</td>
+            <td class="winner">O(1)</td>
+            <td class="winner">O(1)</td>
+          </tr>
+          <tr>
+            <td class="layer-name">Recurrent</td>
+            <td>O(n · d²)</td>
+            <td>O(n)</td>
+            <td>O(n)</td>
+          </tr>
+          <tr>
+            <td class="layer-name">Convolutional</td>
+            <td>O(k · n · d²)</td>
+            <td>O(1)</td>
+            <td>O(log_k(n))</td>
+          </tr>
+          <tr>
+            <td class="layer-name">Restricted Self-Attn</td>
+            <td>O(r · n · d)</td>
+            <td>O(1)</td>
+            <td>O(n/r)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-xl);">
+        <div class="card">
+          <div class="card-title">When n &lt; d</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+            Self-attention's O(n²·d) is cheaper than recurrence's O(n·d²) when sequence length n is smaller than representation dimension d. This is often true in practice for machine translation.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">O(1) Sequential</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+            Unlike RNNs which process tokens one by one (O(n) sequential steps), self-attention processes all positions in parallel. This dramatically speeds up training.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">Short Max Path</div>
+          <p style="font-size:0.8rem;color:var(--text-secondary);line-height:1.65;">
+            Any two positions in the sequence can interact in O(1) operations. In RNNs, distant positions must propagate through O(n) steps, making long-range learning harder.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Interpretability Bonus</div>
+        <p style="font-size:0.83rem;color:var(--text-secondary);line-height:1.7;">
+          Self-attention layers yield interpretable behavior: different attention heads specialize in different roles. The paper visualizes heads learning to attend to anaphora resolution (e.g., "its" → its referent), syntactic structure, and other linguistic phenomena — giving researchers insight into what representations the model has learned.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── SECTION: Results ── -->
+    <section class="section" id="results">
+      <div class="section-header">
+        <div class="section-tag">Results</div>
+        <h1 class="section-title">Benchmarks &amp; Ablations</h1>
+        <p class="section-desc">
+          State-of-the-art on WMT 2014 EN→DE and EN→FR translation, and strong performance on English constituency parsing.
+        </p>
+      </div>
+
+      <div class="training-grid">
+        <div class="training-stat">
+          <div class="val">8×</div>
+          <div class="label">NVIDIA P100 GPUs</div>
+        </div>
+        <div class="training-stat">
+          <div class="val">300k</div>
+          <div class="label">Big model steps</div>
+        </div>
+        <div class="training-stat">
+          <div class="val">0.1</div>
+          <div class="label">Dropout + label smoothing</div>
+        </div>
+      </div>
+
+      <div class="card-title" style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-primary);margin-bottom:var(--space-lg);">EN→DE Translation · WMT 2014</div>
+      <div class="results-chart" id="chart">
+        <div class="chart-row">
+          <div class="chart-label">
+            <span class="chart-model">Transformer (big)</span>
+            <span class="chart-score">28.4 BLEU</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar transformer" data-width="98.6"></div></div>
+        </div>
+        <div class="chart-row" style="margin-top:var(--space-sm);">
+          <div class="chart-label">
+            <span class="chart-model">Transformer (base)</span>
+            <span class="chart-score">27.3 BLEU</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar transformer" data-width="94.8" style="opacity:0.65;"></div></div>
+        </div>
+        <div class="chart-row" style="margin-top:var(--space-sm);">
+          <div class="chart-label">
+            <span class="chart-model">Previous best ensemble</span>
+            <span class="chart-score">26.36 BLEU</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar prev-best" data-width="91.5"></div></div>
+        </div>
+
+        <div class="chart-section-label">EN→FR Translation · WMT 2014</div>
+        <div class="chart-row">
+          <div class="chart-label">
+            <span class="chart-model">Transformer (big)</span>
+            <span class="chart-score">41.8 BLEU</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar transformer" data-width="100"></div></div>
+        </div>
+        <div class="chart-row" style="margin-top:var(--space-sm);">
+          <div class="chart-label">
+            <span class="chart-model">Previous best ensemble</span>
+            <span class="chart-score">41.29 BLEU</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar prev-best" data-width="98.8"></div></div>
+        </div>
+
+        <div class="chart-section-label">English Constituency Parsing · WSJ</div>
+        <div class="chart-row">
+          <div class="chart-label">
+            <span class="chart-model">Transformer (semi-supervised)</span>
+            <span class="chart-score">92.7 F1</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar transformer" data-width="94"></div></div>
+        </div>
+        <div class="chart-row" style="margin-top:var(--space-sm);">
+          <div class="chart-label">
+            <span class="chart-model">Transformer (WSJ only)</span>
+            <span class="chart-score">91.3 F1</span>
+          </div>
+          <div class="chart-bar-track"><div class="chart-bar transformer" data-width="92.6" style="opacity:0.7;"></div></div>
+        </div>
+      </div>
+
+      <div class="card-title" style="font-family:var(--font-mono);font-size:0.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-primary);margin-bottom:var(--space-lg);">Key Ablation Findings (Table 3)</div>
+      <div class="ablation-grid">
+        <div class="ablation-item">
+          <div class="ablation-param">attention_heads</div>
+          <div class="ablation-best">h = 8 optimal</div>
+          <div class="ablation-note">Too few or too many heads hurt quality. 8 heads balance expressiveness vs. parameter dilution.</div>
+        </div>
+        <div class="ablation-item">
+          <div class="ablation-param">d_k dimension</div>
+          <div class="ablation-best">Larger d_k helps</div>
+          <div class="ablation-note">Reducing d_k hurts model quality. Compatibility of keys and queries is important.</div>
+        </div>
+        <div class="ablation-item">
+          <div class="ablation-param">model_size</div>
+          <div class="ablation-best">Bigger = better</div>
+          <div class="ablation-note">Bigger models (big vs. base) consistently perform better, both for translation quality and for parsing.</div>
+        </div>
+        <div class="ablation-item">
+          <div class="ablation-param">dropout</div>
+          <div class="ablation-best">Essential</div>
+          <div class="ablation-note">Dropout at P=0.1 and label smoothing at ε=0.1 are critical regularization. Without both, models overfit.</div>
+        </div>
+        <div class="ablation-item">
+          <div class="ablation-param">positional_encoding</div>
+          <div class="ablation-best">Learned ≈ sinusoidal</div>
+          <div class="ablation-note">Learned and sinusoidal positional encodings produce nearly identical BLEU scores.</div>
+        </div>
+        <div class="ablation-item">
+          <div class="ablation-param">attention_type</div>
+          <div class="ablation-best">Replacing hurts</div>
+          <div class="ablation-note">Replacing multi-head attention with single-head attention drops BLEU by ~0.9. Each head adds value.</div>
+        </div>
+      </div>
+
+      <div class="section-footer">
+        <span class="footer-meta">All results from Vaswani et al., 2017 · arXiv:1706.03762</span>
+        <a href="https://arxiv.org/abs/1706.03762" class="footer-link" target="_blank">Read the paper →</a>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // ── Navigation ──
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.section;
+      navItems.forEach(n => n.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(target).classList.add('active');
+      // Trigger chart animations when results section opens
+      if (target === 'results') animateBars();
+    });
+  });
+
+  // ── Architecture block detail ──
+  const archDetails = {
+    'embed': {
+      title: 'Embeddings + Positional Encoding',
+      body: `Token embeddings are multiplied by √d_model = √512 ≈ 22.6 to scale their magnitude before adding positional encoding. The positional encoding uses sinusoidal functions at different frequencies, allowing the model to learn relative positions. In the decoder, outputs are right-shifted by one position and masked to preserve the autoregressive property.`
+    },
+    'norm': {
+      title: 'Layer Normalization',
+      body: `Applied before (pre-norm variant in some implementations) or after each sub-layer. Layer normalization stabilizes training by normalizing activations across features rather than across batch. Combined with residual connections: output = LayerNorm(x + SubLayer(x)).`
+    },
+    'self-attn': {
+      title: 'Multi-Head Self-Attention',
+      body: `In the encoder, every position attends to every other position — all Q, K, V come from the same layer's output. This allows each position to gather global context. With h=8 heads and d_k=64, the model learns 8 different attention patterns in parallel.\n\nFormula: Attention(Q,K,V) = softmax(QKᵀ/√d_k)V`
+    },
+    'masked-attn': {
+      title: 'Masked Multi-Head Self-Attention',
+      body: `The decoder must not attend to future positions during training (this would be cheating — the model should not see tokens it hasn't generated yet). A causal mask is applied: position i can only attend to positions ≤ i. This is implemented by setting masked positions to -∞ before softmax, ensuring those positions get ~0 weight.`
+    },
+    'cross-attn': {
+      title: 'Cross-Attention (Encoder–Decoder)',
+      body: `Queries come from the decoder's previous sub-layer. Keys and Values come from the encoder output. This allows every decoder position to attend over all positions in the input sequence — the mechanism by which the decoder "reads" the encoded source. This is analogous to attention in earlier encoder-decoder RNN models, but computed in parallel.`
+    },
+    'ffn': {
+      title: 'Position-wise Feed-Forward Network',
+      body: `Applied identically and independently to each position. Two linear transformations with a ReLU between them:\n\nFFN(x) = max(0, xW₁ + b₁)W₂ + b₂\n\nThe inner dimension expands to d_ff = 2048 (×4 the model dimension of 512), giving the FFN substantial capacity. Different layers may use the FFN to learn different transformations.`
+    },
+    'add': {
+      title: 'Add & Norm (Residual Connection)',
+      body: `Residual connections (He et al., 2016) are applied around each sub-layer: output = LayerNorm(x + SubLayer(x)). These allow gradients to flow directly from output to input, enabling very deep stacks to be trained reliably. Residual dropout (P=0.1) is applied to sub-layer outputs before adding to the residual.`
+    },
+    'output': {
+      title: 'Linear + Softmax Output',
+      body: `The final decoder layer's output is projected to vocabulary logits via a learned linear transformation, then softmax normalizes to a probability distribution. The output projection shares weights with the input embedding matrices — a technique called weight tying. Cross-entropy loss with label smoothing (ε=0.1) is used during training.`
+    }
+  };
+
+  document.querySelectorAll('.arch-block').forEach(block => {
+    block.addEventListener('click', () => {
+      const key = block.dataset.detail;
+      const detail = archDetails[key];
+      if (!detail) return;
+      document.getElementById('arch-detail').querySelector('.detail-panel-title').textContent = detail.title;
+      document.getElementById('arch-detail-body').textContent = detail.body;
+      document.querySelectorAll('.arch-block').forEach(b => b.style.outline = 'none');
+      block.style.outline = '1px solid var(--accent-primary)';
+    });
+  });
+
+  // ── Attention tabs ──
+  document.querySelectorAll('.attn-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.attn-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.attn-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + target).classList.add('active');
+    });
+  });
+
+  // ── Multi-head cards ──
+  document.querySelectorAll('.head-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('lit');
+    });
+  });
+
+  // ── Bar chart animation ──
+  function animateBars() {
+    document.querySelectorAll('.chart-bar').forEach(bar => {
+      bar.style.width = '0';
+      const w = bar.dataset.width;
+      setTimeout(() => { bar.style.width = w + '%'; }, 100);
+    });
+  }
+
+  // Animate bars on load if results section is active
+  if (document.getElementById('results').classList.contains('active')) {
+    animateBars();
+  }
+
+  // Trigger on first results visit
+  let resultsAnimated = false;
+  const resultsSection = document.getElementById('results');
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(m => {
+      if (m.target.classList.contains('active') && !resultsAnimated) {
+        resultsAnimated = true;
+        animateBars();
+      }
+    });
+  });
+  observer.observe(resultsSection, { attributes: true, attributeFilter: ['class'] });
+
+  // ── Staggered entry animation ──
+  document.querySelectorAll('.stat-card, .card, .ablation-item').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+    el.style.transition = `opacity 0.4s ease ${i * 0.05}s, transform 0.4s ease ${i * 0.05}s`;
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 50 + i * 40);
+    });
+  });
+</script>
+
+</body>
+</html>

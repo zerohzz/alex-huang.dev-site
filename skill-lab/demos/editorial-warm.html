@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Rise of the AI Engineer — latent.space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400;1,6..72,500&family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf7f2;
+    --paper-warm: #f4efe6;
+    --paper-deep: #ede5d8;
+    --ink: #1c1714;
+    --ink-mid: #3d3530;
+    --ink-light: #7a6e68;
+    --ink-ghost: #b0a59e;
+    --accent: #c96b2b;
+    --accent-light: rgba(201,107,43,0.1);
+    --accent-mid: rgba(201,107,43,0.2);
+    --accent-deep: #a0521e;
+    --teal: #2b7a6b;
+    --teal-light: rgba(43,122,107,0.1);
+    --blue-warm: #2b5ea7;
+    --rule: rgba(28,23,20,0.12);
+    --font-serif: 'Newsreader', Georgia, serif;
+    --font-sans: 'Nunito', system-ui, sans-serif;
+    --max-w: 720px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── Progress ── */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 200;
+    transition: width 0.1s linear;
+    width: 0;
+  }
+
+  /* ── Page wrap ── */
+  .wrap {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 60px 0 0;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 0;
+  }
+
+  .hero-kicker {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-kicker::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-mid);
+  }
+
+  .hero-dek {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--ink-mid);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 580px;
+  }
+
+  .hero-byline {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--rule);
+    margin-bottom: -2px;
+    flex-wrap: wrap;
+  }
+
+  .byline-author {
+    font-family: var(--font-sans);
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--ink-mid);
+    letter-spacing: 0.02em;
+  }
+
+  .byline-sep { color: var(--ink-ghost); font-size: 0.8rem; }
+
+  .byline-meta {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--ink-ghost);
+  }
+
+  .byline-tag {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: auto;
+  }
+
+  /* ── Main content ── */
+  .content {
+    padding: 40px 0 0;
+  }
+
+  /* ── Section label ── */
+  .section-tag {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-tag::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+    max-width: 60px;
+  }
+
+  .section-heading {
+    font-family: var(--font-serif);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    letter-spacing: -0.015em;
+  }
+
+  .section-body {
+    font-family: var(--font-sans);
+    font-size: 0.96rem;
+    color: var(--ink-mid);
+    line-height: 1.72;
+    margin-bottom: 28px;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 48px 0;
+  }
+
+  /* ── Thesis box ── */
+  .thesis {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 32px 36px;
+    border-radius: 4px;
+    margin: 40px 0;
+    position: relative;
+  }
+
+  .thesis-quote {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+
+  .thesis-attr {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: rgba(250,247,242,0.5);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── Stat callouts ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+
+  .stat-cell {
+    background: var(--paper);
+    padding: 22px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.03em;
+  }
+
+  .stat-num .unit {
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+
+  .stat-desc {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    line-height: 1.4;
+  }
+
+  /* ── Why now cards ── */
+  .why-grid {
+    display: grid;
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 28px 0;
+  }
+
+  .why-card {
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .why-card:last-child { border-bottom: none; }
+
+  .why-card:hover { background: var(--paper-warm); }
+  .why-card.active { background: var(--paper-warm); }
+
+  .why-num {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    min-width: 28px;
+    line-height: 1.2;
+  }
+
+  .why-content { flex: 1; }
+
+  .why-title {
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .why-body {
+    font-family: var(--font-sans);
+    font-size: 0.84rem;
+    color: var(--ink-light);
+    line-height: 1.55;
+    display: none;
+    margin-top: 8px;
+  }
+
+  .why-card.active .why-body { display: block; }
+
+  .why-arrow {
+    color: var(--ink-ghost);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: transform 0.2s;
+  }
+
+  .why-card.active .why-arrow { transform: rotate(180deg); color: var(--accent); }
+
+  /* ── Skills comparison ── */
+  .skills-toggle {
+    display: flex;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    background: var(--paper);
+  }
+
+  .skills-tab {
+    flex: 1;
+    padding: 10px 16px;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--ink-light);
+    border: none;
+    background: transparent;
+  }
+
+  .skills-tab:first-child { border-right: 1px solid var(--rule); }
+
+  .skills-tab.active.needed {
+    background: var(--teal);
+    color: white;
+  }
+
+  .skills-tab.active.not-needed {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .skills-pane {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    display: none;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .skills-pane.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .skill-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+    transition: background 0.15s;
+  }
+
+  .skill-item:last-child { border-bottom: none; }
+  .skill-item:hover { background: var(--paper-warm); }
+
+  .skill-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .skill-icon.tick { background: var(--teal-light); color: var(--teal); }
+  .skill-icon.cross { background: rgba(180,60,30,0.1); color: #b43c1e; }
+
+  .skill-name {
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+
+  .skill-note {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    line-height: 1.4;
+  }
+
+  /* ── Role comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0;
+    font-family: var(--font-sans);
+    font-size: 0.84rem;
+  }
+
+  .compare-table th {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .compare-table td {
+    border: 1px solid var(--rule);
+    padding: 10px 14px;
+    color: var(--ink-mid);
+    line-height: 1.45;
+    vertical-align: top;
+  }
+
+  .compare-table tr:hover td { background: var(--paper-warm); }
+
+  .compare-table .row-label {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 0.82rem;
+  }
+
+  .compare-table .ai-col { color: var(--accent-deep); font-weight: 600; }
+  .compare-table .ml-col { color: var(--blue-warm); font-weight: 600; }
+
+  /* ── Pull quote ── */
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 24px;
+    margin: 36px 0;
+  }
+
+  .pull-quote blockquote {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .pull-quote cite {
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    color: var(--ink-ghost);
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Stack pills ── */
+  .stack-section { margin: 28px 0; }
+
+  .stack-category {
+    margin-bottom: 20px;
+  }
+
+  .stack-cat-label {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-bottom: 10px;
+  }
+
+  .stack-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .stack-pill {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid;
+    cursor: default;
+    transition: all 0.15s;
+  }
+
+  .stack-pill:hover { transform: translateY(-1px); }
+
+  .stack-pill.orange { color: var(--accent); border-color: rgba(201,107,43,0.3); background: rgba(201,107,43,0.06); }
+  .stack-pill.teal { color: var(--teal); border-color: rgba(43,122,107,0.3); background: rgba(43,122,107,0.06); }
+  .stack-pill.blue { color: var(--blue-warm); border-color: rgba(43,94,167,0.3); background: rgba(43,94,167,0.06); }
+  .stack-pill.gray { color: var(--ink-light); border-color: var(--rule); background: var(--paper-warm); }
+
+  /* ── Software evolution ── */
+  .evolution-steps {
+    display: grid;
+    gap: 0;
+    margin: 28px 0;
+  }
+
+  .evo-step {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: flex-start;
+  }
+
+  .evo-step:last-child { border-bottom: none; }
+
+  .evo-label {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--paper-deep);
+    flex-shrink: 0;
+    min-width: 50px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .evo-step:hover .evo-label { color: var(--accent); }
+
+  .evo-content { flex: 1; }
+
+  .evo-title {
+    font-family: var(--font-sans);
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .evo-desc {
+    font-family: var(--font-sans);
+    font-size: 0.84rem;
+    color: var(--ink-light);
+    line-height: 1.55;
+  }
+
+  .evo-example {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid var(--accent-mid);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+
+  /* ── Career path ── */
+  .path-steps {
+    counter-reset: path-counter;
+    list-style: none;
+    margin: 24px 0;
+  }
+
+  .path-step {
+    counter-increment: path-counter;
+    display: flex;
+    gap: 18px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: all 0.4s ease;
+  }
+
+  .path-step.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .path-step::before {
+    content: counter(path-counter);
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--accent);
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .path-title {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .path-body {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    line-height: 1.55;
+  }
+
+  /* ── Comp callout ── */
+  .comp-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .comp-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+
+  .comp-val {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .comp-role {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* ── Flippening ── */
+  .flip-chart {
+    margin: 28px 0;
+    padding: 24px;
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+
+  .flip-label {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-ghost);
+    margin-bottom: 20px;
+  }
+
+  .flip-row {
+    margin-bottom: 14px;
+  }
+
+  .flip-row-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+
+  .flip-name {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink-mid);
+  }
+
+  .flip-val {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    font-weight: 600;
+  }
+
+  .flip-track {
+    background: var(--paper-deep);
+    border-radius: 2px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .flip-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  .flip-note {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    margin-top: 16px;
+    font-style: italic;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    border-top: 2px solid var(--ink);
+    padding: 28px 0 60px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 60px;
+    flex-wrap: wrap;
+  }
+
+  .footer-credit {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  .footer-link {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1.5px solid rgba(201,107,43,0.3);
+    padding-bottom: 1px;
+    transition: all 0.15s;
+  }
+
+  .footer-link:hover {
+    color: var(--accent-deep);
+    border-bottom-color: var(--accent-deep);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    body { font-size: 15px; }
+    .hero-title { font-size: 2.2rem; }
+    .stat-row { grid-template-columns: 1fr; }
+    .comp-cards { grid-template-columns: 1fr; }
+    .compare-table { font-size: 0.75rem; }
+    .wrap { padding: 0 18px; }
+  }
+
+  /* Scroll animation baseline */
+  .animate-in {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .animate-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-kicker">The Latent Space Essay</div>
+    <h1 class="hero-title">The Rise of the <em>AI Engineer</em></h1>
+    <p class="hero-dek">A new engineering discipline is forming — distinct from ML research, trained on APIs not PhDs, and poised to outnumber traditional ML engineers within five years.</p>
+    <div class="hero-byline">
+      <span class="byline-author">swyx</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-meta">latent.space · June 30, 2023</span>
+      <span class="byline-tag">Career + Industry</span>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <article class="content">
+
+    <!-- Thesis -->
+    <div class="thesis animate-in">
+      <div class="thesis-quote">"When it comes to shipping AI products, you want engineers, not researchers."</div>
+      <div class="thesis-attr">The core claim — Latent.Space</div>
+    </div>
+
+    <!-- Key stats -->
+    <div class="stat-row animate-in">
+      <div class="stat-cell">
+        <div class="stat-num">5K<span class="unit">+</span></div>
+        <div class="stat-desc">LLM researchers globally</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">50M<span class="unit">+</span></div>
+        <div class="stat-desc">Software engineers globally</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">1–10K<span class="unit">×</span></div>
+        <div class="stat-desc">Faster prototyping with APIs vs. training</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- What is an AI Engineer -->
+    <div class="animate-in">
+      <div class="section-tag">Definition</div>
+      <h2 class="section-heading">What Is an AI Engineer?</h2>
+      <p class="section-body">
+        An AI Engineer applies existing foundation models — GPT-4, Claude, open-source LLMs — to build practical products. They don't train models from scratch. They don't need a PhD. What they need is software engineering fundamentals, product intuition, and the ability to rapidly iterate using existing AI capabilities via APIs and toolchains.
+      </p>
+    </div>
+
+    <!-- Comparison table -->
+    <table class="compare-table animate-in">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th style="color:var(--accent);">AI Engineer</th>
+          <th style="color:var(--blue-warm);">ML Engineer / Researcher</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label">Core work</td>
+          <td class="ai-col">Build products with foundation models</td>
+          <td class="ml-col">Train and fine-tune models</td>
+        </tr>
+        <tr>
+          <td class="row-label">Credential</td>
+          <td class="ai-col">No PhD required</td>
+          <td class="ml-col">PhD typical for research roles</td>
+        </tr>
+        <tr>
+          <td class="row-label">Primary tool</td>
+          <td class="ai-col">APIs, orchestration, prompts</td>
+          <td class="ml-col">PyTorch, CUDA, data pipelines</td>
+        </tr>
+        <tr>
+          <td class="row-label">Iteration speed</td>
+          <td class="ai-col">Days to weeks (fire, ready, aim)</td>
+          <td class="ml-col">Months to years (data-first)</td>
+        </tr>
+        <tr>
+          <td class="row-label">Focus</td>
+          <td class="ai-col">Generative: writing, coding, learning tools</td>
+          <td class="ml-col">Classification: fraud, recommendation</td>
+        </tr>
+        <tr>
+          <td class="row-label">Supply</td>
+          <td class="ai-col">Emerging — fast-growing</td>
+          <td class="ml-col">Scarce — ~5,000 LLM researchers</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr class="divider">
+
+    <!-- Why now -->
+    <div class="animate-in">
+      <div class="section-tag">Context</div>
+      <h2 class="section-heading">Why This Role Is Emerging Now</h2>
+      <p class="section-body">Six forces have converged to make the AI Engineer role both viable and necessary — none of which existed three years ago.</p>
+    </div>
+
+    <div class="why-grid animate-in">
+      <div class="why-card active" data-why="1">
+        <div class="why-num">1</div>
+        <div class="why-content">
+          <div class="why-title">Foundation models have surprising generalization</div>
+          <div class="why-body">Models exhibit unexpected zero-shot transfer and in-context learning that even their creators don't fully understand. This creates an entire class of applications that can be discovered by curious engineers — no training required.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+      <div class="why-card" data-why="2">
+        <div class="why-num">2</div>
+        <div class="why-content">
+          <div class="why-title">Research talent is scarce by design</div>
+          <div class="why-body">~5,000 LLM researchers worldwide versus 50 million software engineers. This supply constraint means AI product-building must be accessible to engineers who didn't train models. APIs make this possible.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+      <div class="why-card" data-why="3">
+        <div class="why-num">3</div>
+        <div class="why-content">
+          <div class="why-title">GPU economics favor API access</div>
+          <div class="why-body">Hardware is concentrated in large labs. Startups and individuals cannot afford to train frontier models. The inevitable result: build with APIs or don't build. AI Engineers are the practitioners who work within these economics.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+      <div class="why-card" data-why="4">
+        <div class="why-num">4</div>
+        <div class="why-content">
+          <div class="why-title">Agile beats waterfall for LLM products</div>
+          <div class="why-body">"Fire, ready, aim" prototyping with LLMs enables 1,000–10,000× faster validation than traditional ML's laborious data collection → training → evaluation cycle. Speed-to-signal is a structural advantage.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+      <div class="why-card" data-why="5">
+        <div class="why-num">5</div>
+        <div class="why-content">
+          <div class="why-title">JavaScript expands the addressable talent pool</div>
+          <div class="why-body">LangChain.js, Transformers.js, and Vercel AI SDK expanded the ecosystem beyond Python-only. This doubled+ the TAM of practitioners who can build AI products — from Python-native to the full web development community.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+      <div class="why-card" data-why="6">
+        <div class="why-num">6</div>
+        <div class="why-content">
+          <div class="why-title">Generative products are a new category</div>
+          <div class="why-body">AI Engineers build writing assistants, coding tools, and personalized learning products — distinct from traditional ML's fraud detection and recommendation systems. New category, new practitioners.</div>
+        </div>
+        <div class="why-arrow">▾</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Skills -->
+    <div class="animate-in">
+      <div class="section-tag">Skills</div>
+      <h2 class="section-heading">What You Actually Need</h2>
+      <p class="section-body">Conventional wisdom says start with Ng's ML courses, PyTorch, and transformer architecture. Successful AI Engineers like Simon Willison and Riley Goodside shipped products without any of this foundation.</p>
+    </div>
+
+    <div class="skills-toggle animate-in">
+      <button class="skills-tab active needed" data-skills="needed">✓ Actually Needed</button>
+      <button class="skills-tab not-needed" data-skills="not-needed">✕ Not Required</button>
+    </div>
+
+    <div class="skills-pane active" id="skills-needed">
+      <div class="skill-item">
+        <div class="skill-icon tick">✓</div>
+        <div>
+          <div class="skill-name">Software engineering fundamentals</div>
+          <div class="skill-note">APIs, debugging, data structures, version control — core craft transfers completely</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon tick">✓</div>
+        <div>
+          <div class="skill-name">API integration experience</div>
+          <div class="skill-note">If you can call a REST API and handle responses, you can build AI products today</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon tick">✓</div>
+        <div>
+          <div class="skill-name">Product thinking</div>
+          <div class="skill-note">Understanding user needs and what makes AI useful — often more valuable than technical depth</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon tick">✓</div>
+        <div>
+          <div class="skill-name">Rapid prototyping ability</div>
+          <div class="skill-note">The ability to go from idea to working demo in days, not months</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon tick">✓</div>
+        <div>
+          <div class="skill-name">Understanding LLM capabilities and limits</div>
+          <div class="skill-note">Practical intuition about what models can and can't reliably do — from spending time with them</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skills-pane" id="skills-not-needed">
+      <div class="skill-item">
+        <div class="skill-icon cross">✕</div>
+        <div>
+          <div class="skill-name">PhD in any field</div>
+          <div class="skill-note">Top AI Engineer compensation ($300K–$900K) is achieved without academic credentials</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon cross">✕</div>
+        <div>
+          <div class="skill-name">PyTorch / CUDA knowledge</div>
+          <div class="skill-note">You're building on top of models, not training them — training frameworks are irrelevant</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon cross">✕</div>
+        <div>
+          <div class="skill-name">Deep learning fundamentals</div>
+          <div class="skill-note">Backpropagation, gradient descent, and architecture math rarely encountered in product work</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon cross">✕</div>
+        <div>
+          <div class="skill-name">"Attention Is All You Need" comprehension</div>
+          <div class="skill-note">You use the outputs of this research, not the mathematics — a user doesn't need to understand the engine</div>
+        </div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-icon cross">✕</div>
+        <div>
+          <div class="skill-name">Data warehouse architecture</div>
+          <div class="skill-note">Traditional ML data infrastructure skills don't transfer to API-first product development</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Compensation -->
+    <div class="animate-in">
+      <div class="section-tag">Compensation</div>
+      <h2 class="section-heading">The Market Has Decided</h2>
+      <p class="section-body">Sheer demand-and-supply economics have already set the price. The market doesn't wait for credentials.</p>
+    </div>
+
+    <div class="comp-cards animate-in">
+      <div class="comp-card">
+        <div class="comp-val">$300K</div>
+        <div class="comp-role">Prompt Engineering<br>at Anthropic</div>
+      </div>
+      <div class="comp-card">
+        <div class="comp-val">$900K</div>
+        <div class="comp-role">AI Software Building<br>at OpenAI</div>
+      </div>
+    </div>
+
+    <!-- The Flippening -->
+    <div class="flip-chart animate-in">
+      <div class="flip-label">Job Title Trajectory — Indeed.com (2023 baseline)</div>
+      <div class="flip-row">
+        <div class="flip-row-label">
+          <span class="flip-name">ML Engineer</span>
+          <span class="flip-val">10× more jobs (currently)</span>
+        </div>
+        <div class="flip-track">
+          <div class="flip-fill" data-pct="91" style="background:var(--blue-warm);"></div>
+        </div>
+      </div>
+      <div class="flip-row">
+        <div class="flip-row-label">
+          <span class="flip-name">AI Engineer</span>
+          <span class="flip-val">Growing faster — predicted to flip within 5 years</span>
+        </div>
+        <div class="flip-track">
+          <div class="flip-fill" data-pct="35" style="background:var(--accent);"></div>
+        </div>
+      </div>
+      <div class="flip-note">Andrej Karpathy: "There's probably going to be significantly more AI Engineers than ML Engineers. One can be quite successful in this role without ever training anything."</div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Software evolution -->
+    <div class="animate-in">
+      <div class="section-tag">Framing</div>
+      <h2 class="section-heading">Software 1.0 → 2.0 → 3.0</h2>
+      <p class="section-body">Extending Andrej Karpathy's original Software 2.0 framing — English is becoming the hottest new programming language.</p>
+    </div>
+
+    <div class="evolution-steps animate-in">
+      <div class="evo-step">
+        <div class="evo-label">1.0</div>
+        <div class="evo-content">
+          <div class="evo-title">Classical Code</div>
+          <div class="evo-desc">Explicit logic hand-written by engineers. Every behavior is deterministic and manually specified. The dominant paradigm for 60+ years of software.</div>
+          <span class="evo-example">if / else / while</span>
+        </div>
+      </div>
+      <div class="evo-step">
+        <div class="evo-label">2.0</div>
+        <div class="evo-content">
+          <div class="evo-title">Neural Networks</div>
+          <div class="evo-desc">Karpathy's original framing: instead of writing logic, you write training data and let gradient descent find the weights. Behavior is learned, not programmed.</div>
+          <span class="evo-example">PyTorch · TensorFlow · data pipelines</span>
+        </div>
+      </div>
+      <div class="evo-step">
+        <div class="evo-label">3.0</div>
+        <div class="evo-content">
+          <div class="evo-title">English as Code</div>
+          <div class="evo-desc">AI Engineers orchestrate foundation models with prompts, context, and tool use. The "code" is natural language. The intelligence is pre-trained. The engineer's job: compose capabilities into products.</div>
+          <span class="evo-example">LangChain · vector DBs · agent loops</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote animate-in">
+      <blockquote>"English is the hottest new programming language."</blockquote>
+      <cite>— Latent.Space, The Rise of the AI Engineer</cite>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Tools -->
+    <div class="animate-in">
+      <div class="section-tag">Stack</div>
+      <h2 class="section-heading">The AI Engineer's Toolbox</h2>
+    </div>
+
+    <div class="stack-section animate-in">
+      <div class="stack-category">
+        <div class="stack-cat-label">Orchestration & Chaining</div>
+        <div class="stack-pills">
+          <span class="stack-pill orange">LangChain ($200M+ funded)</span>
+          <span class="stack-pill orange">LlamaIndex</span>
+          <span class="stack-pill orange">Guardrails</span>
+          <span class="stack-pill orange">Vercel AI SDK</span>
+        </div>
+      </div>
+      <div class="stack-category">
+        <div class="stack-cat-label">Foundation Models</div>
+        <div class="stack-pills">
+          <span class="stack-pill blue">GPT-4</span>
+          <span class="stack-pill blue">Claude</span>
+          <span class="stack-pill blue">LLaMA (open source)</span>
+          <span class="stack-pill blue">HuggingFace</span>
+        </div>
+      </div>
+      <div class="stack-category">
+        <div class="stack-cat-label">Agents</div>
+        <div class="stack-pills">
+          <span class="stack-pill teal">Auto-GPT</span>
+          <span class="stack-pill teal">BabyAGI</span>
+          <span class="stack-pill teal">Voyager (Nvidia)</span>
+        </div>
+      </div>
+      <div class="stack-category">
+        <div class="stack-cat-label">Infrastructure</div>
+        <div class="stack-pills">
+          <span class="stack-pill gray">Pinecone (vector DB)</span>
+          <span class="stack-pill gray">Transformers.js</span>
+          <span class="stack-pill gray">LangChain.js</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Career path -->
+    <div class="animate-in">
+      <div class="section-tag">Career Advice</div>
+      <h2 class="section-heading">How to Become One</h2>
+      <p class="section-body">Don't start with academic papers. Don't take ML prerequisites. The practitioners who ship products follow a different path entirely.</p>
+    </div>
+
+    <ol class="path-steps">
+      <li class="path-step animate-in">
+        <div>
+          <div class="path-title">Build with existing APIs immediately</div>
+          <div class="path-body">Take a problem you care about and make it work with GPT-4 or Claude. Don't study first — ship something, however rough.</div>
+        </div>
+      </li>
+      <li class="path-step animate-in">
+        <div>
+          <div class="path-title">Spend time with models to discover their capabilities</div>
+          <div class="path-body">Zero-shot and few-shot capabilities are often surprising even to researchers. Exploration reveals what's possible — documentation doesn't capture it fully.</div>
+        </div>
+      </li>
+      <li class="path-step animate-in">
+        <div>
+          <div class="path-title">Learn tools through application, not tutorials</div>
+          <div class="path-body">Pick up LangChain, a vector database, or an agent framework because your project needs it. Context-driven learning is faster than sequential study.</div>
+        </div>
+      </li>
+      <li class="path-step animate-in">
+        <div>
+          <div class="path-title">Iterate rapidly — the "fire, ready, aim" workflow</div>
+          <div class="path-body">LLMs reward fast experimentation. Validate ideas in days, not months. Traditional ML's requirement for large labeled datasets before any validation is inverted.</div>
+        </div>
+      </li>
+      <li class="path-step animate-in">
+        <div>
+          <div class="path-title">Join the community and show your work</div>
+          <div class="path-body">The AI Engineer Summit (ai.engineer) and Latent.Space represent a community forming around this identity — the connective tissue for the emerging discipline.</div>
+        </div>
+      </li>
+    </ol>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <div class="footer-credit">
+        Interactive summary of swyx's<br>
+        <em>The Rise of the AI Engineer</em> — latent.space, June 2023
+      </div>
+      <a href="https://www.latent.space/p/ai-engineer" class="footer-link" target="_blank">Read the original essay →</a>
+    </footer>
+
+  </article>
+</div>
+
+<script>
+  // ── Reading progress ──
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrollable = document.body.scrollHeight - window.innerHeight;
+    progress.style.width = Math.min((window.scrollY / scrollable) * 100, 100) + '%';
+  });
+
+  // ── Why-now accordion ──
+  document.querySelectorAll('.why-card').forEach(card => {
+    card.querySelector('.why-title').addEventListener('click', () => {
+      const wasActive = card.classList.contains('active');
+      document.querySelectorAll('.why-card.active').forEach(c => c.classList.remove('active'));
+      if (!wasActive) card.classList.add('active');
+    });
+    // Also click the whole card
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('.why-title')) {
+        const wasActive = card.classList.contains('active');
+        document.querySelectorAll('.why-card.active').forEach(c => c.classList.remove('active'));
+        if (!wasActive) card.classList.add('active');
+      }
+    });
+  });
+
+  // ── Skills toggle ──
+  document.querySelectorAll('.skills-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.skills;
+      document.querySelectorAll('.skills-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.skills-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('skills-' + target).classList.add('active');
+    });
+  });
+
+  // ── Bar animation ──
+  function animateBars() {
+    document.querySelectorAll('.flip-fill').forEach(fill => {
+      const pct = fill.dataset.pct || 0;
+      fill.style.width = pct + '%';
+    });
+  }
+
+  // ── Intersection observer for animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Trigger flip bars when chart is visible
+        if (entry.target.classList.contains('flip-chart')) {
+          setTimeout(animateBars, 200);
+        }
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.animate-in, .path-step').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.03}s`;
+    observer.observe(el);
+  });
+
+  // Animate path steps with stagger
+  const pathObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        pathObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.path-step').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.08}s`;
+    pathObserver.observe(el);
+  });
+
+  // Initial visible check (items already in viewport)
+  setTimeout(() => {
+    document.querySelectorAll('.animate-in').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('visible');
+      }
+    });
+    animateBars();
+  }, 100);
+</script>
+
+</body>
+</html>

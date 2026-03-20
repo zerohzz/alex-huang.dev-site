@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>State of AI Report 2025 — Interactive Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --blue-100: #dbeafe;
+    --blue-50: #eff6ff;
+    --green-500: #22c55e;
+    --green-100: #dcfce7;
+    --amber-500: #f59e0b;
+    --amber-100: #fef3c7;
+    --red-500: #ef4444;
+    --red-100: #fee2e2;
+    --purple-500: #a855f7;
+    --purple-100: #f3e8ff;
+    --teal-500: #14b8a6;
+    --teal-100: #ccfbf1;
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'Fira Code', 'Courier New', monospace;
+    --border-radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--gray-50);
+    color: var(--gray-900);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 52px;
+    gap: 24px;
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .brand-badge {
+    background: var(--blue-600);
+    color: white;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .brand-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--gray-900);
+    letter-spacing: -0.01em;
+  }
+
+  .topbar-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--gray-200);
+    flex-shrink: 0;
+  }
+
+  /* Pill nav */
+  .pill-nav {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex: 1;
+  }
+
+  .pill-nav::-webkit-scrollbar { display: none; }
+
+  .pill-btn {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-500);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .pill-btn:hover {
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+
+  .pill-btn.active {
+    background: var(--blue-600);
+    color: white;
+  }
+
+  .pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  /* ── Main layout ── */
+  .main-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* ── Section panels ── */
+  .section-panel {
+    display: none;
+    animation: fadeSlide 0.25s ease;
+  }
+
+  .section-panel.active { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Section header ── */
+  .panel-header {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .panel-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .panel-meta { flex: 1; }
+
+  .panel-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+
+  .panel-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .panel-summary {
+    font-size: 0.88rem;
+    color: var(--gray-500);
+    line-height: 1.55;
+    max-width: 600px;
+  }
+
+  .panel-edition {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gray-400);
+    flex-shrink: 0;
+    align-self: center;
+    background: var(--gray-100);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-100);
+  }
+
+  /* ── KPI cards ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .kpi-card.blue::before { background: var(--blue-600); }
+  .kpi-card.green::before { background: var(--green-500); }
+  .kpi-card.amber::before { background: var(--amber-500); }
+  .kpi-card.purple::before { background: var(--purple-500); }
+  .kpi-card.teal::before { background: var(--teal-500); }
+  .kpi-card.red::before { background: var(--red-500); }
+
+  .kpi-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 5px;
+  }
+
+  .kpi-label {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .kpi-delta {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+
+  .kpi-delta.up { color: var(--green-500); }
+  .kpi-delta.neutral { color: var(--gray-400); }
+  .kpi-delta.down { color: var(--red-500); }
+
+  /* ── Bar chart ── */
+  .bar-chart { padding: 4px 0; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+  }
+
+  .bar-label {
+    font-size: 0.78rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    text-align: right;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar-track {
+    background: var(--gray-100);
+    border-radius: 2px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.7s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  .bar-val {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  /* ── Table ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .data-table th {
+    background: var(--gray-50);
+    border-bottom: 2px solid var(--gray-200);
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--gray-500);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .data-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+    transition: background 0.15s;
+  }
+
+  .data-table tr:hover td {
+    background: var(--blue-50);
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .table-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  .badge-blue { background: var(--blue-100); color: var(--blue-700); }
+  .badge-green { background: var(--green-100); color: #15803d; }
+  .badge-amber { background: var(--amber-100); color: #92400e; }
+  .badge-red { background: var(--red-100); color: #b91c1c; }
+  .badge-purple { background: var(--purple-100); color: #7e22ce; }
+  .badge-teal { background: var(--teal-100); color: #0f766e; }
+  .badge-gray { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ── Mono stat ── */
+  .mono-stat {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--gray-600);
+  }
+
+  .mono-stat.highlight { color: var(--blue-600); font-weight: 500; }
+
+  /* ── Findings list ── */
+  .findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .finding-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    background: var(--gray-50);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-100);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .finding-item:hover {
+    background: var(--blue-50);
+    border-color: var(--blue-100);
+  }
+
+  .finding-num {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--blue-600);
+    font-weight: 500;
+    flex-shrink: 0;
+    padding-top: 1px;
+    min-width: 20px;
+  }
+
+  .finding-text {
+    font-size: 0.84rem;
+    color: var(--gray-700);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .finding-sub {
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    margin-top: 3px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* ── Donut-style ring chart (pure CSS) ── */
+  .ring-chart-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ring-chart {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+
+  .ring-svg {
+    transform: rotate(-90deg);
+  }
+
+  .ring-bg {
+    fill: none;
+    stroke: var(--gray-100);
+    stroke-width: 10;
+  }
+
+  .ring-fill {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dasharray 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .ring-sub {
+    font-size: 0.6rem;
+    color: var(--gray-400);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .ring-name {
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .rings-row {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Timeline dots ── */
+  .event-timeline {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .event-timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--gray-200);
+  }
+
+  .event-item {
+    position: relative;
+    padding: 0 0 14px 16px;
+  }
+
+  .event-item::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--blue-100);
+  }
+
+  .event-item:last-child { padding-bottom: 0; }
+
+  .event-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 2px;
+  }
+
+  .event-detail {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    line-height: 1.45;
+  }
+
+  /* ── Prediction cards ── */
+  .prediction-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-100);
+    background: var(--gray-50);
+    margin-bottom: 10px;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .prediction-item:hover {
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pred-status {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .pred-status.correct { background: var(--green-100); color: #15803d; }
+  .pred-status.wrong { background: var(--red-100); color: #b91c1c; }
+  .pred-status.partial { background: var(--amber-100); color: #92400e; }
+  .pred-status.pending { background: var(--gray-100); color: var(--gray-500); }
+
+  .pred-text {
+    font-size: 0.82rem;
+    color: var(--gray-700);
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .pred-verdict {
+    font-size: 0.72rem;
+    color: var(--gray-400);
+    margin-top: 3px;
+  }
+
+  /* ── Compute index ── */
+  .compute-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .compute-row:last-child { border-bottom: none; }
+
+  .compute-year {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gray-400);
+    width: 36px;
+    flex-shrink: 0;
+  }
+
+  .compute-bar-track {
+    flex: 1;
+    background: var(--gray-100);
+    border-radius: 2px;
+    height: 16px;
+    overflow: hidden;
+  }
+
+  .compute-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+    transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2, .grid-3, .grid-4, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 120px 1fr 50px; }
+    .rings-row { gap: 16px; }
+    .main-layout { padding: 16px; }
+  }
+
+  /* ── Utility ── */
+  .mb-16 { margin-bottom: 16px; }
+  .mb-12 { margin-bottom: 12px; }
+  .text-mono { font-family: var(--font-mono); font-size: 0.78rem; }
+  .text-dim { color: var(--gray-400); }
+  .span-full { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<!-- Top navigation bar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <span class="brand-badge">AI</span>
+      <span class="brand-title">State of AI Report 2025</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <nav class="pill-nav">
+      <button class="pill-btn active" data-panel="overview">
+        <span class="pill-dot"></span>Overview
+      </button>
+      <button class="pill-btn" data-panel="research">
+        <span class="pill-dot"></span>Research
+      </button>
+      <button class="pill-btn" data-panel="industry">
+        <span class="pill-dot"></span>Industry
+      </button>
+      <button class="pill-btn" data-panel="politics">
+        <span class="pill-dot"></span>Politics
+      </button>
+      <button class="pill-btn" data-panel="safety">
+        <span class="pill-dot"></span>Safety
+      </button>
+      <button class="pill-btn" data-panel="survey">
+        <span class="pill-dot"></span>Survey
+      </button>
+      <button class="pill-btn" data-panel="compute">
+        <span class="pill-dot"></span>Compute
+      </button>
+      <button class="pill-btn" data-panel="predictions">
+        <span class="pill-dot"></span>Predictions
+      </button>
+    </nav>
+  </div>
+</div>
+
+<div class="main-layout">
+
+  <!-- ══════════════════════════════════════
+       OVERVIEW PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel active" id="panel-overview">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#eff6ff;">📊</div>
+      <div class="panel-meta">
+        <div class="panel-label">Annual Report · 8th Edition</div>
+        <h1 class="panel-title">State of AI Report 2025</h1>
+        <p class="panel-summary">A comprehensive analysis of AI's research breakthroughs, commercial adoption, geopolitical dynamics, and safety evolution — published October 9, 2025 by Nathan Benaich / Air Street Capital.</p>
+      </div>
+      <span class="panel-edition">Oct 2025</span>
+    </div>
+
+    <!-- Top KPIs -->
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card blue">
+        <div class="kpi-value">44%</div>
+        <div class="kpi-label">U.S. businesses paying for AI tools</div>
+        <div class="kpi-delta up">↑ from 5% in 2023</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-value">$530K</div>
+        <div class="kpi-label">Average enterprise AI contract value</div>
+        <div class="kpi-delta neutral">New metric in 2025</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-value">95%</div>
+        <div class="kpi-label">Practitioners using AI at work or home</div>
+        <div class="kpi-delta up">↑ Mainstream adoption threshold reached</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value">1.5×</div>
+        <div class="kpi-label">AI-first startup growth vs. peers</div>
+        <div class="kpi-delta neutral">2024–2025 cohort</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <!-- 7 Dimensions -->
+      <div class="card">
+        <div class="card-title">Report Dimensions</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Domain</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="text-mono text-dim">01</td><td>Research</td><td><span class="table-badge badge-blue">Capabilities leap</span></td></tr>
+            <tr><td class="text-mono text-dim">02</td><td>Industry</td><td><span class="table-badge badge-green">Strong adoption</span></td></tr>
+            <tr><td class="text-mono text-dim">03</td><td>Politics</td><td><span class="table-badge badge-amber">Geopolitical tension</span></td></tr>
+            <tr><td class="text-mono text-dim">04</td><td>Safety</td><td><span class="table-badge badge-purple">Evolving focus</span></td></tr>
+            <tr><td class="text-mono text-dim">05</td><td>Survey</td><td><span class="table-badge badge-teal">1,200+ respondents</span></td></tr>
+            <tr><td class="text-mono text-dim">06</td><td>Predictions</td><td><span class="table-badge badge-gray">Tracked annually</span></td></tr>
+            <tr><td class="text-mono text-dim">07</td><td>Compute</td><td><span class="table-badge badge-red">Industrial scale</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Top 5 findings -->
+      <div class="card">
+        <div class="card-title">Headline Findings</div>
+        <div class="findings-list">
+          <div class="finding-item">
+            <span class="finding-num">01</span>
+            <div>
+              <div class="finding-text">OpenAI retains narrow frontier lead; DeepSeek closes fast</div>
+              <div class="finding-sub">China's open-weights models competitive in reasoning and coding</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">02</span>
+            <div>
+              <div class="finding-text">Reasoning models now plan, reflect, self-correct</div>
+              <div class="finding-sub">RL + rubric-based rewards enable extended cognitive horizons</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">03</span>
+            <div>
+              <div class="finding-text">AI enters scientific method — hypothesis generation to validation</div>
+              <div class="finding-sub">Scaling laws extended to protein biology via ProGen3</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">04</span>
+            <div>
+              <div class="finding-text">Power supply becomes the binding constraint on AI scale</div>
+              <div class="finding-sub">Multi-GW data centers now being planned; sovereign backing accelerates</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">05</span>
+            <div>
+              <div class="finding-text">Safety discourse shifts from existential risk to reliability</div>
+              <div class="finding-sub">Cyber resilience, autonomous system governance take center stage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       RESEARCH PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-research">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#eff6ff;">🔬</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 01 · Research</div>
+        <h2 class="panel-title">Technology Breakthroughs</h2>
+        <p class="panel-summary">Reinforcement learning enables reasoning with planning and self-correction. Frontier competition intensifies with China narrowing capability gaps.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card blue">
+        <div class="kpi-value">RL+</div>
+        <div class="kpi-label">Reasoning via rubric-based reward models</div>
+        <div class="kpi-delta neutral">Core architecture shift 2025</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-value">→ Bio</div>
+        <div class="kpi-label">Scaling laws reach protein science</div>
+        <div class="kpi-delta neutral">ProGen3 / Profluent</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-value">Open</div>
+        <div class="kpi-label">DeepSeek, Qwen, Kimi challenge closed labs</div>
+        <div class="kpi-delta up">↑ China open-weights competitive</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value">Auto</div>
+        <div class="kpi-label">Autonomous hypothesis-testing systems</div>
+        <div class="kpi-delta neutral">Full scientific method coverage</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <div class="card">
+        <div class="card-title">Reasoning Model Capabilities</div>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <div class="bar-label">Planning</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="88" style="background:var(--blue-600);"></div></div>
+            <div class="bar-val">High</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Self-correction</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="82" style="background:var(--blue-500);"></div></div>
+            <div class="bar-val">High</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Reflection</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="78" style="background:var(--blue-400, #60a5fa);"></div></div>
+            <div class="bar-val">High</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Extended time horizon</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="70" style="background:var(--blue-300, #93c5fd);"></div></div>
+            <div class="bar-val">Emerging</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Autonomous research</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="55" style="background:var(--purple-500);"></div></div>
+            <div class="bar-val">Emerging</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Competitive Landscape</div>
+        <div class="event-timeline">
+          <div class="event-item">
+            <div class="event-title">OpenAI — Frontier leader</div>
+            <div class="event-detail">Retains narrow lead at frontier; GPT-o series defines reasoning benchmark</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Anthropic — Safety-forward competitor</div>
+            <div class="event-detail">Claude family competitive across reasoning, coding, and agentic tasks</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Google DeepMind — Multimodal scale</div>
+            <div class="event-detail">Gemini Robotics 1.5 extends into physical AI and embodied systems</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">DeepSeek / Qwen / Kimi — China tier</div>
+            <div class="event-detail">Open-weights models closing gap on reasoning and coding benchmarks fast</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Profluent — Scientific AI</div>
+            <div class="event-detail">ProGen3 extends scaling laws into protein biology research</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       INDUSTRY PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-industry">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#f0fdf4;">💼</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 02 · Industry</div>
+        <h2 class="panel-title">Commercial Adoption</h2>
+        <p class="panel-summary">AI spending has crossed mainstream thresholds. AI-first startups are growing faster than peers, and enterprise contracts are scaling significantly.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card green">
+        <div class="kpi-value">44%</div>
+        <div class="kpi-label">U.S. businesses paying for AI tools</div>
+        <div class="kpi-delta up">↑ 9× growth from 5% in 2023</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-value">$530K</div>
+        <div class="kpi-label">Average enterprise AI contract</div>
+        <div class="kpi-delta neutral">2025 average</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value">1.5×</div>
+        <div class="kpi-label">AI-first startup growth vs peers</div>
+        <div class="kpi-delta up">↑ Consistent 2024–2025</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-value">Multi-GW</div>
+        <div class="kpi-label">Data center scale now planned</div>
+        <div class="kpi-delta neutral">Industrial-era threshold crossed</div>
+      </div>
+    </div>
+
+    <div class="grid-1-2 mb-16">
+      <div class="card">
+        <div class="card-title">Adoption Surge 2023→2025</div>
+        <div class="rings-row">
+          <div class="ring-chart-wrap">
+            <div class="ring-chart">
+              <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+                <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                <circle class="ring-fill" cx="50" cy="50" r="40" stroke="#e2e8f0"
+                  data-pct="5" data-color="#94a3b8" stroke-dasharray="0 251.3"/>
+              </svg>
+              <div class="ring-label">5%<div class="ring-sub">2023</div></div>
+            </div>
+            <div class="ring-name">Businesses paying for AI</div>
+          </div>
+          <div class="ring-chart-wrap">
+            <div class="ring-chart">
+              <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+                <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                <circle class="ring-fill" cx="50" cy="50" r="40" stroke="var(--green-500)"
+                  data-pct="44" data-color="#22c55e" stroke-dasharray="0 251.3"/>
+              </svg>
+              <div class="ring-label">44%<div class="ring-sub">2025</div></div>
+            </div>
+            <div class="ring-name">Businesses paying for AI</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Enterprise AI Signals</div>
+        <div class="findings-list">
+          <div class="finding-item">
+            <span class="finding-num">→</span>
+            <div>
+              <div class="finding-text">Average AI contracts at $530,000</div>
+              <div class="finding-sub">Enterprise budgets now substantial; AI is a line item, not an experiment</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">→</span>
+            <div>
+              <div class="finding-text">AI-first startups grow 1.5× faster</div>
+              <div class="finding-sub">Competitive moat from AI-native architecture compounds over time</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">→</span>
+            <div>
+              <div class="finding-text">Robotics / physical AI entering commercial phase</div>
+              <div class="finding-sub">Chain-of-Action planning enables embodied system deployment</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">→</span>
+            <div>
+              <div class="finding-text">Power is the new constraint on AI business models</div>
+              <div class="finding-sub">Sovereign funds from US, UAE, China backing infrastructure directly</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       POLITICS PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-politics">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#fefce8;">🌐</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 03 · Politics</div>
+        <h2 class="panel-title">Regulation, Economics & Geopolitics</h2>
+        <p class="panel-summary">U.S.-China competition defines the AI geopolitical landscape. Europe's AI Act faces implementation challenges. Sovereign infrastructure investment accelerates.</p>
+      </div>
+    </div>
+
+    <div class="grid-3 mb-16">
+      <div class="card">
+        <div class="card-title">United States</div>
+        <div class="event-timeline">
+          <div class="event-item">
+            <div class="event-title">"America-first" AI positioning</div>
+            <div class="event-detail">Federal policy oriented around maintaining compute and model leadership</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Export controls on chips</div>
+            <div class="event-detail">Restricting access to advanced semiconductors for adversary nations</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Sovereign infrastructure investment</div>
+            <div class="event-detail">U.S. sovereign funds backing multi-GW AI data center builds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">China</div>
+        <div class="event-timeline">
+          <div class="event-item">
+            <div class="event-title">Open-weights strategy</div>
+            <div class="event-detail">DeepSeek, Qwen, Kimi deployed as open models to accelerate global adoption</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Compute self-sufficiency</div>
+            <div class="event-detail">Huawei and domestic fabs scaling production despite export restrictions</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Sovereign backing of AI labs</div>
+            <div class="event-detail">State capital backing frontier research as national strategic priority</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Europe</div>
+        <div class="event-timeline">
+          <div class="event-item">
+            <div class="event-title">EU AI Act in implementation</div>
+            <div class="event-detail">Risk-tiered regulation facing practical deployment challenges</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Competitiveness gap concern</div>
+            <div class="event-detail">EU regulators balancing safety with fear of falling behind US/China</div>
+          </div>
+          <div class="event-item">
+            <div class="event-title">Sovereign AI compute</div>
+            <div class="event-detail">Several EU nations funding national AI infrastructure initiatives</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-16">
+      <div class="card-title">Geopolitical AI Landscape 2025</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Strategy</th>
+            <th>Key Assets</th>
+            <th>Key Constraint</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>United States</strong></td>
+            <td>Closed-model frontier + export control</td>
+            <td>OpenAI, Anthropic, Google, Microsoft</td>
+            <td>Energy / political coordination</td>
+            <td><span class="table-badge badge-blue">Leading</span></td>
+          </tr>
+          <tr>
+            <td><strong>China</strong></td>
+            <td>Open-weights + domestic compute</td>
+            <td>DeepSeek, Qwen, Huawei</td>
+            <td>Advanced chip access</td>
+            <td><span class="table-badge badge-amber">Closing</span></td>
+          </tr>
+          <tr>
+            <td><strong>EU</strong></td>
+            <td>Regulatory framework + national compute</td>
+            <td>Mistral, national institutes</td>
+            <td>Commercial scale, talent</td>
+            <td><span class="table-badge badge-gray">Lagging</span></td>
+          </tr>
+          <tr>
+            <td><strong>UAE / Gulf</strong></td>
+            <td>Sovereign capital + infrastructure</td>
+            <td>G42, Falcon, data center build-out</td>
+            <td>Talent, base research capacity</td>
+            <td><span class="table-badge badge-teal">Investing</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SAFETY PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-safety">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#f3e8ff;">🛡️</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 04 · Safety</div>
+        <h2 class="panel-title">Risk Identification & Mitigation</h2>
+        <p class="panel-summary">Safety discourse has meaningfully shifted from existential risk framing toward practical reliability, cyber resilience, and autonomous system governance.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card purple">
+        <div class="kpi-value">Shift</div>
+        <div class="kpi-label">From existential risk → reliability</div>
+        <div class="kpi-delta neutral">Dominant framing in 2025</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-value">Cyber</div>
+        <div class="kpi-label">Cyber resilience now primary concern</div>
+        <div class="kpi-delta neutral">Both offense and defense</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value">Align?</div>
+        <div class="kpi-label">Models can mimic alignment under supervision</div>
+        <div class="kpi-delta down">↓ Raises transparency concerns</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-value">Gov.</div>
+        <div class="kpi-label">Autonomous system governance emerging</div>
+        <div class="kpi-delta neutral">New policy area 2025</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <div class="card">
+        <div class="card-title">Safety Focus Evolution</div>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <div class="bar-label">Reliability / robustness</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="90" style="background:var(--purple-500);"></div></div>
+            <div class="bar-val">Primary</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Cyber resilience</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="85" style="background:var(--red-500);"></div></div>
+            <div class="bar-val">Primary</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Autonomous governance</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="65" style="background:var(--amber-500);"></div></div>
+            <div class="bar-val">Growing</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Existential / x-risk</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="35" style="background:var(--gray-400);"></div></div>
+            <div class="bar-val">Declining</div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">Misinformation / deepfakes</div>
+            <div class="bar-track"><div class="bar-fill" data-pct="55" style="background:var(--amber-400, #fbbf24);"></div></div>
+            <div class="bar-val">Steady</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Key Safety Findings</div>
+        <div class="findings-list">
+          <div class="finding-item">
+            <span class="finding-num">!</span>
+            <div>
+              <div class="finding-text">Models can mimic alignment under evaluation</div>
+              <div class="finding-sub">Supervised alignment behavior may not generalize; interpretability lags capability</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">!</span>
+            <div>
+              <div class="finding-text">Autonomous system governance is an emerging gap</div>
+              <div class="finding-sub">Existing frameworks designed for human actors, not AI agents operating continuously</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">!</span>
+            <div>
+              <div class="finding-text">AI-enabled cyberattack capabilities are advancing</div>
+              <div class="finding-sub">Both offensive and defensive applications improving; attack surface expanding</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">!</span>
+            <div>
+              <div class="finding-text">Transparency vs. capability tension remains unresolved</div>
+              <div class="finding-sub">Interpretability research advances but capability growth outpaces understanding</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SURVEY PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-survey">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#ccfbf1;">📋</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 05 · Practitioner Survey</div>
+        <h2 class="panel-title">AI Usage Patterns</h2>
+        <p class="panel-summary">Survey of 1,200+ AI practitioners reveals near-universal AI adoption in professional and personal settings, with strong productivity gains reported.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card teal">
+        <div class="kpi-value">95%</div>
+        <div class="kpi-label">Use AI at work or home</div>
+        <div class="kpi-delta up">↑ Mainstream threshold crossed</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-value">76%</div>
+        <div class="kpi-label">Pay for AI tools personally</div>
+        <div class="kpi-delta up">↑ Strong willingness to pay</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-value">1,200+</div>
+        <div class="kpi-label">Survey respondents</div>
+        <div class="kpi-delta neutral">AI practitioners globally</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-value">Wide</div>
+        <div class="kpi-label">Productivity gains reported</div>
+        <div class="kpi-delta up">↑ Widespread across roles</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <div class="card">
+        <div class="card-title">Adoption by Metric</div>
+        <div class="rings-row">
+          <div class="ring-chart-wrap">
+            <div class="ring-chart">
+              <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+                <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                <circle class="ring-fill" cx="50" cy="50" r="40" stroke="var(--teal-500)"
+                  data-pct="95" stroke-dasharray="0 251.3"/>
+              </svg>
+              <div class="ring-label">95%<div class="ring-sub">use AI</div></div>
+            </div>
+            <div class="ring-name">Use AI at work / home</div>
+          </div>
+          <div class="ring-chart-wrap">
+            <div class="ring-chart">
+              <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+                <circle class="ring-bg" cx="50" cy="50" r="40"/>
+                <circle class="ring-fill" cx="50" cy="50" r="40" stroke="var(--blue-600)"
+                  data-pct="76" stroke-dasharray="0 251.3"/>
+              </svg>
+              <div class="ring-label">76%<div class="ring-sub">pay</div></div>
+            </div>
+            <div class="ring-name">Pay for AI personally</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">What Practitioners Report</div>
+        <div class="findings-list">
+          <div class="finding-item">
+            <span class="finding-num">↑</span>
+            <div>
+              <div class="finding-text">Widespread productivity gains across roles</div>
+              <div class="finding-sub">Coding, writing, research, and analysis are top use cases</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">↑</span>
+            <div>
+              <div class="finding-text">Personal willingness to pay is high (76%)</div>
+              <div class="finding-sub">Users pay for AI independently of employer provision — strong pull signal</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">↑</span>
+            <div>
+              <div class="finding-text">AI-native workflows are becoming standard</div>
+              <div class="finding-sub">Integration into daily work routines, not occasional usage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       COMPUTE PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-compute">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#fee2e2;">⚡</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 07 · Compute Index</div>
+        <h2 class="panel-title">Infrastructure Trends</h2>
+        <p class="panel-summary">AI compute has crossed into industrial-era scale. Power supply constraints now shape frontier AI development. Sovereign capital backing accelerates.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid mb-16">
+      <div class="kpi-card red">
+        <div class="kpi-value">GW</div>
+        <div class="kpi-label">Multi-gigawatt data centers planned</div>
+        <div class="kpi-delta neutral">Industrial-scale threshold</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-value">Power</div>
+        <div class="kpi-label">Electricity supply is binding constraint</div>
+        <div class="kpi-delta down">↓ Limiting factor for scaling</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-value">3x</div>
+        <div class="kpi-label">Sovereigns backing AI infra</div>
+        <div class="kpi-delta neutral">US, UAE, China all active</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-value">Open</div>
+        <div class="kpi-label">DeepSeek efficiency vs. closed-model cost</div>
+        <div class="kpi-delta up">↑ Efficiency gains challenge capex moats</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <div class="card">
+        <div class="card-title">Compute Scale Trajectory</div>
+        <div id="compute-chart">
+          <div class="compute-row">
+            <span class="compute-year">2019</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="5" style="background:var(--blue-300,#93c5fd);">tiny</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2020</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="8" style="background:var(--blue-400,#60a5fa);">small</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2021</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="14" style="background:var(--blue-500);">MW-scale</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2022</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="25" style="background:var(--blue-600);">100s MW</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2023</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="45" style="background:var(--blue-700);">GW nearing</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2024</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="72" style="background:var(--purple-500);">Multi-GW</div>
+            </div>
+          </div>
+          <div class="compute-row">
+            <span class="compute-year">2025</span>
+            <div class="compute-bar-track">
+              <div class="compute-bar-fill" data-pct="100" style="background:var(--red-500);">Industrial era</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Infrastructure Dynamics</div>
+        <div class="findings-list">
+          <div class="finding-item">
+            <span class="finding-num">⚡</span>
+            <div>
+              <div class="finding-text">Power is the binding constraint on AI scale</div>
+              <div class="finding-sub">Electricity availability now determines where and how fast frontier AI can grow</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">🏗️</span>
+            <div>
+              <div class="finding-text">Sovereign funds directly funding compute</div>
+              <div class="finding-sub">U.S., UAE, China treating AI compute as national strategic infrastructure</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">📉</span>
+            <div>
+              <div class="finding-text">Efficiency gains challenge capex moats</div>
+              <div class="finding-sub">DeepSeek's compute efficiency vs. frontier closed-model costs puts pressure on investment theses</div>
+            </div>
+          </div>
+          <div class="finding-item">
+            <span class="finding-num">🌍</span>
+            <div>
+              <div class="finding-text">Geographic diversification of compute accelerates</div>
+              <div class="finding-sub">Gulf, Southeast Asia, and European nations all building sovereign AI infrastructure</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PREDICTIONS PANEL
+  ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-predictions">
+
+    <div class="panel-header">
+      <div class="panel-icon" style="background:#fef3c7;">🎯</div>
+      <div class="panel-meta">
+        <div class="panel-label">Section 06 · Predictions</div>
+        <h2 class="panel-title">Forecasts & Track Record</h2>
+        <p class="panel-summary">Annual predictions evaluated and new 12-month forecasts set. A measure of epistemic accountability in a fast-moving field.</p>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-16">
+      <div class="card">
+        <div class="card-title">Prior Year Assessment</div>
+        <div class="prediction-item">
+          <div class="pred-status correct">✓</div>
+          <div>
+            <div class="pred-text">Reasoning models with planning + self-correction emerge</div>
+            <div class="pred-verdict">Correct — RL + rubric rewards enabled this in 2025</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status correct">✓</div>
+          <div>
+            <div class="pred-text">Enterprise AI adoption crosses 30%+ of U.S. businesses</div>
+            <div class="pred-verdict">Correct — reached 44% by report date</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status correct">✓</div>
+          <div>
+            <div class="pred-text">China releases competitive open-weights models</div>
+            <div class="pred-verdict">Correct — DeepSeek, Qwen, Kimi all competitive</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status partial">~</div>
+          <div>
+            <div class="pred-text">Physical AI / robotics commercial deployments at scale</div>
+            <div class="pred-verdict">Partial — Gemini Robotics 1.5 advanced, but mass deployment still early</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2026 Forecasts</div>
+        <div class="prediction-item">
+          <div class="pred-status pending">?</div>
+          <div>
+            <div class="pred-text">Autonomous AI agents complete multi-day professional tasks</div>
+            <div class="pred-verdict">Watch: agentic benchmarks to validate in 12 months</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status pending">?</div>
+          <div>
+            <div class="pred-text">Power supply constraints visibly slow frontier training</div>
+            <div class="pred-verdict">Watch: data center announcements vs. delivery timelines</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status pending">?</div>
+          <div>
+            <div class="pred-text">EU AI Act enforcement triggers first major commercial case</div>
+            <div class="pred-verdict">Watch: regulatory action against large frontier model provider</div>
+          </div>
+        </div>
+        <div class="prediction-item">
+          <div class="pred-status pending">?</div>
+          <div>
+            <div class="pred-text">Robotics adoption surpasses software AI in new enterprise contracts</div>
+            <div class="pred-verdict">Watch: physical AI deployment numbers vs. SaaS contracts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-layout -->
+
+<script>
+  // ── Panel navigation ──
+  const pillBtns = document.querySelectorAll('.pill-btn');
+  const panels = document.querySelectorAll('.section-panel');
+
+  pillBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.panel;
+      pillBtns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + target).classList.add('active');
+      // Trigger animations
+      setTimeout(() => {
+        animateBars();
+        animateRings();
+        animateCompute();
+      }, 50);
+    });
+  });
+
+  // ── Bar animation ──
+  function animateBars() {
+    document.querySelectorAll('.bar-fill').forEach(bar => {
+      const pct = bar.dataset.pct || 0;
+      bar.style.width = pct + '%';
+    });
+  }
+
+  // ── Ring animation ──
+  function animateRings() {
+    const circumference = 2 * Math.PI * 40; // r=40
+    document.querySelectorAll('.ring-fill').forEach(circle => {
+      const pct = parseFloat(circle.dataset.pct || 0);
+      const filled = (pct / 100) * circumference;
+      circle.style.strokeDasharray = `${filled} ${circumference - filled}`;
+    });
+  }
+
+  // ── Compute bar animation ──
+  function animateCompute() {
+    document.querySelectorAll('.compute-bar-fill').forEach(bar => {
+      const pct = bar.dataset.pct || 0;
+      bar.style.width = pct + '%';
+    });
+  }
+
+  // ── Run initial animations ──
+  setTimeout(() => {
+    animateBars();
+    animateRings();
+    animateCompute();
+  }, 200);
+
+  // ── Stagger card entry ──
+  const cardEls = document.querySelectorAll('.kpi-card, .card, .finding-item');
+  const entryObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        entryObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  cardEls.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(10px)';
+    el.style.transition = `opacity 0.4s ease ${i * 0.03}s, transform 0.4s ease ${i * 0.03}s`;
+    entryObserver.observe(el);
+  });
+</script>
+
+</body>
+</html>
