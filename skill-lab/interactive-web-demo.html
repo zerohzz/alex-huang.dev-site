@@ -3,621 +3,546 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building AI-Assisted Websites · Alex Huang</title>
+  <title>Build Your Site in One Afternoon · AI Workflow Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --color-bg:        #0d1117;
-      --color-surface:   #161b22;
-      --color-border:    #21262d;
-      --color-text:      #e6edf3;
-      --color-muted:     #8b949e;
-      --color-accent:    #58a6ff;
-      --color-accent-2:  #79c0ff;
-      --color-success:   #3fb950;
-      --color-warn:      #d29922;
-      --font-sans:       'IBM Plex Sans', sans-serif;
-      --font-mono:       'IBM Plex Mono', monospace;
-      --space-xs:        0.25rem;
-      --space-sm:        0.5rem;
-      --space-md:        1rem;
-      --space-lg:        2rem;
-      --space-xl:        4rem;
-      --radius:          6px;
-      --transition:      200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      --bg:            #faf9f7;
+      --surface:       #ffffff;
+      --border:        #e8e4dc;
+      --border-light:  #f0ece4;
+      --text-primary:  #1a1816;
+      --text-muted:    #8b8580;
+      --text-faint:    #b5b0aa;
+      --accent:        #d97757;
+      --accent-deep:   #c9622a;
+      --accent-soft:   #f5ede8;
+      --positive:      #4a7c59;
+      --positive-soft: #edf4ef;
+      --font-display:  'Instrument Serif', Georgia, serif;
+      --font-body:     'DM Sans', system-ui, sans-serif;
+      --font-mono:     'DM Mono', 'Fira Code', monospace;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+      --max-w: 680px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-
     body {
-      font-family: var(--font-sans);
-      background: var(--color-bg);
-      color: var(--color-text);
-      line-height: 1.7;
-      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: clamp(15px, 1.4vw, 16.5px);
+      line-height: 1.7; color: var(--text-primary);
+      background: var(--bg); -webkit-font-smoothing: antialiased;
     }
 
-    /* ── HEADER ── */
-    .site-header {
-      border-bottom: 1px solid var(--color-border);
-      padding: var(--space-md) var(--space-xl);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      opacity: 0;
-      animation: fadeUp 0.5s ease forwards;
+    .progress-bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--border); z-index: 100; }
+    .progress-fill { height: 100%; background: var(--accent); width: 0; transition: width .2s ease; }
+
+    .page { max-width: var(--max-w); margin: 0 auto; padding: 0 clamp(1.25rem, 6vw, 2.5rem); }
+
+    .hero { padding: 4rem 0 3rem; }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.25rem; display: block;
     }
-    .site-header .wordmark {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--color-accent);
-      letter-spacing: 0.08em;
-      text-decoration: none;
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 4.5vw, 2.75rem);
+      font-weight: 400; line-height: 1.1; letter-spacing: -.02em;
+      color: var(--text-primary); margin-bottom: 1.25rem;
     }
-    .site-header .meta {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-muted);
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-summary {
+      font-size: 1.05rem; color: var(--text-muted);
+      max-width: 54ch; line-height: 1.65; margin-bottom: 2rem;
+    }
+    .hero-facts {
+      display: flex; flex-wrap: wrap; gap: 1.5rem;
+      font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+      padding-top: 1.5rem; border-top: 1px solid var(--border);
+    }
+    .hero-facts span { color: var(--text-primary); font-weight: 500; }
+
+    .phase-nav {
+      display: flex; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      margin-bottom: 2.5rem; background: var(--surface);
+    }
+    .phase-btn {
+      flex: 1; border: none; background: none;
+      padding: .9rem .5rem; cursor: pointer;
+      font-family: var(--font-body); font-size: 12px;
+      color: var(--text-muted); transition: all .2s ease;
+      text-align: center; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    }
+    .phase-btn:last-child { border-right: none; }
+    .phase-btn-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1.5px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px; transition: all .2s ease;
+    }
+    .phase-btn.active { color: var(--accent); background: var(--accent-soft); }
+    .phase-btn.active .phase-btn-num { background: var(--accent); border-color: var(--accent); color: white; }
+    .phase-btn.done { color: var(--positive); }
+    .phase-btn.done .phase-btn-num { background: var(--positive); border-color: var(--positive); color: white; }
+    .phase-btn-label { display: none; font-weight: 500; }
+    @media (min-width: 480px) { .phase-btn-label { display: block; } }
+
+    .phase-panel { display: none; opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
+    .phase-panel.active { display: block; }
+    .phase-panel.visible { opacity: 1; transform: none; }
+
+    .phase-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; margin-bottom: 2rem;
+      padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .phase-tool {
+      font-family: var(--font-mono); font-size: 11px;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--accent); margin-bottom: .5rem; display: block;
+    }
+    .phase-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 400; line-height: 1.15;
+    }
+    .phase-time {
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--text-muted); white-space: nowrap; padding-top: .25rem; flex-shrink: 0;
     }
 
-    /* ── HERO ── */
-    .hero {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: var(--space-xl) var(--space-lg);
-      opacity: 0;
-      animation: fadeUp 0.5s 0.1s ease forwards;
-    }
-    .hero-label {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      margin-bottom: var(--space-md);
-    }
-    .hero h1 {
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-      margin-bottom: var(--space-md);
-    }
-    .hero h1 em {
-      font-style: normal;
-      color: var(--color-accent);
-    }
-    .hero-sub {
-      font-size: 1.05rem;
-      color: var(--color-muted);
-      max-width: 560px;
-      margin-bottom: var(--space-lg);
-    }
-    .hero-meta {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-muted);
-      display: flex;
-      gap: var(--space-lg);
-    }
-
-    /* ── PROGRESS BAR ── */
-    .progress-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      height: 2px;
-      background: var(--color-border);
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--color-accent);
-      width: 0%;
-      transition: width 0.1s linear;
-    }
-
-    /* ── STEP SEQUENCER ── */
-    .sequencer {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 var(--space-lg) var(--space-xl);
-    }
-    .sequencer-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: var(--space-lg);
-      opacity: 0;
-      animation: fadeUp 0.5s 0.2s ease forwards;
-    }
-    .sequencer-header h2 {
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--color-muted);
-    }
-    .step-counter {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--color-muted);
-    }
-    .step-counter span { color: var(--color-accent); }
-
-    .steps-nav {
-      display: flex;
-      gap: var(--space-xs);
-      margin-bottom: var(--space-lg);
-      opacity: 0;
-      animation: fadeUp 0.5s 0.25s ease forwards;
-    }
-    .step-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--color-border);
-      border: 1px solid var(--color-border);
-      cursor: pointer;
-      transition: background var(--transition), transform var(--transition);
-    }
-    .step-dot.active {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
-      transform: scale(1.4);
-    }
-    .step-dot.completed {
-      background: var(--color-success);
-      border-color: var(--color-success);
-    }
-
-    .step-panel {
-      display: none;
-      opacity: 0;
-      transform: translateY(8px);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: var(--space-lg);
-      background: var(--color-surface);
-    }
-    .step-panel.active {
-      display: block;
-      animation: fadeUp 0.3s ease forwards;
-    }
-
-    .step-panel-header {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-md);
-      margin-bottom: var(--space-md);
-    }
+    .steps { list-style: none; margin: 0 0 2rem; }
+    .step { display: flex; gap: 1rem; padding: .9rem 0; border-bottom: 1px solid var(--border-light); }
+    .step:last-child { border-bottom: none; }
     .step-num {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--color-accent);
-      background: rgba(88, 166, 255, 0.1);
-      border: 1px solid rgba(88, 166, 255, 0.25);
-      border-radius: 4px;
-      padding: 2px 8px;
-      white-space: nowrap;
-      margin-top: 4px;
+      width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: .15rem;
     }
-    .step-panel h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-    .step-panel p {
-      color: var(--color-muted);
-      margin-bottom: var(--space-md);
-      font-size: 0.95rem;
+    .step-text { font-size: .95rem; line-height: 1.65; }
+    .step-text strong { font-weight: 600; }
+    .step-text code {
+      font-family: var(--font-mono); font-size: .85em;
+      background: var(--border-light); padding: .1em .4em; border-radius: 4px;
     }
 
-    .insight-block {
-      background: rgba(88, 166, 255, 0.06);
-      border-left: 3px solid var(--color-accent);
-      padding: var(--space-md);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      margin: var(--space-md) 0;
-      font-size: 0.9rem;
+    .principle {
+      background: var(--accent-soft); border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      font-size: .9rem; line-height: 1.6;
     }
-    .insight-block .label {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--color-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: var(--space-xs);
+    .principle-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--accent); margin-bottom: .35rem; display: block;
     }
 
-    .code-block {
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: var(--space-md);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--color-accent-2);
-      overflow-x: auto;
-      margin: var(--space-md) 0;
-      position: relative;
+    .pitfall {
+      border: 1px solid #f0c9b8; background: #fff9f7;
+      border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem;
     }
-    .code-block .copy-btn {
-      position: absolute;
-      top: var(--space-sm);
-      right: var(--space-sm);
-      background: var(--color-border);
-      border: none;
-      border-radius: 4px;
-      color: var(--color-muted);
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      padding: 2px 8px;
-      cursor: pointer;
-      transition: background var(--transition), color var(--transition);
+    .pitfall-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em; color: var(--accent);
+      margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem;
     }
-    .code-block .copy-btn:hover { background: var(--color-accent); color: white; }
-
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-sm);
-      margin: var(--space-md) 0;
-    }
-    .tag {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      padding: 2px 10px;
-      border-radius: 4px;
-      background: rgba(88, 166, 255, 0.08);
-      border: 1px solid rgba(88, 166, 255, 0.2);
-      color: var(--color-accent-2);
-    }
-    .tag.warn {
-      background: rgba(210, 153, 34, 0.08);
-      border-color: rgba(210, 153, 34, 0.2);
-      color: var(--color-warn);
-    }
-    .tag.success {
-      background: rgba(63, 185, 80, 0.08);
-      border-color: rgba(63, 185, 80, 0.2);
-      color: var(--color-success);
+    .pitfall-label::before { content: '⚠'; font-size: 11px; }
+    .pitfall p { font-size: .9rem; line-height: 1.6; }
+    .pitfall p + p { margin-top: .5rem; }
+    .pitfall code {
+      font-family: var(--font-mono); font-size: .85em;
+      background: #f0e8e4; padding: .1em .4em; border-radius: 4px;
     }
 
-    .step-nav-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: var(--space-lg);
-      padding-top: var(--space-md);
-      border-top: 1px solid var(--color-border);
+    .phase-controls {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 2rem; border-top: 1px solid var(--border); margin-top: .5rem;
     }
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      padding: var(--space-sm) var(--space-md);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all var(--transition);
-      border: 1px solid transparent;
+    .ctrl-btn {
+      font-family: var(--font-body); font-size: .875rem; font-weight: 500;
+      padding: .6rem 1.25rem; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: var(--surface);
+      color: var(--text-muted); cursor: pointer; transition: all .2s ease;
     }
-    .btn-ghost {
-      background: transparent;
-      border-color: var(--color-border);
-      color: var(--color-muted);
-    }
-    .btn-ghost:hover { border-color: var(--color-muted); color: var(--color-text); }
-    .btn-ghost:disabled { opacity: 0.3; cursor: default; }
-    .btn-primary {
-      background: var(--color-accent);
-      color: var(--color-bg);
-      font-weight: 600;
-    }
-    .btn-primary:hover { background: var(--color-accent-2); }
+    .ctrl-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .ctrl-btn:disabled { opacity: .35; cursor: not-allowed; pointer-events: none; }
+    .ctrl-btn.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .ctrl-btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: white; }
+    .ctrl-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .04em; }
 
-    /* ── KEYBOARD HINT ── */
-    .kbd-hint {
-      text-align: center;
-      margin-top: var(--space-md);
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--color-muted);
-      opacity: 0;
-      animation: fadeUp 0.5s 0.4s ease forwards;
+    .scope-section { margin: 4rem 0 2rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+    .scope-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 400; margin-bottom: 1.25rem; }
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .scope-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.1rem 1.25rem; background: var(--surface); }
+    .scope-card.yes { border-color: #c5dbc9; }
+    .scope-card-label {
+      font-family: var(--font-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: .08em;
+      margin-bottom: .75rem; display: block;
     }
-    .kbd {
-      display: inline-block;
-      border: 1px solid var(--color-border);
-      border-radius: 3px;
-      padding: 0 5px;
-      background: var(--color-surface);
-      color: var(--color-muted);
+    .scope-card.yes .scope-card-label { color: var(--positive); }
+    .scope-card.no  .scope-card-label { color: var(--text-faint); }
+    .scope-items { list-style: none; }
+    .scope-items li {
+      font-size: .875rem; line-height: 1.5; padding: .3rem 0;
+      display: flex; gap: .5rem; align-items: baseline;
+      border-bottom: 1px solid var(--border-light); color: var(--text-muted);
+    }
+    .scope-items li:last-child { border-bottom: none; }
+    .scope-items li::before { flex-shrink: 0; font-size: .75rem; }
+    .scope-card.yes .scope-items li::before { content: '✓'; color: var(--positive); }
+    .scope-card.no  .scope-items li::before { content: '✕'; color: var(--text-faint); }
+
+    .takeaways {
+      margin: 3rem 0 4rem; padding: 2rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    }
+    .takeaways-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 400; margin-bottom: 1.25rem; }
+    .takeaway-list { list-style: none; counter-reset: takeaway; }
+    .takeaway-list li {
+      display: flex; gap: .75rem; align-items: baseline;
+      padding: .7rem 0; border-bottom: 1px solid var(--border-light);
+      font-size: .9rem; line-height: 1.6; counter-increment: takeaway;
+    }
+    .takeaway-list li:last-child { border-bottom: none; }
+    .takeaway-list li::before {
+      content: counter(takeaway);
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--accent); flex-shrink: 0; width: 18px; text-align: right;
     }
 
-    /* ── CONCLUSION ── */
-    .conclusion {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: var(--space-xl) var(--space-lg);
-      border-top: 1px solid var(--color-border);
-      display: none;
+    .footer {
+      border-top: 1px solid var(--border); padding: 1.5rem 0 3rem;
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .04em;
     }
-    .conclusion.visible { display: block; animation: fadeUp 0.4s ease forwards; opacity: 0; }
-    .conclusion h2 {
-      font-size: 1.5rem;
-      margin-bottom: var(--space-md);
-    }
-    .conclusion p { color: var(--color-muted); max-width: 600px; margin-bottom: var(--space-md); }
 
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--color-border);
-      padding: var(--space-lg) var(--space-xl);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--color-muted);
-    }
-    footer a { color: var(--color-muted); text-decoration: none; }
-    footer a:hover { color: var(--color-accent); }
+    .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
+    @media (max-width: 520px) {
+      .scope-grid { grid-template-columns: 1fr; }
+      .phase-controls { flex-wrap: wrap; gap: .75rem; }
+      .ctrl-count { order: -1; width: 100%; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
 
-  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-bar"><div class="progress-fill" id="pbar"></div></div>
 
-  <header class="site-header">
-    <a class="wordmark" href="#">alex-huang.dev</a>
-    <span class="meta">interactive-web skill · dark-technical</span>
+<div class="page">
+
+  <header class="hero reveal">
+    <span class="hero-eyebrow">Tutorial · Case Study · 18 min read</span>
+    <h1 class="hero-title">Build your site in <em>one afternoon</em>,<br>using three AI tools</h1>
+    <p class="hero-summary">A proven 4-phase workflow — ChatGPT for requirements, Gemini for code generation, Claude Code for customization, GitHub Pages for deployment. Total cost: $12.</p>
+    <div class="hero-facts">
+      <div>Time&nbsp;&nbsp;<span>4–5 hours</span></div>
+      <div>Cost&nbsp;&nbsp;<span>$12 (domain only)</span></div>
+      <div>Stack&nbsp;&nbsp;<span>Astro · Tailwind · GitHub Pages</span></div>
+      <div>By&nbsp;&nbsp;<span>Alex Huang · March 2026</span></div>
+    </div>
   </header>
 
-  <section class="hero">
-    <div class="hero-label">Step Sequencer · Technical Article</div>
-    <h1>Building <em>AI-Assisted</em> Websites<br>from the Ground Up</h1>
-    <p class="hero-sub">A practitioner's guide to embedding LLM capabilities into production web applications — architecture, tradeoffs, and lessons from real deployments.</p>
-    <div class="hero-meta">
-      <span>Author: Alex Huang</span>
-      <span>March 2026</span>
-      <span>12 min read</span>
+  <nav class="phase-nav reveal" aria-label="Workflow phases">
+    <button class="phase-btn active" onclick="goToPhase(0)" aria-label="Phase 1: Requirements">
+      <span class="phase-btn-num">1</span>
+      <span class="phase-btn-label">Requirements</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(1)" aria-label="Phase 2: Prototype">
+      <span class="phase-btn-num">2</span>
+      <span class="phase-btn-label">Prototype</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(2)" aria-label="Phase 3: Customize">
+      <span class="phase-btn-num">3</span>
+      <span class="phase-btn-label">Customize</span>
+    </button>
+    <button class="phase-btn" onclick="goToPhase(3)" aria-label="Phase 4: Deploy">
+      <span class="phase-btn-num">4</span>
+      <span class="phase-btn-label">Deploy</span>
+    </button>
+  </nav>
+
+  <!-- Phase 1 -->
+  <section class="phase-panel active" id="phase-0" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">ChatGPT</span>
+        <h2 class="phase-name">Define your requirements</h2>
+      </div>
+      <div class="phase-time">~30 min</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Key principle</span>
+      AI tools don't make decisions for you — they help you turn "vague" into "actionable." Leave this phase with a structured doc you can hand to the next tool.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Open a ChatGPT conversation and describe your rough idea — what the site is for, who it's for, what it needs to do.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Ask it to turn your idea into <strong>structured requirements</strong> covering four areas: tech stack, page structure, visual direction, and feature list.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">Iterate until everything feels specific. Push back on vague outputs — ambiguity here causes rework in every subsequent phase.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Save the final doc. This becomes the exact input for Phase 2.</div>
+      </li>
+    </ol>
+    <div class="principle" style="background: var(--positive-soft); border-left-color: var(--positive);">
+      <span class="principle-label" style="color: var(--positive);">Output you should have</span>
+      Chosen stack (Astro + Tailwind recommended), list of pages, visual direction notes, and a feature checklist. Specific enough that a code generator can act on it without asking clarifying questions.
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" disabled>← Previous</button>
+      <span class="ctrl-count">Phase 1 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(1)">Prototype →</button>
     </div>
   </section>
 
-  <main class="sequencer">
-    <div class="sequencer-header">
-      <h2>Implementation Walkthrough</h2>
-      <span class="step-counter">Step <span id="currentStepNum">1</span> of 5</span>
+  <!-- Phase 2 -->
+  <section class="phase-panel" id="phase-1" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">Google Gemini</span>
+        <h2 class="phase-name">Generate the prototype</h2>
+      </div>
+      <div class="phase-time">30–60 min</div>
     </div>
-
-    <div class="steps-nav" id="stepsNav" aria-label="Step navigation"></div>
-
-    <!-- Step 1 -->
-    <div class="step-panel active" data-step="0">
-      <div class="step-panel-header">
-        <span class="step-num">01</span>
-        <h3>Define the LLM's Role in Your Architecture</h3>
-      </div>
-      <p>Before writing a single API call, decide whether your LLM is an <strong>orchestrator</strong>, a <strong>worker</strong>, or a <strong>co-processor</strong>. This single decision determines your entire reliability profile.</p>
-      <div class="insight-block">
-        <div class="label">Core Insight</div>
-        LLMs as orchestrators (deciding what to do) require far more guard-rails than LLMs as workers (executing well-defined sub-tasks). Most production failures come from conflating these two modes.
-      </div>
-      <div class="tag-list">
-        <span class="tag">orchestrator</span>
-        <span class="tag">worker</span>
-        <span class="tag">co-processor</span>
-        <span class="tag warn">high-risk: orchestrator without fallback</span>
-      </div>
-      <p>The clearest signal: if your LLM output directly invokes an API or modifies state, it is an orchestrator. Apply the same scrutiny you would to a deployment script running with production credentials.</p>
+    <div class="principle">
+      <span class="principle-label">Why Gemini here</span>
+      Gemini's strength is long-context code generation — it can output an entire Astro project in one pass. You want a running local codebase at the end of this phase, not a plan.
     </div>
-
-    <!-- Step 2 -->
-    <div class="step-panel" data-step="1">
-      <div class="step-panel-header">
-        <span class="step-num">02</span>
-        <h3>Structure Your Prompt Layer as Infrastructure</h3>
-      </div>
-      <p>Prompts are not strings — they are configuration. Treat them with the same versioning, testing, and review discipline you apply to application code.</p>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">copy</button>
-        <pre>// prompts/article-transform.v2.ts
-export const ARTICLE_TRANSFORM = {
-  version: "2.1.0",
-  system: `You are a content intelligence engine...`,
-  userTemplate: (article: string) =>
-    `Transform the following article:\n\n${article}`,
-  temperature: 0.3,
-  maxTokens: 4096,
-};</pre>
-      </div>
-      <div class="insight-block">
-        <div class="label">Lesson Learned</div>
-        Prompt drift — where prompts accumulate informal edits without review — was the leading cause of silent regressions in every team we interviewed. Semver your prompts.
-      </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Paste your requirements doc into Gemini. Ask for a <strong>complete Astro + Tailwind CSS codebase</strong> with all pages included.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Ask for placeholder content in all pages and a working layout — you'll replace the content in Phase 3.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">Copy the output into a local project folder. Run <code>npm install && npm run dev</code> — it should run immediately.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Browse the local preview. Note what needs changing. Don't fix anything yet — that's Phase 3.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Common pitfall</span>
+      <p><strong>Preview shows the old version.</strong> If <code>npm run preview</code> isn't reflecting changes, you skipped a build step.</p>
+      <p>Always run <code>npm run build</code> before <code>npm run preview</code>. The dev server (<code>npm run dev</code>) auto-rebuilds; preview does not.</p>
     </div>
-
-    <!-- Step 3 -->
-    <div class="step-panel" data-step="2">
-      <div class="step-panel-header">
-        <span class="step-num">03</span>
-        <h3>Design for Latency Budgets, Not Best-Case Performance</h3>
-      </div>
-      <p>LLM API calls have p99 latencies that are 5–20× their median. Build UX and backend timeouts around the p99, not the median.</p>
-      <div class="tag-list">
-        <span class="tag success">p50: ~800ms</span>
-        <span class="tag warn">p95: ~4s</span>
-        <span class="tag warn">p99: ~12s</span>
-      </div>
-      <p>Strategies that work in production:</p>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">copy</button>
-        <pre>// 1. Stream tokens to the user immediately
-const stream = await client.messages.stream({ ... });
-for await (const chunk of stream) {
-  res.write(chunk.delta?.text ?? "");
-}
-
-// 2. Speculative prefill for known templates
-// 3. Async with job queue for non-interactive flows</pre>
-      </div>
-    </div>
-
-    <!-- Step 4 -->
-    <div class="step-panel" data-step="3">
-      <div class="step-panel-header">
-        <span class="step-num">04</span>
-        <h3>Evaluation Before Deployment</h3>
-      </div>
-      <p>You cannot A/B test your way out of a bad foundation. Evals must be in place before you ship, not after you observe failures.</p>
-      <div class="insight-block">
-        <div class="label">Minimum Viable Eval Suite</div>
-        Three eval categories: <strong>correctness</strong> (does output match ground truth?), <strong>format</strong> (does output parse?), <strong>safety</strong> (does output refuse jailbreaks?). Start here, expand from incidents.
-      </div>
-      <div class="tag-list">
-        <span class="tag success">correctness eval</span>
-        <span class="tag success">format eval</span>
-        <span class="tag success">safety eval</span>
-        <span class="tag warn">regression eval (add after first incident)</span>
-      </div>
-    </div>
-
-    <!-- Step 5 -->
-    <div class="step-panel" data-step="4">
-      <div class="step-panel-header">
-        <span class="step-num">05</span>
-        <h3>Observability: Log What the Model Saw, Not Just What It Returned</h3>
-      </div>
-      <p>Standard application logging captures outputs. AI-assisted systems require capturing the full context: prompt, model version, temperature, and the full completion — not just the parsed result.</p>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">copy</button>
-        <pre>// Log the full LLM interaction, not just parsed results
-logger.info("llm_call", {
-  prompt_hash: hash(finalPrompt),
-  model: "claude-sonnet-4-6",
-  temperature: 0.3,
-  input_tokens: usage.input_tokens,
-  output_tokens: usage.output_tokens,
-  latency_ms: Date.now() - start,
-  // Store full completion in cold storage, reference by ID
-  completion_id: await store(completion),
-});</pre>
-      </div>
-      <div class="insight-block">
-        <div class="label">Why This Matters</div>
-        When a user reports "the AI said something wrong," you need to replay exactly what the model received. Without full prompt logging, post-mortems are guesswork.
-      </div>
-    </div>
-
-    <div class="step-nav-buttons">
-      <button class="btn btn-ghost" id="prevBtn" onclick="navigate(-1)" disabled>← prev</button>
-      <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">next →</button>
-    </div>
-
-    <p class="kbd-hint">
-      Navigate with <kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> arrow keys
-    </p>
-  </main>
-
-  <section class="conclusion" id="conclusion">
-    <h2>Key Takeaways</h2>
-    <p>Building AI-assisted websites is an architectural discipline, not a feature flag. The teams that succeed treat LLM integration with the same rigor they apply to databases: schema the inputs, version the configuration, test before shipping, and instrument everything.</p>
-    <p>The interactive-web skill was used to generate this page — transforming a 2,800-word technical article into a step-sequencer experience in under 60 seconds.</p>
-    <div class="tag-list">
-      <span class="tag success">Covered: 5 core principles</span>
-      <span class="tag">interactive-web skill demo</span>
-      <span class="tag">dark-technical direction</span>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(0)">← Requirements</button>
+      <span class="ctrl-count">Phase 2 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(2)">Customize →</button>
     </div>
   </section>
 
-  <footer>
-    <span>alex-huang.dev</span>
-    <span>Generated by <a href="https://github.com/zerohzz/zz-skills/tree/main/interactive-web">interactive-web skill</a></span>
-    <span>© 2026</span>
-  </footer>
+  <!-- Phase 3 -->
+  <section class="phase-panel" id="phase-2" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">Claude Code</span>
+        <h2 class="phase-name">Customize and personalize</h2>
+      </div>
+      <div class="phase-time">1–2 hours</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Why Claude Code here</span>
+      Claude Code has direct local filesystem access — it modifies multiple files simultaneously and handles coordinated changes that would break if done one-at-a-time in a chat interface.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Open your project folder in Claude Code.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text"><strong>Blog migration:</strong> if you have existing posts, ask Claude Code to import and convert them in bulk.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text"><strong>Animations:</strong> add scroll reveals, hover effects, and page transitions across the project.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">Replace all placeholder content with your real information — bio, projects, resume data.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-text">Verify with <code>npm run dev</code> before moving to deployment.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Common pitfall</span>
+      <p><strong>Downloaded error XML instead of an SVG.</strong> If an externally-hosted icon or image renders broken, check its file size — CDN errors return XML, not binary data.</p>
+      <p>Externally-hosted assets with expiry timestamps will also break after time passes. <strong>Localize everything</strong> into your project's <code>/public</code> folder.</p>
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(1)">← Prototype</button>
+      <span class="ctrl-count">Phase 3 of 4</span>
+      <button class="ctrl-btn primary" onclick="goToPhase(3)">Deploy →</button>
+    </div>
+  </section>
 
-  <script>
-    const TOTAL = 5;
-    let current = 0;
+  <!-- Phase 4 -->
+  <section class="phase-panel" id="phase-3" role="tabpanel">
+    <div class="phase-header">
+      <div>
+        <span class="phase-tool">GitHub Pages</span>
+        <h2 class="phase-name">Deploy to production</h2>
+      </div>
+      <div class="phase-time">~1 hour</div>
+    </div>
+    <div class="principle">
+      <span class="principle-label">Key principle</span>
+      Budget more time than you expect. The steps are mechanical but the ordering matters — one missed setting breaks the whole pipeline.
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-num">1</span>
+        <div class="step-text">Push your code to a GitHub repository.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">2</span>
+        <div class="step-text">Create <code>.github/workflows/deploy.yml</code> — the GitHub Actions workflow that builds and publishes your site on every push.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">3</span>
+        <div class="step-text">In repo Settings → Pages, set <strong>Source to "GitHub Actions"</strong>. This must be done before the first workflow run.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">4</span>
+        <div class="step-text">For a custom domain: add a <code>CNAME</code> file to <code>/public</code> containing your domain name.</div>
+      </li>
+      <li class="step">
+        <span class="step-num">5</span>
+        <div class="step-text">Configure DNS: add 4 A records pointing to GitHub's IP addresses, and a CNAME record for <code>www</code>.</div>
+      </li>
+    </ol>
+    <div class="pitfall">
+      <span class="pitfall-label">Critical pitfall — most common failure</span>
+      <p><strong>Pages Source not set before workflow runs.</strong> The <code>configure-pages</code> action fails if you haven't set Source to "GitHub Actions" first.</p>
+      <p>Settings → Pages → Build and deployment → Source → <strong>"GitHub Actions"</strong>. Do this before triggering any deployment.</p>
+    </div>
+    <div class="pitfall" style="border-color: #c5dbc9; background: var(--positive-soft);">
+      <span class="pitfall-label" style="color: var(--positive);">DNS propagation</span>
+      <p>DNS changes take up to 48 hours to propagate globally. HTTPS certificate provisioning adds another step. Your custom domain won't work immediately after configuration.</p>
+    </div>
+    <div class="phase-controls">
+      <button class="ctrl-btn" onclick="goToPhase(2)">← Customize</button>
+      <span class="ctrl-count">Phase 4 of 4</span>
+      <button class="ctrl-btn primary" id="complete-btn" onclick="showCompletion()">Mark complete ✓</button>
+    </div>
+  </section>
 
-    const panels = document.querySelectorAll('.step-panel');
-    const nav = document.getElementById('stepsNav');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const currentStepNum = document.getElementById('currentStepNum');
-    const conclusion = document.getElementById('conclusion');
-    const progressFill = document.getElementById('progressFill');
+  <!-- Scope -->
+  <div class="scope-section reveal">
+    <h3 class="scope-title">When this approach works</h3>
+    <div class="scope-grid">
+      <div class="scope-card yes">
+        <span class="scope-card-label">Works well for</span>
+        <ul class="scope-items">
+          <li>Static sites, blogs, portfolios</li>
+          <li>No backend or database needed</li>
+          <li>Quick validation of ideas</li>
+          <li>Sites you'll maintain yourself</li>
+        </ul>
+      </div>
+      <div class="scope-card no">
+        <span class="scope-card-label">Not suited for</span>
+        <ul class="scope-items">
+          <li>Dynamic features (user accounts, comments)</li>
+          <li>Completely code-free scenarios</li>
+          <li>Highly custom commercial designs</li>
+          <li>Sites requiring a backend API</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-    // Build step dots
-    for (let i = 0; i < TOTAL; i++) {
-      const dot = document.createElement('button');
-      dot.className = 'step-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Go to step ${i + 1}`);
-      dot.addEventListener('click', () => goTo(i));
-      nav.appendChild(dot);
-    }
+  <!-- Takeaways -->
+  <div class="takeaways reveal">
+    <h3 class="takeaways-title">Four things to remember</h3>
+    <ol class="takeaway-list">
+      <li>Clear requirements prevent rework — vagueness in Phase 1 costs double the time in Phase 3.</li>
+      <li>Different tools shine at different stages — don't force one tool to do everything.</li>
+      <li>Budget time for deployment — the mechanics are simple but ordering is unforgiving.</li>
+      <li>Ship incomplete work rather than perfecting unreleased versions — a live site at 80% beats a perfect site that never launches.</li>
+    </ol>
+  </div>
 
-    function goTo(idx) {
+  <footer class="footer">alex-huang.dev/posts/ai-website-one-day</footer>
+
+</div>
+
+<script>
+  let current = 0;
+  const done = new Set();
+
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('pbar').style.width = Math.min(pct, 100) + '%';
+  }, { passive: true });
+
+  function goToPhase(idx) {
+    const panels = document.querySelectorAll('.phase-panel');
+    const btns   = document.querySelectorAll('.phase-btn');
+    panels[current].classList.remove('visible');
+    setTimeout(() => {
       panels[current].classList.remove('active');
       current = idx;
       panels[current].classList.add('active');
-
-      // Update dots
-      nav.querySelectorAll('.step-dot').forEach((d, i) => {
-        d.className = 'step-dot' +
-          (i < current ? ' completed' : '') +
-          (i === current ? ' active' : '');
-      });
-
-      currentStepNum.textContent = current + 1;
-      prevBtn.disabled = current === 0;
-      nextBtn.textContent = current === TOTAL - 1 ? 'finish ✓' : 'next →';
-
-      // Progress bar
-      progressFill.style.width = ((current + 1) / TOTAL * 100) + '%';
-
-      // Conclusion
-      if (current === TOTAL - 1) {
-        setTimeout(() => conclusion.classList.add('visible'), 600);
-      } else {
-        conclusion.classList.remove('visible');
-      }
-
-      panels[current].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function navigate(dir) {
-      const next = current + dir;
-      if (next >= 0 && next < TOTAL) goTo(next);
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') navigate(1);
-      if (e.key === 'ArrowLeft') navigate(-1);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        panels[current].classList.add('visible');
+      }));
+      document.querySelector('.phase-nav').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 200);
+    btns.forEach((b, i) => {
+      b.classList.remove('active', 'done');
+      if (i === idx) b.classList.add('active');
+      else if (done.has(i)) b.classList.add('done');
     });
+  }
 
-    function copyCode(btn) {
-      const pre = btn.nextElementSibling;
-      navigator.clipboard.writeText(pre.textContent).then(() => {
-        btn.textContent = 'copied!';
-        setTimeout(() => btn.textContent = 'copy', 1500);
-      });
-    }
+  function showCompletion() {
+    for (let i = 0; i < 4; i++) done.add(i);
+    document.querySelectorAll('.phase-btn').forEach(b => { b.classList.remove('active'); b.classList.add('done'); });
+    const btn = document.getElementById('complete-btn');
+    btn.textContent = '✓ Complete';
+    btn.style.cssText = 'background: var(--positive); border-color: var(--positive); color: white;';
+    btn.disabled = true;
+    document.querySelector('.takeaways').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-    // Init progress
-    progressFill.style.width = (1 / TOTAL * 100) + '%';
-  </script>
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), 80 + i * 100);
+  });
+  setTimeout(() => document.querySelector('.phase-panel.active').classList.add('visible'), 300);
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
 </body>
 </html>
