@@ -1,0 +1,903 @@
+<!DOCTYPE html><html dir="ltr" lang="en" class="scroll-smooth"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://alex-huang.dev/skill-lab/interactive-web/"><meta name="generator" content="Astro v5.18.0"><!-- Serif fonts for blog headings (loaded via CDN at runtime) --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+SC:wght@400;700&display=swap"><!-- Load Font --><style>@font-face{font-family:Outfit-28d858ac019a802a;src:url("/_astro/fonts/14701263b3cb1ab6.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:300;font-style:normal;}@font-face{font-family:Outfit-28d858ac019a802a;src:url("/_astro/fonts/14701263b3cb1ab6.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:400;font-style:normal;}@font-face{font-family:Outfit-28d858ac019a802a;src:url("/_astro/fonts/14701263b3cb1ab6.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:500;font-style:normal;}@font-face{font-family:Outfit-28d858ac019a802a;src:url("/_astro/fonts/14701263b3cb1ab6.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:600;font-style:normal;}@font-face{font-family:Outfit-28d858ac019a802a;src:url("/_astro/fonts/14701263b3cb1ab6.woff2") format("woff2");font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;font-weight:700;font-style:normal;}@font-face{font-family:"Outfit-28d858ac019a802a fallback: Arial";src:local("Arial");font-display:swap;font-weight:300;font-style:normal;size-adjust:99.1474%;ascent-override:100.8599%;descent-override:26.2236%;line-gap-override:0%;}@font-face{font-family:"Outfit-28d858ac019a802a fallback: Arial";src:local("Arial");font-display:swap;font-weight:400;font-style:normal;size-adjust:99.1474%;ascent-override:100.8599%;descent-override:26.2236%;line-gap-override:0%;}@font-face{font-family:"Outfit-28d858ac019a802a fallback: Arial";src:local("Arial");font-display:swap;font-weight:500;font-style:normal;size-adjust:99.1474%;ascent-override:100.8599%;descent-override:26.2236%;line-gap-override:0%;}@font-face{font-family:"Outfit-28d858ac019a802a fallback: Arial";src:local("Arial");font-display:swap;font-weight:600;font-style:normal;size-adjust:99.1474%;ascent-override:100.8599%;descent-override:26.2236%;line-gap-override:0%;}@font-face{font-family:"Outfit-28d858ac019a802a fallback: Arial";src:local("Arial");font-display:swap;font-weight:700;font-style:normal;size-adjust:99.1474%;ascent-override:100.8599%;descent-override:26.2236%;line-gap-override:0%;}:root{--font-outfit:Outfit-28d858ac019a802a,"Outfit-28d858ac019a802a fallback: Arial",sans-serif;}</style><!-- General Meta Tags --><title>Turn Any Doc into an Interactive Web Experience, in One Line | Alex Huang</title><meta name="title" content="Turn Any Doc into an Interactive Web Experience, in One Line | Alex Huang"><meta name="description" content="I built a Claude Code skill that takes any article and turns it into a polished, interactive single-file HTML page. 10 interaction models, 5 design directions, zero frontend code required."><meta name="author" content="Alex Huang"><link rel="sitemap" href="/sitemap-index.xml"><!-- Open Graph / Facebook --><meta property="og:title" content="Turn Any Doc into an Interactive Web Experience, in One Line | Alex Huang"><meta property="og:description" content="I built a Claude Code skill that takes any article and turns it into a polished, interactive single-file HTML page. 10 interaction models, 5 design directions, zero frontend code required."><meta property="og:url" content="https://alex-huang.dev/skill-lab/interactive-web/"><meta property="og:image" content="https://alex-huang.dev/posts/interactive-web-skill/index.png"><!-- Article Published/Modified time --><meta property="article:published_time" content="2026-03-21T00:00:00.000Z"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://alex-huang.dev/skill-lab/interactive-web/"><meta property="twitter:title" content="Turn Any Doc into an Interactive Web Experience, in One Line | Alex Huang"><meta property="twitter:description" content="I built a Claude Code skill that takes any article and turns it into a polished, interactive single-file HTML page. 10 interaction models, 5 design directions, zero frontend code required."><meta property="twitter:image" content="https://alex-huang.dev/posts/interactive-web-skill/index.png"><!-- Google JSON-LD Structured data --><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Turn Any Doc into an Interactive Web Experience, in One Line | Alex Huang","image":"https://alex-huang.dev/posts/interactive-web-skill/index.png","datePublished":"2026-03-21T00:00:00.000Z","author":[{"@type":"Person","name":"Alex Huang","url":"https://github.com/zerohzz"}]}</script><!-- Enable RSS feed auto-discovery  --><!-- https://docs.astro.build/en/recipes/rss/#enabling-rss-feed-auto-discovery --><link rel="alternate" type="application/rss+xml" title="Alex Huang" href="https://alex-huang.dev/rss.xml"><meta name="theme-color" content=""><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CDGfc0hd.js"></script><!-- Minimal inline script to prevent FOUC - sets theme immediately --><script>
+      (function () {
+        const initialColorScheme = ""; // "light" | "dark"
+        const currentTheme = localStorage.getItem("theme");
+
+        function getPreferTheme() {
+          if (currentTheme) return currentTheme;
+          if (initialColorScheme) return initialColorScheme;
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+
+        const themeValue = getPreferTheme();
+
+        // Set theme immediately to prevent flash
+        document.firstElementChild?.setAttribute("data-theme", themeValue);
+
+        // Export minimal API for external script
+        window.theme = {
+          themeValue: themeValue,
+          getTheme: () => window.theme.themeValue,
+          setTheme: val => {
+            window.theme.themeValue = val;
+          },
+        };
+      })();
+    </script><link rel="stylesheet" href="/_astro/about.CKEo_Pms.css">
+<style>:where([data-astro-image]){object-fit:var(--fit);object-position:var(--pos);height:auto}:where([data-astro-image=full-width]){width:100%}:where([data-astro-image=constrained]){max-width:100%}
+@keyframes astroFadeInOut{0%{opacity:1}to{opacity:0}}@keyframes astroFadeIn{0%{opacity:0;mix-blend-mode:plus-lighter}to{opacity:1;mix-blend-mode:plus-lighter}}@keyframes astroFadeOut{0%{opacity:1;mix-blend-mode:plus-lighter}to{opacity:0;mix-blend-mode:plus-lighter}}@keyframes astroSlideFromRight{0%{transform:translate(100%)}}@keyframes astroSlideFromLeft{0%{transform:translate(-100%)}}@keyframes astroSlideToRight{to{transform:translate(100%)}}@keyframes astroSlideToLeft{to{transform:translate(-100%)}}@media(prefers-reduced-motion){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}[data-astro-transition-scope]{animation:none!important}}
+.toc-link[data-astro-cid-xvrfupwn].toc-active{color:var(--color-accent);border-left-color:var(--color-accent);font-weight:500;transform:translate(1px)}.toc-link-mobile[data-astro-cid-xvrfupwn].toc-active{color:var(--color-accent);background-color:color-mix(in srgb,var(--color-accent) 10%,transparent);font-weight:500}
+</style><style>[data-astro-transition-scope="astro-7g4hhuwt-1"] { view-transition-name: turn-any-doc-into-an-interactive-web-experience-in-one-line; }@layer astro { ::view-transition-old(turn-any-doc-into-an-interactive-web-experience-in-one-line) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(turn-any-doc-into-an-interactive-web-experience-in-one-line) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(turn-any-doc-into-an-interactive-web-experience-in-one-line) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(turn-any-doc-into-an-interactive-web-experience-in-one-line) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7g4hhuwt-1"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7g4hhuwt-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7g4hhuwt-1"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7g4hhuwt-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-7g4hhuwt-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-7g4hhuwt-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-7g4hhuwt-1"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-7g4hhuwt-1"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-2"] { view-transition-name: project; }@layer astro { ::view-transition-old(project) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(project) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(project) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(project) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-2"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-2"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-3"] { view-transition-name: open-source; }@layer astro { ::view-transition-old(open-source) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(open-source) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(open-source) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(open-source) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-3"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-3"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-4"] { view-transition-name: claude-code; }@layer astro { ::view-transition-old(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(claude-code) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-4"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-4"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-5"] { view-transition-name: ai-tools; }@layer astro { ::view-transition-old(ai-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(ai-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(ai-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(ai-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-5"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-5"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-6"] { view-transition-name: interactive-web; }@layer astro { ::view-transition-old(interactive-web) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(interactive-web) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(interactive-web) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(interactive-web) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-6"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-6"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-6"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-6"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-6"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style><style>[data-astro-transition-scope="astro-36ssibgs-7"] { view-transition-name: developer-tools; }@layer astro { ::view-transition-old(developer-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }::view-transition-new(developer-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back]::view-transition-old(developer-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back]::view-transition-new(developer-tools) { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; } }[data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-7"],
+			[data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-7"],
+			[data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }[data-astro-transition=back][data-astro-transition-fallback="old"] [data-astro-transition-scope="astro-36ssibgs-7"],
+			[data-astro-transition=back][data-astro-transition-fallback="old"][data-astro-transition-scope="astro-36ssibgs-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeOut; }[data-astro-transition=back][data-astro-transition-fallback="new"] [data-astro-transition-scope="astro-36ssibgs-7"],
+			[data-astro-transition=back][data-astro-transition-fallback="new"][data-astro-transition-scope="astro-36ssibgs-7"] { 
+	animation-duration: 180ms;
+	animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+	animation-fill-mode: both;
+	animation-name: astroFadeIn; }</style></head> <body>  <a id="skip-to-content" href="#main-content" class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4">
+Skip to content
+</a> <!-- Full-width header so the border-b spans the entire viewport --> <header class="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur-md"> <div id="top-nav-wrap" class="mx-auto w-full max-w-5xl px-4 py-4 sm:py-6 flex items-baseline justify-between sm:items-center"> <!-- Logo: "alex-huang" in default text color, ".dev" in accent --> <a href="/" class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"> <span class="text-foreground">alex-huang</span><span class="text-accent">.dev</span> </a> <nav id="nav-menu" class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"> <!-- Mobile-only: search + theme toggle + hamburger always visible in top-right --> <div class="flex items-center self-end sm:hidden"> <a href="/search" title="Search" aria-label="search" class="group inline-flex items-center gap-1 hover:text-accent focus-outline flex p-3">  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg> <span class="sr-only">Search</span>  </a> <button id="theme-btn" class="focus-outline relative size-12 p-4 hover:[&>svg]:stroke-accent" title="Toggles light & dark" aria-label="auto" aria-live="polite"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg> </button> <button id="menu-btn" class="focus-outline p-2" aria-label="Open Menu" aria-expanded="false" aria-controls="menu-items"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden" id="close-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-menu-deep" id="menu-icon"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 6h16" /><path d="M7 12h13" /><path d="M10 18h10" /></svg> </button> </div> <ul id="menu-items" class="mt-4 grid w-44 grid-cols-2 place-content-center gap-2 [&#38;>li>a]:block [&#38;>li>a]:px-4 [&#38;>li>a]:py-3 [&#38;>li>a]:text-center [&#38;>li>a]:font-medium [&#38;>li>a]:transition-colors [&#38;>li>a]:hover:text-accent sm:[&#38;>li>a]:px-2 sm:[&#38;>li>a]:py-1 hidden sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0"> <li class="col-span-2"> <a href="/projects"> Projects </a> </li><li class="col-span-2"> <a href="/resume"> Resume </a> </li><li class="col-span-2"> <a href="/posts" class="active-nav"> Blog </a> </li><li class="col-span-2"> <a href="/contact"> Contact </a> </li> <li class="col-span-1 hidden sm:flex items-center justify-center"> <a href="/search" title="Search" aria-label="search" class="group inline-flex items-center gap-1 hover:text-accent focus-outline flex p-3 sm:p-1">  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg> <span class="sr-only">Search</span>  </a> </li> <li class="col-span-1 hidden items-center justify-center sm:flex"> <button id="theme-btn-desktop" class="focus-outline relative size-8 p-1 hover:[&>svg]:stroke-accent" title="Toggles light & dark" aria-label="auto" aria-live="polite"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" /></svg> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" /><path d="M6.343 17.657l-1.414 1.414" /><path d="M6.343 6.343l-1.414 -1.414" /><path d="M17.657 6.343l1.414 -1.414" /><path d="M17.657 17.657l1.414 1.414" /><path d="M4 12h-2" /><path d="M12 4v-2" /><path d="M20 12h2" /><path d="M12 20v2" /></svg> </button> </li> </ul> </nav> </div> </header> <script type="module">function s(){const e=document.querySelector("#menu-btn"),t=document.querySelector("#menu-items"),n=document.querySelector("#menu-icon"),o=document.querySelector("#close-icon");!e||!t||!n||!o||e.addEventListener("click",()=>{const c=e.getAttribute("aria-expanded")==="true";e.setAttribute("aria-expanded",c?"false":"true"),e.setAttribute("aria-label",c?"Open Menu":"Close Menu"),t.classList.toggle("hidden"),n.classList.toggle("hidden"),o.classList.toggle("hidden")})}s();document.addEventListener("astro:after-swap",s);</script> <main id="main-content" class="mx-auto w-full max-w-3xl lg:max-w-5xl px-4 pt-8 pb-12" data-pagefind-body> <div><a id="back-button" href="/" class="group inline-flex items-center gap-1 hover:text-accent focus-outline -ms-2 mb-4 hover:text-foreground/75"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-5 rtl:rotate-180"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg><span>Go back</span> </a><script type="module">function o(){const t=document.querySelector("#back-button"),e=sessionStorage.getItem("backUrl");e&&t&&(t.href=e)}document.addEventListener("astro:page-load",o);o();</script></div> <h1 class="inline-block text-2xl font-bold text-foreground sm:text-3xl" data-astro-transition-scope="astro-7g4hhuwt-1"> Turn Any Doc into an Interactive Web Experience, in One Line </h1> <div class="my-2 flex items-center gap-2 flex-wrap"> <div class="flex items-center gap-x-2 opacity-80"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 min-w-5.5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M7 14h.013" /><path d="M10.01 14h.005" /><path d="M13.01 14h.005" /><path d="M16.015 14h.005" /><path d="M13.015 17h.005" /><path d="M7.01 17h.005" /><path d="M10.01 17h.005" /></svg>  <time class="text-sm sm:text-base" datetime="2026-03-21T00:00:00.000Z">21 Mar, 2026</time> </div> <span class="text-text-muted text-sm" aria-hidden="true">·</span> <span class="text-sm text-text-muted">8 min read</span> <span aria-hidden="true" class="max-sm:hidden hidden">|</span>  </div>  <div class="mt-8 lg:flex lg:gap-16"> <article id="article" class="app-prose min-w-0 flex-1 max-w-[680px] self-start prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"> <p>I got tired of my blog posts looking like every other Markdown-rendered page on the internet. So I built a thing.</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span></span></code></pre>
+<p>That’s it. One command. Claude Code reads the article, figures out its structure, picks the right interaction model, commits to a design direction, and outputs a complete single-file HTML page I can open in any browser. No build step. No React. No CSS framework. Just a <code>.html</code> file that looks like someone actually designed it.</p>
+<p>Here’s the repo: <a href="https://github.com/zerohzz/zz-skills">github.com/zerohzz/zz-skills</a></p>
+<p>And here’s a live demo: <a href="https://alex-huang.dev/skill-lab/interactive-web">alex-huang.dev/skill-lab/interactive-web</a></p>
+<hr>
+<h2 id="what-it-actually-does">What it actually does</h2>
+<p><code>interactive-web</code> is a Claude Code skill. You give it any written content — a blog post, a technical tutorial, an essay, a doc — and it transforms it into an interactive web experience.</p>
+<p>Not a generic template. Not “your article but with a dark background.” Every output is specifically designed for that article’s content type.</p>
+<p>A tutorial becomes a step sequencer with a progress bar. A comparison post becomes a side-by-side matrix you can toggle. An architecture explainer becomes an expandable component diagram. An opinion essay becomes a scroll journey with pull quotes and typographic rhythm.</p>
+<p>The skill decides what interaction model fits, picks a matching visual design, then builds the whole thing.</p>
+<hr>
+<h2 id="the-part-that-surprised-me">The part that surprised me</h2>
+<p>I built this for Claude Code. But the skill also works with other AI agents.</p>
+<p>That wasn’t the plan. I just tried feeding <code>SKILL.md</code> as a system prompt to another agent one day, and it followed the instructions — ran the analysis, picked the right model, generated the HTML. Because a Claude Code skill is really just structured instructions + reference docs + scripts. There’s no proprietary API lock-in. Any agent that can read instructions and run Python can use it.</p>
+<p>That made me realize: skills are portable. Which makes them way more valuable than I originally thought.</p>
+<hr>
+<h2 id="how-to-install-it">How to install it</h2>
+<p><strong>Option 1 — One-liner (recommended):</strong></p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">npx</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> skills</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> add</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> zerohzz/zz-skills</span></span></code></pre>
+<p><strong>Option 2 — Plugin marketplace:</strong></p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/plugin</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> marketplace</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> add</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> zerohzz/zz-skills</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/plugin</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> install</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> interactive-web@zz-skills</span></span></code></pre>
+<p><strong>Option 3 — Just ask Claude:</strong></p>
+<blockquote>
+<p>Please install Skills from github.com/zerohzz/zz-skills</p>
+</blockquote>
+<p>That’s the install. Now let’s use it.</p>
+<hr>
+<h2 id="how-to-use-it">How to use it</h2>
+<h3 id="basic-just-point-it-at-a-file">Basic: just point it at a file</h3>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span></span></code></pre>
+<p>Claude will analyze the article structure, choose an interaction model and design direction automatically, then generate a complete <code>.html</code> file.</p>
+<h3 id="from-a-url">From a URL</h3>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> https://example.com/some-article</span></span></code></pre>
+<p>It fetches the page, normalizes the content, runs the same pipeline.</p>
+<h3 id="pick-your-own-interaction-model">Pick your own interaction model</h3>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --model</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> step-sequencer</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --model</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> comparison-matrix</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --model</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> timeline</span></span></code></pre>
+<h3 id="pick-your-own-design-direction">Pick your own design direction</h3>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --design</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> dark-technical</span></span>
+<span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --design</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> claude-like</span></span></code></pre>
+<h3 id="combine-both">Combine both</h3>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> posts/my-article.md</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --model</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> concept-explorer</span><span style="--shiki-light:#2B5581;--shiki-dark:#82AAFF"> --design</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> clean-analytical</span></span></code></pre>
+<h3 id="or-just-paste-text-and-say-the-magic-words">Or just paste text and say the magic words</h3>
+<p>Paste your article into the Claude Code conversation and say:</p>
+<ul>
+<li><em>“Make this interactive”</em></li>
+<li><em>“Turn my blog post into a webpage”</em></li>
+<li><em>“Build an interactive explainer for this”</em></li>
+</ul>
+<p>The skill triggers automatically.</p>
+<hr>
+<h2 id="10-interaction-models">10 interaction models</h2>
+<p>The skill doesn’t just slap your text into a fancy layout. It picks from 10 interaction patterns based on what your content actually is:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Model</th><th>Best for</th><th>Example</th></tr></thead><tbody><tr><td><strong>Scroll Journey</strong></td><td>Opinion essays, narratives, long arguments</td><td>”Why I left Big Tech”</td></tr><tr><td><strong>Step Sequencer</strong></td><td>Tutorials, how-tos, walkthroughs</td><td>”Deploy to AWS in 5 steps”</td></tr><tr><td><strong>Concept Explorer</strong></td><td>Frameworks, layered ideas, mental models</td><td>”The 4 types of tech debt”</td></tr><tr><td><strong>Comparison Matrix</strong></td><td>Tool reviews, tradeoff analysis</td><td>”Postgres vs MySQL for startups”</td></tr><tr><td><strong>Architecture Explainer</strong></td><td>System design, flows, integrations</td><td>”How our payment pipeline works”</td></tr><tr><td><strong>Decision Tree</strong></td><td>”Which should I use?” guides</td><td>”Choosing a JS framework in 2026”</td></tr><tr><td><strong>Timeline</strong></td><td>Chronological, before/after content</td><td>”The evolution of CSS layouts”</td></tr><tr><td><strong>Data Dashboard</strong></td><td>Stats-heavy, research, metrics</td><td>”State of AI in 2026”</td></tr><tr><td><strong>Filterable Gallery</strong></td><td>Pattern libraries, curated examples</td><td>”20 useful Git commands”</td></tr><tr><td><strong>FAQ Explorer</strong></td><td>Q&#x26;A posts, FAQ pages</td><td>”Everything about Claude Code”</td></tr></tbody></table>
+<p>The selection happens automatically in the analysis pipeline — or you override it with <code>--model</code>.</p>
+<hr>
+<h2 id="5-design-directions">5 design directions</h2>
+<p>Every output commits to one of five aesthetic systems. Not just colors — a full design system with font pairings, spacing rules, motion behavior, and accent logic.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Direction</th><th>Vibe</th><th>Fonts</th><th>When to use</th></tr></thead><tbody><tr><td><code>dark-technical</code></td><td>Precision, monospace, analytical</td><td>IBM Plex Sans + Mono</td><td>Developer content, architecture</td></tr><tr><td><code>editorial-ink</code></td><td>Ink-on-paper, magazine weight</td><td>Playfair Display + Crimson Pro</td><td>Essays, opinion, long-form</td></tr><tr><td><code>clean-analytical</code></td><td>High contrast, chart-ready</td><td>Plus Jakarta Sans + Fira Code</td><td>Data posts, comparisons, research</td></tr><tr><td><code>editorial-warm</code></td><td>Forward momentum, approachable</td><td>Newsreader + Nunito</td><td>Tutorials, case studies</td></tr><tr><td><code>claude-like</code></td><td>Warm restraint, content-forward</td><td>Instrument Serif + DM Sans</td><td>Conversational AI, reflective pieces</td></tr></tbody></table>
+<p>Hard rule: the skill never uses Inter, Roboto, Arial, or System UI. Every output looks like it was designed for that specific article.</p>
+<hr>
+<h2 id="why-it-works-the-4-stage-pipeline">Why it works: the 4-stage pipeline</h2>
+<p>Here’s the thing most people get wrong when asking AI to “make a webpage from my article”: they do it in one shot. The AI has to understand the content AND write the code simultaneously. The result is usually a generic landing page that doesn’t reflect the article’s actual structure.</p>
+<p>This skill separates understanding from generation.</p>
+<p>Before any HTML is written, three Python scripts run in sequence:</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="plaintext"><code><span class="line"><span>Article input</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>normalize_article.py  →  normalized.md</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>extract_structure.py  →  structure.json</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>build_page_plan.py    →  blueprint.json</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>Claude builds HTML from the blueprint</span></span></code></pre>
+<p><strong>Stage 1 — Normalize:</strong> Cleans the input. Strips HTML noise, extracts metadata, produces consistent Markdown.</p>
+<p><strong>Stage 2 — Extract:</strong> Classifies the article type (tutorial? opinion? comparison?). Pulls out key concepts, stages, comparisons, data points, code blocks. Outputs <code>structure.json</code>.</p>
+<p><strong>Stage 3 — Blueprint:</strong> Selects the interaction model and design direction. Maps each section to a specific component type. Outputs <code>blueprint.json</code> — the construction plan.</p>
+<p><strong>Stage 4 — Build:</strong> Claude reads the blueprint and generates the HTML. It’s not guessing anymore. It’s executing a plan.</p>
+<p>The quality difference between “one-shot generation” and “pipeline then generate” is massive. It’s the same principle as software engineering: design before implementation.</p>
+<blockquote>
+<p>No Python? No problem. If the environment can’t run scripts, Claude does the same analysis in-context and documents its reasoning in an internal brief. Same logic, just without the intermediate JSON files.</p>
+</blockquote>
+<hr>
+<h2 id="the-degradation-rule">The degradation rule</h2>
+<p>Not every article should be interactive. A 200-word opinion doesn’t need tabs and accordions. Forcing interactivity on simple content makes it worse, not better.</p>
+<p>So the skill has an explicit degradation rule:</p>
+<p><strong>Make it interactive when:</strong></p>
+<ul>
+<li>Content has phases, comparisons, hierarchies, or data</li>
+<li>Navigation would reduce cognitive load</li>
+<li>Multiple concepts have meaningful relationships</li>
+</ul>
+<p><strong>Keep it static when:</strong></p>
+<ul>
+<li>It’s a short opinion or single argument</li>
+<li>No interaction would reveal hidden structure</li>
+<li>It’s a brief note, announcement, or reflection</li>
+</ul>
+<p>A beautiful static editorial page beats hollow interactivity every time.</p>
+<hr>
+<h2 id="the-non-negotiables">The non-negotiables</h2>
+<p>Some rules are baked in and can’t be overridden:</p>
+<ul>
+<li>Never invents sections not in the source article</li>
+<li>Never adds fake metrics or citations</li>
+<li>Never copy-pastes paragraphs — extracts and rebuilds content into interactive treatments</li>
+<li>Never uses Inter/Roboto/Arial/System UI fonts</li>
+<li>All interactive elements must be keyboard accessible</li>
+<li>Responsive layout for all outputs</li>
+<li>Respects <code>prefers-reduced-motion</code></li>
+</ul>
+<hr>
+<h2 id="file-structure">File structure</h2>
+<p>If you want to understand how the skill is organized (or want to fork and build your own):</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="plaintext"><code><span class="line"><span>interactive-web/</span></span>
+<span class="line"><span>├── SKILL.md                          # Main instruction file</span></span>
+<span class="line"><span>├── references/</span></span>
+<span class="line"><span>│   ├── design-principles.md          # 5 aesthetic directions + motion rules</span></span>
+<span class="line"><span>│   ├── visualization-patterns.md     # Implementation guide per interaction model</span></span>
+<span class="line"><span>│   └── content-extraction-guide.md   # What to extract + quality checklist</span></span>
+<span class="line"><span>├── assets/</span></span>
+<span class="line"><span>│   └── component-patterns.md         # Ready-to-use CSS/JS components</span></span>
+<span class="line"><span>└── scripts/</span></span>
+<span class="line"><span>    ├── normalize_article.py          # Stage 1</span></span>
+<span class="line"><span>    ├── extract_structure.py          # Stage 2</span></span>
+<span class="line"><span>    └── build_page_plan.py            # Stage 3</span></span></code></pre>
+<p>The whole thing is MIT licensed. Fork it, modify it, use it however you want.</p>
+<hr>
+<h2 id="try-it-right-now">Try it right now</h2>
+<ol>
+<li>
+<p>Install:</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">npx</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> skills</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> add</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> zerohzz/zz-skills</span></span></code></pre>
+</li>
+<li>
+<p>Run it on any article:</p>
+<pre class="astro-code astro-code-themes min-light night-owl" style="--shiki-light:#24292eff;--shiki-dark:#d6deeb;--shiki-light-bg:#ffffff;--shiki-dark-bg:#011627; overflow-x: auto;--file-name-offset: -0.75rem;" tabindex="0" data-language="bash"><code><span class="line"><span style="--shiki-light:#6F42C1;--shiki-light-font-style:inherit;--shiki-dark:#82AAFF;--shiki-dark-font-style:italic">/interactive-web</span><span style="--shiki-light:#2B5581;--shiki-dark:#ECC48D"> your-article.md</span></span></code></pre>
+</li>
+<li>
+<p>Open the generated <code>.html</code> file in your browser.</p>
+</li>
+</ol>
+<p>That’s it. Three steps.</p>
+<p>If you want to see what the output looks like before installing: <a href="https://alex-huang.dev/skill-lab/interactive-web">live demo</a>.</p> </article>  <aside class="hidden lg:block"> <nav id="toc-sidebar" aria-label="Table of contents" class="hidden lg:block w-52 shrink-0 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto" style="will-change: transform;" data-astro-cid-xvrfupwn><p class="mb-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted" data-astro-cid-xvrfupwn>
+On this page
+</p><ul class="space-y-0.5 border-l border-border/50" data-astro-cid-xvrfupwn><li data-astro-cid-xvrfupwn><a href="#what-it-actually-does" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>What it actually does</a></li><li data-astro-cid-xvrfupwn><a href="#the-part-that-surprised-me" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>The part that surprised me</a></li><li data-astro-cid-xvrfupwn><a href="#how-to-install-it" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>How to install it</a></li><li data-astro-cid-xvrfupwn><a href="#how-to-use-it" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>How to use it</a></li><li data-astro-cid-xvrfupwn><a href="#10-interaction-models" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>10 interaction models</a></li><li data-astro-cid-xvrfupwn><a href="#5-design-directions" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>5 design directions</a></li><li data-astro-cid-xvrfupwn><a href="#why-it-works-the-4-stage-pipeline" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>Why it works: the 4-stage pipeline</a></li><li data-astro-cid-xvrfupwn><a href="#the-degradation-rule" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>The degradation rule</a></li><li data-astro-cid-xvrfupwn><a href="#the-non-negotiables" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>The non-negotiables</a></li><li data-astro-cid-xvrfupwn><a href="#file-structure" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>File structure</a></li><li data-astro-cid-xvrfupwn><a href="#try-it-right-now" class="toc-link block pl-4 py-1 text-sm leading-snug text-text-muted
+                       border-l-2 border-transparent -ml-px
+                       transition-all duration-150 hover:text-foreground" data-astro-cid-xvrfupwn>Try it right now</a></li></ul></nav><script type="module">function f(){const d=document.querySelectorAll(".toc-link"),r=document.querySelectorAll(".toc-link-mobile");if(d.length>0||r.length>0){const s=new IntersectionObserver(i=>{for(const l of i)if(l.isIntersecting){const p=`#${l.target.id}`;d.forEach(c=>{const a=c.getAttribute("href")===p;c.classList.toggle("toc-active",a)}),r.forEach(c=>{const a=c.getAttribute("href")===p;c.classList.toggle("toc-active",a)})}},{rootMargin:"0px 0px -65% 0px",threshold:0});document.querySelectorAll("article h2").forEach(i=>{i.id&&s.observe(i)})}const e=document.getElementById("toc-fab"),t=document.getElementById("toc-popover"),o=document.getElementById("toc-backdrop"),u=document.getElementById("toc-popover-close");function v(){!e||!t||!o||(t.classList.remove("opacity-0","scale-95","pointer-events-none"),t.classList.add("opacity-100","scale-100","pointer-events-auto"),t.setAttribute("aria-hidden","false"),o.classList.remove("hidden"),e.setAttribute("aria-expanded","true"),e.classList.add("border-accent/60"))}function n(){!e||!t||!o||(t.classList.add("opacity-0","scale-95","pointer-events-none"),t.classList.remove("opacity-100","scale-100","pointer-events-auto"),t.setAttribute("aria-hidden","true"),o.classList.add("hidden"),e.setAttribute("aria-expanded","false"),e.classList.remove("border-accent/60"))}e?.addEventListener("click",()=>{e.getAttribute("aria-expanded")==="true"?n():v()}),u?.addEventListener("click",n),o?.addEventListener("click",n),r.forEach(s=>s.addEventListener("click",n))}document.addEventListener("astro:page-load",f);</script> </aside> </div>  <div class="lg:hidden" id="toc-mobile-root" data-astro-cid-xvrfupwn><button id="toc-fab" aria-label="Table of contents" aria-expanded="false" aria-controls="toc-popover" class="fixed top-[6rem] right-4 z-40
+                 h-7 w-7 rounded-[6px]
+                 bg-card/80 backdrop-blur-sm border border-accent
+                 flex items-center justify-center
+                 transition-all duration-200
+                 hover:bg-accent/10 hover:shadow-md
+                 active:scale-95" style="will-change: transform;" data-astro-cid-xvrfupwn><svg xmlns="http://www.w3.org/2000/svg" class="h-[14px] w-[14px] text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-astro-cid-xvrfupwn><!-- Open book: left page --><path d="M12 20V7C10 5.5 6.5 5 4 5.5C3 5.7 2 6.5 2 7.5V18.5C2 19.3 3 19.8 4 19.5C6.5 18.8 10 19 12 20z" data-astro-cid-xvrfupwn></path><!-- Open book: right page --><path d="M12 20V7C14 5.5 17.5 5 20 5.5C21 5.7 22 6.5 22 7.5V18.5C22 19.3 21 19.8 20 19.5C17.5 18.8 14 19 12 20z" data-astro-cid-xvrfupwn></path><!-- Circle on left page --><circle cx="7" cy="12.5" r="2" stroke-width="1.5" data-astro-cid-xvrfupwn></circle><!-- Lines on right page --><line x1="15" y1="9.5" x2="19.5" y2="9.5" stroke-width="1.5" data-astro-cid-xvrfupwn></line><line x1="15" y1="12.5" x2="19.5" y2="12.5" stroke-width="1.5" data-astro-cid-xvrfupwn></line><line x1="15" y1="15.5" x2="18" y2="15.5" stroke-width="1.5" data-astro-cid-xvrfupwn></line></svg></button><div id="toc-popover" role="dialog" aria-label="Table of contents" aria-hidden="true" class="fixed top-[8.5rem] right-4 z-40
+                 w-64 rounded-xl border border-border bg-card shadow-2xl overflow-hidden
+                 opacity-0 scale-95 pointer-events-none
+                 transition-all duration-200 ease-out origin-top-right" style="will-change: transform, opacity;" data-astro-cid-xvrfupwn><div class="flex items-center justify-between px-4 py-2.5 border-b border-border/60" data-astro-cid-xvrfupwn><p class="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted" data-astro-cid-xvrfupwn>
+On this page
+</p><button id="toc-popover-close" aria-label="Close" class="text-text-muted hover:text-foreground transition-colors p-0.5 -mr-0.5 rounded" data-astro-cid-xvrfupwn><svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" data-astro-cid-xvrfupwn><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" data-astro-cid-xvrfupwn></path></svg></button></div><ul class="px-2 py-2 space-y-0.5 max-h-60 overflow-y-auto" data-astro-cid-xvrfupwn><li data-astro-cid-xvrfupwn><a href="#what-it-actually-does" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>What it actually does</a></li><li data-astro-cid-xvrfupwn><a href="#the-part-that-surprised-me" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>The part that surprised me</a></li><li data-astro-cid-xvrfupwn><a href="#how-to-install-it" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>How to install it</a></li><li data-astro-cid-xvrfupwn><a href="#how-to-use-it" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>How to use it</a></li><li data-astro-cid-xvrfupwn><a href="#10-interaction-models" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>10 interaction models</a></li><li data-astro-cid-xvrfupwn><a href="#5-design-directions" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>5 design directions</a></li><li data-astro-cid-xvrfupwn><a href="#why-it-works-the-4-stage-pipeline" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>Why it works: the 4-stage pipeline</a></li><li data-astro-cid-xvrfupwn><a href="#the-degradation-rule" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>The degradation rule</a></li><li data-astro-cid-xvrfupwn><a href="#the-non-negotiables" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>The non-negotiables</a></li><li data-astro-cid-xvrfupwn><a href="#file-structure" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>File structure</a></li><li data-astro-cid-xvrfupwn><a href="#try-it-right-now" class="toc-link-mobile block px-3 py-1.5 rounded-md text-sm leading-snug
+                         text-text-muted transition-all duration-150
+                         hover:bg-accent/10 hover:text-foreground" data-astro-cid-xvrfupwn>Try it right now</a></li></ul></div><div id="toc-backdrop" class="fixed inset-0 z-30 hidden" aria-hidden="true" data-astro-cid-xvrfupwn></div></div> <hr class="my-8 border-dashed">  <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8"> <li> <a href="/tags/project/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-2"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> Project </a> </li><li> <a href="/tags/open-source/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-3"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> Open-Source </a> </li><li> <a href="/tags/claude-code/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-4"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> claude-code </a> </li><li> <a href="/tags/ai-tools/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-5"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> ai-tools </a> </li><li> <a href="/tags/interactive-web/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-6"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> interactive-web </a> </li><li> <a href="/tags/developer-tools/" class="inline-flex items-center gap-0.5 rounded-full border border-border px-3 py-1 text-text-muted transition-all duration-200 hover:border-accent hover:bg-accent hover:text-white focus-visible:border-none focus-visible:outline-2 focus-visible:outline-dashed focus-visible:outline-accent text-xs" data-astro-transition-scope="astro-36ssibgs-7"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-70 size-3"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 9l14 0" /><path d="M5 15l14 0" /><path d="M11 4l-4 16" /><path d="M17 4l-4 16" /></svg> developer-tools </a> </li> </ul> <div id="btt-btn-container" class="fixed end-4 bottom-8 z-50 md:sticky md:end-auto md:float-end md:me-1 translate-y-14 opacity-0 transition duration-500"> <button data-button="back-to-top" class="group relative bg-background px-2 py-1 size-14 rounded-full shadow-xl md:h-8 md:w-fit md:rounded-md md:shadow-none md:focus-visible:rounded-none md:bg-background/35 md:bg-clip-padding md:backdrop-blur-lg"> <span id="progress-indicator" class="absolute inset-0 -z-10 block size-14 scale-110 rounded-full bg-transparent md:hidden md:h-8 md:rounded-md"></span> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block rotate-90 md:hidden"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 6l-6 6l6 6" /></svg> <span class="sr-only text-sm group-hover:text-accent md:not-sr-only"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M16 9l-4 -4" /><path d="M8 9l4 -4" /></svg>
+Back To Top
+</span> </button> </div> <script data-astro-rerun>
+  /** Scrolls the document to the top when
+   * the "Back to Top" button is clicked. */
+  function backToTop() {
+    const rootElement = document.documentElement;
+    const btnContainer = document.querySelector("#btt-btn-container");
+    const backToTopBtn = document.querySelector("[data-button='back-to-top']");
+    const progressIndicator = document.querySelector("#progress-indicator");
+
+    if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
+      return;
+
+    // Attach click event handler for back-to-top button
+    backToTopBtn.addEventListener("click", () => {
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    });
+
+    // Handle button visibility according to scroll position
+    let lastVisible = null;
+    function handleScroll() {
+      const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+      const scrollTop = rootElement.scrollTop;
+      const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
+
+      progressIndicator.style.setProperty(
+        "background-image",
+        `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`
+      );
+
+      const isVisible = scrollTop / scrollTotal > 0.3;
+
+      if (isVisible !== lastVisible) {
+        btnContainer.classList.toggle("opacity-100", isVisible);
+        btnContainer.classList.toggle("translate-y-0", isVisible);
+        btnContainer.classList.toggle("opacity-0", !isVisible);
+        btnContainer.classList.toggle("translate-y-14", !isVisible);
+        lastVisible = isVisible;
+      }
+    }
+
+    let ticking = false;
+    document.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+  }
+  backToTop();
+</script> <div class="flex flex-none flex-col items-center justify-center gap-1 md:items-start"><span class="italic">Share this post on:</span><div class="flex flex-wrap items-center gap-x-0.5 gap-y-1"><a href="https://www.linkedin.com/sharing/share-offsite/?url=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on LinkedIn" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 11v5" /><path d="M8 8v.01" /><path d="M12 16v-5" /><path d="M16 16v-3a2 2 0 1 0 -4 0" /><path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" /></svg><span class="sr-only">Share this post on LinkedIn</span> </a><a href="https://github.com/zerohzz" title="View on GitHub" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" /></svg><span class="sr-only">View on GitHub</span> </a><span class="mx-1 h-4 w-px self-center bg-foreground/20" aria-hidden="true"></span><a href="https://x.com/intent/post?url=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on X" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 4l11.733 16h4.267l-11.733 -16z" /><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" /></svg><span class="sr-only">Share this post on X</span> </a><a href="https://www.facebook.com/sharer.php?u=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on Facebook" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg><span class="sr-only">Share this post on Facebook</span> </a><a href="https://wa.me/?text=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post via WhatsApp" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" /><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" /></svg><span class="sr-only">Share this post via WhatsApp</span> </a><a href="https://t.me/share/url?url=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post via Telegram" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4" /></svg><span class="sr-only">Share this post via Telegram</span> </a><span class="mx-1 h-4 w-px self-center bg-foreground/20" aria-hidden="true"></span><a href="http://service.weibo.com/share/share.php?url=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on Weibo" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg role="img" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-current stroke-none">
+  <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.089.856.51.992.405.119.857-.105.992-.512.33-1.021.12-2.178-.646-3.035l.03.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.081.104.496.586.813 1.082.707 1.532-.331 3.185.15 4.296 1.383 1.112 1.246 1.429 2.943.947 4.416-.165.48.106 1.007.586 1.157.479.165.991-.104 1.157-.586.675-2.088.241-4.478-1.338-6.235l.03.045z" />
+</svg><span class="sr-only">Share this post on Weibo</span> </a><span class="scale-90 cursor-default p-2 opacity-30 sm:p-1" title="Coming soon" aria-label="Share on WeChat (coming soon)"><svg role="img" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="inline-block size-6 scale-125 sm:scale-110 fill-current stroke-none">
+  <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z" />
+</svg></span><span class="scale-90 cursor-default p-2 opacity-30 sm:p-1" title="Coming soon" aria-label="Share on Xiaohongshu (coming soon)"><svg role="img" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="inline-block size-6 scale-125 sm:scale-110 fill-current stroke-none">
+  <path d="M22.405 9.879c.002.016.01.02.07.019h.725a.797.797 0 0 0 .78-.972.794.794 0 0 0-.884-.618.795.795 0 0 0-.692.794c0 .101-.002.666.001.777zm-11.509 4.808c-.203.001-1.353.004-1.685.003a2.528 2.528 0 0 1-.766-.126.025.025 0 0 0-.03.014L7.7 16.127a.025.025 0 0 0 .01.032c.111.06.336.124.495.124.66.01 1.32.002 1.981 0 .01 0 .02-.006.023-.015l.712-1.545a.025.025 0 0 0-.024-.036zM.477 9.91c-.071 0-.076.002-.076.01a.834.834 0 0 0-.01.08c-.027.397-.038.495-.234 3.06-.012.24-.034.389-.135.607-.026.057-.033.042.003.112.046.092.681 1.523.787 1.74.008.015.011.02.017.02.008 0 .033-.026.047-.044.147-.187.268-.391.371-.606.306-.635.44-1.325.486-1.706.014-.11.021-.22.03-.33l.204-2.616.022-.293c.003-.029 0-.033-.03-.034zm7.203 3.757a1.427 1.427 0 0 1-.135-.607c-.004-.084-.031-.39-.235-3.06a.443.443 0 0 0-.01-.082c-.004-.011-.052-.008-.076-.008h-1.48c-.03.001-.034.005-.03.034l.021.293c.076.982.153 1.964.233 2.946.05.4.186 1.085.487 1.706.103.215.223.419.37.606.015.018.037.051.048.049.02-.003.742-1.642.804-1.765.036-.07.03-.055.003-.112zm3.861-.913h-.872a.126.126 0 0 1-.116-.178l1.178-2.625a.025.025 0 0 0-.023-.035l-1.318-.003a.148.148 0 0 1-.135-.21l.876-1.954a.025.025 0 0 0-.023-.035h-1.56c-.01 0-.02.006-.024.015l-.926 2.068c-.085.169-.314.634-.399.938a.534.534 0 0 0-.02.191.46.46 0 0 0 .23.378.981.981 0 0 0 .46.119h.59c.041 0-.688 1.482-.834 1.972a.53.53 0 0 0-.023.172.465.465 0 0 0 .23.398c.15.092.342.12.475.12l1.66-.001c.01 0 .02-.006.023-.015l.575-1.28a.025.025 0 0 0-.024-.035zm-6.93-4.937H3.1a.032.032 0 0 0-.034.033c0 1.048-.01 2.795-.01 6.829 0 .288-.269.262-.28.262h-.74c-.04.001-.044.004-.04.047.001.037.465 1.064.555 1.263.01.02.03.033.051.033.157.003.767.009.938-.014.153-.02.3-.06.438-.132.3-.156.49-.419.595-.765.052-.172.075-.353.075-.533.002-2.33 0-4.66-.007-6.991a.032.032 0 0 0-.032-.032zm11.784 6.896c0-.014-.01-.021-.024-.022h-1.465c-.048-.001-.049-.002-.05-.049v-4.66c0-.072-.005-.07.07-.07h.863c.08 0 .075.004.075-.074V8.393c0-.082.006-.076-.08-.076h-3.5c-.064 0-.075-.006-.075.073v1.445c0 .083-.006.077.08.077h.854c.075 0 .07-.004.07.07v4.624c0 .095.008.084-.085.084-.37 0-1.11-.002-1.304 0-.048.001-.06.03-.06.03l-.697 1.519s-.014.025-.008.036c.006.01.013.008.058.008 1.748.003 3.495.002 5.243.002.03-.001.034-.006.035-.033v-1.539zm4.177-3.43c0 .013-.007.023-.02.024-.346.006-.692.004-1.037.004-.014-.002-.022-.01-.022-.024-.005-.434-.007-.869-.01-1.303 0-.072-.006-.071.07-.07l.733-.003c.041 0 .081.002.12.015.093.025.16.107.165.204.006.431.002 1.153.001 1.153zm2.67.244a1.953 1.953 0 0 0-.883-.222h-.18c-.04-.001-.04-.003-.042-.04V10.21c0-.132-.007-.263-.025-.394a1.823 1.823 0 0 0-.153-.53 1.533 1.533 0 0 0-.677-.71 2.167 2.167 0 0 0-1-.258c-.153-.003-.567 0-.72 0-.07 0-.068.004-.068-.065V7.76c0-.031-.01-.041-.046-.039H17.93s-.016 0-.023.007c-.006.006-.008.012-.008.023v.546c-.008.036-.057.015-.082.022h-.95c-.022.002-.028.008-.03.032v1.481c0 .09-.004.082.082.082h.913c.082 0 .072.128.072.128V11.19s.003.117-.06.117h-1.482c-.068 0-.06.082-.06.082v1.445s-.01.068.064.068h1.457c.082 0 .076-.006.076.079v3.225c0 .088-.007.081.082.081h1.43c.09 0 .082.007.082-.08v-3.27c0-.029.006-.035.033-.035l2.323-.003c.098 0 .191.02.28.061a.46.46 0 0 1 .274.407c.008.395.003.79.003 1.185 0 .259-.107.367-.33.367h-1.218c-.023.002-.029.008-.028.033.184.437.374.871.57 1.303a.045.045 0 0 0 .04.026c.17.005.34.002.51.003.15-.002.517.004.666-.01a2.03 2.03 0 0 0 .408-.075c.59-.18.975-.698.976-1.313v-1.981c0-.128-.01-.254-.034-.38 0 .078-.029-.641-.724-.998z" />
+</svg></span><span class="mx-1 h-4 w-px self-center bg-foreground/20" aria-hidden="true"></span><a href="https://news.ycombinator.com/submitlink?u=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on Hacker News" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><!-- Hacker News: Y letterform in a square -->
+  <rect x="3" y="3" width="18" height="18" rx="3" />
+  <polyline points="8,8 12,13 16,8" />
+  <line x1="12" y1="13" x2="12" y2="17" />
+</svg><span class="sr-only">Share this post on Hacker News</span> </a><a href="https://www.reddit.com/submit?url=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on Reddit" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><!-- Reddit: alien head -->
+  <circle cx="12" cy="12" r="9" /><!-- antennae -->
+  <line x1="12" y1="3" x2="15" y2="1" />
+  <circle cx="15.5" cy="0.5" r="0.5" fill="currentColor" stroke="none" /><!-- eyes -->
+  <circle cx="9" cy="11" r="1" fill="currentColor" stroke="none" />
+  <circle cx="15" cy="11" r="1" fill="currentColor" stroke="none" /><!-- smile -->
+  <path d="M9 14.5c.83.83 5.17.83 6 0" /><!-- ears -->
+  <path d="M3 9.5C3 8.67 3.67 8 4.5 8S6 8.67 6 9.5 5.33 11 4.5 11 3 10.33 3 9.5z" />
+  <path d="M21 9.5C21 8.67 20.33 8 19.5 8S18 8.67 18 9.5s.67 1.5 1.5 1.5S21 10.33 21 9.5z" />
+</svg><span class="sr-only">Share this post on Reddit</span> </a><a href="https://bsky.app/intent/compose?text=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post on Bluesky" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><!-- Bluesky: butterfly / cloud shape -->
+  <path d="M12 10C10 6.5 6 4 4 5.5C2 7 3 11 5 12C3 13 2 17 4 18.5C6 20 10 17.5 12 14" />
+  <path d="M12 10C14 6.5 18 4 20 5.5C22 7 21 11 19 12C21 13 22 17 20 18.5C18 20 14 17.5 12 14" />
+</svg><span class="sr-only">Share this post on Bluesky</span> </a><a href="mailto:?subject=See%20this%20post&#38;body=https://alex-huang.dev/posts/interactive-web-skill/" title="Share this post via email" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1 hover:text-accent scale-90 p-2 hover:rotate-6 sm:p-1"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 opacity-90 sm:scale-110 fill-transparent stroke-current stroke-2 group-hover:fill-transparent"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg><span class="sr-only">Share this post via email</span> </a></div></div> <hr class="my-6 border-dashed"> <!-- Previous/Next Post Buttons --> <div data-pagefind-ignore class="grid grid-cols-1 gap-4 sm:grid-cols-2">  <a href="/posts/ai-website-one-day-zh" class="group flex w-full gap-2 rounded-xl border border-border bg-card p-4 text-end transition-all duration-200 hover:-translate-y-[2px] hover:border-accent/40 hover:shadow-md sm:col-start-2 sm:flex-row-reverse"> <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 inline-block flex-none text-text-muted transition-colors group-hover:text-accent rtl:rotate-180"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 6l6 6l-6 6" /></svg> <div class="min-w-0"> <span class="text-xs font-medium uppercase tracking-wide text-text-muted">Next Post</span> <div class="mt-0.5 line-clamp-1 text-sm font-semibold text-foreground transition-colors group-hover:text-accent">从零开始免费部署你的个站，只需要一个下午。以及为何你也该试试</div> <p class="mt-0.5 line-clamp-1 text-xs text-text-muted">记录我用一个下午时间，从零搭建并部署个人网站 alex-huang.dev 的完整过程——工具链：ChatGPT → Gemini → Claude Code → GitHub Pages，实际用时约 4-5 小时。</p> </div> </a> </div>  <section class="mt-12" data-pagefind-ignore data-fade-up>  <div class="flex items-center gap-3 mb-6"> <h2 class="text-lg font-semibold text-foreground shrink-0">
+Comments
+</h2> <div class="flex-1 h-px bg-gradient-to-r from-accent/40 to-border"></div> </div>  <div id="cusdis-loading" class="space-y-4 motion-safe:animate-pulse py-2" aria-hidden="true"> <div class="h-3 w-1/3 rounded bg-muted"></div> <div class="space-y-2"> <div class="h-3 w-full rounded bg-muted"></div> <div class="h-3 w-5/6 rounded bg-muted"></div> </div> <div class="h-8 w-24 rounded-lg bg-muted"></div> </div>  <div id="cusdis-empty" class="py-8 text-center text-sm text-text-muted space-y-2"> <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mb-3 opacity-40" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path> </svg> <p class="font-medium text-foreground/80">Have a question or thought?</p> <p class="text-xs">I'd love to hear it — no account required, just a name.</p> </div>  <div id="cusdis_thread" class="hidden" data-host="https://cusdis-production-15fc.up.railway.app" data-app-id="767da6ad-ffa5-4251-8991-8676757eb25e" data-page-id="interactive-web-skill" data-page-url="https://alex-huang.dev/posts/interactive-web-skill/" data-page-title="Turn Any Doc into an Interactive Web Experience, in One Line"></div>  <p class="mt-4 text-xs text-right" style="color: color-mix(in srgb, var(--text-muted) 75%, transparent)">
+Comments by  <a href="https://cusdis.com" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 hover:text-accent transition-colors duration-200">
+Cusdis
+</a>  · name &amp; email only, no account required ☕
+</p> </section> </main> <footer class="app-layout mt-auto"> <div class="py-6 sm:py-4 border-t border-border flex flex-col items-center justify-between sm:flex-row-reverse"> <div class="flex flex-wrap items-center gap-1"> <a href="https://github.com/zerohzz" title="Alex Huang on GitHub" class="group inline-flex items-center gap-1 hover:text-accent p-2 hover:rotate-6 sm:p-1">  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" /></svg> <span class="sr-only">Alex Huang on GitHub</span>  </a><a href="https://www.linkedin.com/in/azhua/" title="Alex Huang on LinkedIn" class="group inline-flex items-center gap-1 hover:text-accent p-2 hover:rotate-6 sm:p-1">  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 11v5" /><path d="M8 8v.01" /><path d="M12 16v-5" /><path d="M16 16v-3a2 2 0 1 0 -4 0" /><path d="M3 7a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4z" /></svg> <span class="sr-only">Alex Huang on LinkedIn</span>  </a><a href="mailto:alexander-huang@outlook.com" title="Send an email to Alex Huang" class="group inline-flex items-center gap-1 hover:text-accent p-2 hover:rotate-6 sm:p-1">  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z" /><path d="M3 7l9 6l9 -6" /></svg> <span class="sr-only">Send an email to Alex Huang</span>  </a> </div> <div class="my-2 flex flex-col items-center whitespace-nowrap sm:flex-row"> <span>Copyright &#169; 2026</span> <span class="hidden sm:inline">&nbsp;|&nbsp;</span> <span>All rights reserved.</span> </div> </div> </footer>  <!-- Custom cursor — persist across page navigations --> <div id="custom-cursor" aria-hidden="true" data-astro-transition-persist="astro-crr4cxcp-8"></div> <!-- Load full theme logic --> <script type="module">const d="theme",c="light",a="dark";function h(){const e=localStorage.getItem(d);return e||(window.matchMedia("(prefers-color-scheme: dark)").matches?a:c)}let t=window.theme?.themeValue??h();function m(){localStorage.setItem(d,t),o()}function o(){document.firstElementChild?.setAttribute("data-theme",t),document.querySelectorAll("#theme-btn, #theme-btn-desktop").forEach(n=>{n.setAttribute("aria-label",t)});const e=document.body;if(e){const r=window.getComputedStyle(e).backgroundColor;document.querySelector("meta[name='theme-color']")?.setAttribute("content",r)}}window.theme?(window.theme.setPreference=m,window.theme.reflectPreference=o):window.theme={themeValue:t,setPreference:m,reflectPreference:o,getTheme:()=>t,setTheme:e=>{t=e}};o();function s(){o(),document.querySelectorAll("#theme-btn, #theme-btn-desktop").forEach(e=>{e.addEventListener("click",()=>{t=t===c?a:c,window.theme?.setTheme(t),m()})})}s();document.addEventListener("astro:after-swap",s);document.addEventListener("astro:before-swap",e=>{const n=e,r=document.querySelector("meta[name='theme-color']")?.getAttribute("content");r&&n.newDocument.querySelector("meta[name='theme-color']")?.setAttribute("content",r)});window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",({matches:e})=>{t=e?a:c,window.theme?.setTheme(t),m()});</script> <script type="module">function m(){const c=document.getElementById("custom-cursor");if(!c)return;const s=c;if(window.matchMedia("(pointer: coarse)").matches)return;let u=0,l=0,n=0,o=0,r=!0;document.addEventListener("mousemove",e=>{u=e.clientX,l=e.clientY,s.classList.add("visible")}),document.addEventListener("mouseover",e=>{const t=e.target,a=t.tagName==="A"||t.tagName==="BUTTON"||!!t.closest("a")||!!t.closest("button")||window.getComputedStyle(t).cursor==="pointer";s.classList.toggle("hovering",a)}),document.addEventListener("mouseleave",()=>{s.classList.remove("visible")});function d(e,t,a){return e+(t-e)*a}function i(){r&&(n=d(n,u,.15),o=d(o,l,.15),s.style.left=`${n}px`,s.style.top=`${o}px`,requestAnimationFrame(i))}i(),document.addEventListener("astro:after-swap",()=>{r=!1,r=!0,i()})}m();document.addEventListener("astro:page-load",m);</script> <script type="module">function a(){const o=document.querySelectorAll("[data-fade-up]"),n=new IntersectionObserver(t=>{t.forEach(s=>{if(s.isIntersecting){const e=s.target,r=e.dataset.delay??"0";e.style.transitionDelay=`${r}s`,e.classList.add("in-view"),n.unobserve(e)}})},{rootMargin:"-50px"});o.forEach(t=>n.observe(t))}a();document.addEventListener("astro:page-load",a);</script> <script type="module">function o(){document.querySelectorAll("[data-magnetic]").forEach(t=>{const n=parseFloat(t.dataset.magnetic||"0.2");t.style.transition="transform 0.3s cubic-bezier(0.21, 0.47, 0.32, 0.98)",t.addEventListener("mousemove",s=>{const e=t.getBoundingClientRect(),a=e.left+e.width/2,c=e.top+e.height/2,i=(s.clientX-a)*n,r=(s.clientY-c)*n;t.style.transform=`translate(${i}px, ${r}px)`}),t.addEventListener("mouseleave",()=>{t.style.transform=""})})}o();document.addEventListener("astro:page-load",o);</script> </body> </html> <script data-astro-rerun>
+  /** Create a progress indicator
+   *  at the top */
+  function createProgressBar() {
+    // Create the main container div
+    const progressContainer = document.createElement("div");
+    progressContainer.className =
+      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
+
+    // Create the progress bar div
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar h-1 w-0 bg-accent";
+    progressBar.id = "myBar";
+
+    // Append the progress bar to the progress container
+    progressContainer.appendChild(progressBar);
+
+    // Append the progress container to the document body or any other desired parent element
+    document.body.appendChild(progressContainer);
+  }
+  createProgressBar();
+
+  /** Update the progress bar
+   *  when user scrolls */
+  function updateScrollProgress() {
+    document.addEventListener("scroll", () => {
+      const winScroll =
+        document.body.scrollTop || document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      if (document) {
+        const myBar = document.getElementById("myBar");
+        if (myBar) {
+          myBar.style.width = scrolled + "%";
+        }
+      }
+    });
+  }
+  updateScrollProgress();
+
+  /** Attaches links to headings in the document,
+   *  allowing sharing of sections easily */
+  function addHeadingLinks() {
+    const headings = Array.from(
+      document.querySelectorAll("h2, h3, h4, h5, h6")
+    );
+    for (const heading of headings) {
+      heading.classList.add("group");
+      const link = document.createElement("a");
+      link.className =
+        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
+      link.href = "#" + heading.id;
+
+      const span = document.createElement("span");
+      span.ariaHidden = "true";
+      span.innerText = "#";
+      link.appendChild(span);
+      heading.appendChild(link);
+    }
+  }
+  addHeadingLinks();
+
+  /** Attaches copy buttons to code blocks in the document,
+   * allowing users to copy code easily. */
+  const ICON_COPY = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+  const ICON_CHECK = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+
+  function attachCopyButtons() {
+    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    for (const codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      const copyButton = document.createElement("button");
+      copyButton.setAttribute("aria-label", "Copy code");
+      // Positioned inside the code block, top-right corner
+      copyButton.className = `copy-code absolute z-10 rounded-md p-1.5 text-text-muted transition-all duration-150 opacity-0 hover:opacity-100`;
+      copyButton.style.top = "0.5rem";
+      copyButton.style.right = "0.5rem";
+      copyButton.innerHTML = ICON_COPY;
+      codeBlock.setAttribute("tabindex", "0");
+
+      // Show button on hover of the wrapper
+      wrapper.addEventListener("mouseenter", () => copyButton.style.opacity = "1");
+      wrapper.addEventListener("mouseleave", () => {
+        if (copyButton.getAttribute("data-copied") !== "true") {
+          copyButton.style.opacity = "0";
+        }
+      });
+
+      codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+      wrapper.appendChild(copyButton);
+
+      copyButton.addEventListener("click", async () => {
+        const code = codeBlock.querySelector("code");
+        await navigator.clipboard.writeText(code?.innerText ?? "");
+        copyButton.innerHTML = ICON_CHECK;
+        copyButton.setAttribute("data-copied", "true");
+        copyButton.style.opacity = "1";
+        copyButton.style.color = "var(--color-accent)";
+        setTimeout(() => {
+          copyButton.innerHTML = ICON_COPY;
+          copyButton.removeAttribute("data-copied");
+          copyButton.style.color = "";
+        }, 1500);
+      });
+    }
+  }
+  attachCopyButtons();
+
+  /* Go to page start after page swap */
+  document.addEventListener("astro:after-swap", () =>
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
+  );
+
+  /** Position a lang-toggle slider under its active tab */
+  function positionSlider(sliderId, currentId) {
+    const slider = document.getElementById(sliderId);
+    const current = document.getElementById(currentId);
+    if (!slider || !current) return;
+    slider.style.left   = current.offsetLeft + "px";
+    slider.style.width  = current.offsetWidth + "px";
+    slider.style.height = current.offsetHeight + "px";
+    slider.style.top    = "2px";
+    slider.style.bottom = "2px";
+  }
+  positionSlider("lang-slider", "lang-current");
+  positionSlider("lang-slider-mobile", "lang-current-mobile");
+</script> <script data-astro-rerun>
+  (function () {
+    const thread = document.getElementById("cusdis_thread");
+    if (!thread) return;
+
+    const siteTheme = document.documentElement.getAttribute("data-theme") ?? "light";
+    thread.setAttribute("data-theme", siteTheme === "dark" ? "dark" : "light");
+
+    // Deduplicate postMessage listener across View Transitions
+    if (window._cusdisMessageHandler) {
+      window.removeEventListener("message", window._cusdisMessageHandler);
+    }
+    window._cusdisMessageHandler = (e) => {
+      const cusdisHost = document.getElementById("cusdis_thread")?.dataset.host ?? "https://cusdis.com";
+      if (e.origin !== cusdisHost) return;
+      const iframe = document.querySelector("#cusdis_thread iframe");
+      if (!iframe) return;
+      const h = typeof e.data === "object" ? e.data.height : e.data;
+      if (h && typeof h === "number" && h > 0) iframe.style.height = h + "px";
+    };
+    window.addEventListener("message", window._cusdisMessageHandler);
+
+    // Auto-resize iframe
+    function setupIframeResize() {
+      const iframe = thread.querySelector("iframe");
+      if (!iframe) return;
+      iframe.style.overflow = "hidden";
+      iframe.style.display = "block";
+      iframe.style.width = "100%";
+    }
+
+    // MutationObserver: detect iframe insertion
+    const iframeWatcher = new MutationObserver(() => {
+      const iframe = thread.querySelector("iframe");
+      if (!iframe) return;
+      iframeWatcher.disconnect();
+      setupIframeResize();
+      let last = 0, ticks = 0;
+      const poll = setInterval(() => {
+        try {
+          const h = iframe.contentDocument?.documentElement?.scrollHeight;
+          if (h && h !== last) { iframe.style.height = h + "px"; last = h; }
+        } catch (_) {}
+        if (++ticks > 20) clearInterval(poll);
+      }, 200);
+    });
+    iframeWatcher.observe(thread, { childList: true, subtree: true });
+
+    // Smooth reveal: fade skeleton out, fade thread in
+    function onReady() {
+      const loading = document.getElementById("cusdis-loading");
+      if (loading) {
+        loading.style.opacity = "0";
+        setTimeout(() => loading.remove(), 300);
+      }
+      const empty = document.getElementById("cusdis-empty");
+      if (empty) {
+        empty.style.opacity = "0";
+        setTimeout(() => empty.remove(), 300);
+      }
+      thread.classList.remove("hidden");
+      requestAnimationFrame(() => thread.classList.add("cusdis-ready"));
+      setupIframeResize();
+      clearTimeout(loadTimeout);
+    }
+
+    // Error fallback if CDN fails
+    const loadTimeout = setTimeout(() => {
+      const loading = document.getElementById("cusdis-loading");
+      if (loading) {
+        loading.innerHTML = '<p style="color:var(--text-muted);font-size:0.75rem;padding:0.5rem 0">Comments unavailable. Try refreshing.</p>';
+        loading.style.opacity = "1";
+        loading.removeAttribute("aria-hidden");
+        loading.classList.remove("motion-safe:animate-pulse");
+      }
+    }, 8000);
+
+    if (!window.CUSDIS) {
+      const s = document.createElement("script");
+      s.src = "https://cusdis.com/js/cusdis.es.js";
+      s.async = true;
+      s.defer = true;
+      s.onload = onReady;
+      document.body.appendChild(s);
+    } else {
+      window.CUSDIS.initial();
+      onReady();
+    }
+
+    const themeObserver = new MutationObserver(() => {
+      const t = document.documentElement.getAttribute("data-theme");
+      if (window.CUSDIS) window.CUSDIS.setTheme(t === "dark" ? "dark" : "light");
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+  })();
+</script>
