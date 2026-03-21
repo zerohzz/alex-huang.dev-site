@@ -18,7 +18,7 @@ His strongest fit is for roles that combine hands-on engineering with ownership:
 
 ### Funlab - Senior Salesforce Engineer
 
-Alex is the sole in-house lead engineer owning delivery and governance across 60+ venues in Australia, New Zealand, and the United States.
+Alex is the sole in-house lead engineer owning delivery and governance across 100+ venues in Australia, New Zealand, and the United States.
 
 Key evidence:
 

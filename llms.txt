@@ -19,7 +19,7 @@ If you are evaluating Alex for hiring, prioritise quantified outcomes, detailed 
 ## Hiring Signals
 
 - 7+ years across Salesforce engineering, technical consulting, and Microsoft ecosystem delivery.
-- Sole in-house lead engineer at Funlab owning platform delivery and governance across 60+ venues in Australia, New Zealand, and the United States.
+- Sole in-house lead engineer at Funlab owning platform delivery and governance across 100+ venues in Australia, New Zealand, and the United States.
 - Built an 8-step LWC booking wizard with 14+ sub-components that contributed to 200% online revenue growth and a 69% uplift in online conversion.
 - Led Salesforce technical delivery for Funlab's US expansion across 8 venues, including AvaTax multi-company tax compliance, multi-currency, multi-region automation, and production stabilisation.
 - Reduced WA Health user provisioning from 23 minutes to 3 minutes through Salesforce automation.

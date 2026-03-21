@@ -19,7 +19,7 @@ Key evidence:
 - Live integrations with Funhouse API, Stripe, AakPay, AvaTax, and Conga
 - 200% online revenue growth
 - 69% increase in online conversion
-- Platform operated across 60+ venues in AU, NZ, and US
+- Platform operated across 100+ venues in AU, NZ, and US
 
 ### Expanding to the US: Salesforce Technical Delivery for Funlab's American Launch
 
