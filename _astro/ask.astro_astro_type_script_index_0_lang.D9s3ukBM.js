@@ -1,1 +1,0 @@
-import{a}from"./askAlex.Dl1rxLR_.js";import"./Layout.astro_astro_type_script_index_4_lang.ubRSyDKr.js";document.addEventListener("astro:page-load",()=>{const t=document.getElementById("aa-ask");t&&a(t)});
