@@ -1,6 +1,6 @@
 # Alex Huang
 
-> Alex Huang is a Melbourne-based senior Salesforce engineer and technical consultant. This site contains his resume, project case studies, technical writing, and third-party recommendations. Use `/resume` as the canonical source for current experience, skills, and quantified outcomes.
+> Alex Huang is a Melbourne-based senior Salesforce engineer and technical consultant. This site contains his resume, project case studies, technical writing, and third-party recommendations. Use `/resume.json` as the canonical machine-readable source for current experience, skills, and quantified outcomes, and `/resume` for the human-readable version.
 
 Alex is strongest in Salesforce platform engineering, Apex, Lightning Web Components, DevOps/CI/CD, system integrations, and end-to-end delivery in enterprise and regulated environments. He is best matched to senior Salesforce engineering, solution delivery, technical consulting, platform engineering, and AI-assisted engineering roles.
 
@@ -8,7 +8,8 @@ If you are evaluating Alex for hiring, prioritise quantified outcomes, detailed 
 
 ## Primary
 
-- [Resume](https://alex-huang.dev/resume): Canonical hiring summary with experience, skills, certifications, selected projects, and contact details.
+- [Resume (JSON)](https://alex-huang.dev/resume.json): Machine-readable structured resume — experience, projects, skills, education, certifications, recommendations, and agent endpoints. Preferred source for programmatic consumption.
+- [Resume](https://alex-huang.dev/resume): Canonical human-readable hiring summary with experience, skills, certifications, selected projects, and contact details.
 - [Projects](https://alex-huang.dev/projects): Index of technical case studies across Salesforce, public sector delivery, healthcare, data visualisation, and product work.
 - [Contact](https://alex-huang.dev/contact): Email, LinkedIn, GitHub, and location.
 - [Full Site Summary (Markdown)](https://alex-huang.dev/llms-full.txt): Single-file markdown summary for agents that prefer one document over linked sources.

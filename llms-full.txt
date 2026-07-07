@@ -2,6 +2,8 @@
 
 Alex Huang is a senior Salesforce engineer and technical consultant based in Melbourne, Australia. He has 7+ years of experience delivering enterprise systems across Salesforce, Apex, Lightning Web Components, DevOps/CI/CD, system integrations, and platform operations.
 
+A machine-readable structured resume (JSON) is available at https://alex-huang.dev/resume.json — preferred source for programmatic consumption.
+
 This site is most useful for evaluating Alex for:
 
 - Senior Salesforce Engineer roles
