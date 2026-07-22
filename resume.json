@@ -638,6 +638,19 @@
     ],
     "writing": [
       {
+        "title": "I Tried Loop Engineering on a Real Salesforce Ticket",
+        "date": "2026-07-22",
+        "summary": "The newest AI buzzword, tested on one small Salesforce ticket: an oracle-first brief, a false green caught, a deploy gate that held. Masked brief included.",
+        "tags": [
+          "AI",
+          "Loop Engineering",
+          "Salesforce",
+          "Agents",
+          "Playwright"
+        ],
+        "url": "https://alex-huang.dev/posts/loop-engineering/"
+      },
+      {
         "title": "I Built a Claude Code Harness for a Salesforce Project. Here's What's Inside.",
         "date": "2026-05-26",
         "summary": "Most Claude Code harnesses are JS/TS-shaped. Here's one built for a Salesforce Apex/LWC monorepo: hooks, CLAUDE.md, skills, MCP, and the scars that shaped it.",
