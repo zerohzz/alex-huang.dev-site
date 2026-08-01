@@ -57,7 +57,7 @@ Why it is high-signal:
 Key evidence:
 
 - 8-step LWC booking wizard with 14+ sub-components
-- Funhouse API, Stripe, AakPay, AvaTax, and Conga integrations
+- Internal venue API, payment provider, AvaTax, and Conga integrations
 - 200% online revenue growth
 - 69% increase in online conversion
 
@@ -78,9 +78,9 @@ Key evidence:
 - fixed `UNABLE_TO_LOCK_ROW` concurrency failures
 - fixed trigger/flow double-firing and governor limit issues
 
-### WA Health Vaccine Management
+### State Vaccine Management System
 
-Source: https://alex-huang.dev/posts/project-wa-health-vaccine-management
+Source: https://alex-huang.dev/posts/project-vaccine-management-system
 
 Why it is high-signal:
 
@@ -91,11 +91,11 @@ Key evidence:
 
 - reduced user provisioning from 23 minutes to 3 minutes
 - built 7 flows across distinct system features
-- delivered Apex email services and permission architecture
+- delivered Apex automation and role-based permission architecture
 
-### NSW Police Force Public Assembly Digitisation
+### Public Sector Form Digitisation
 
-Source: https://alex-huang.dev/posts/project-nsw-police-form-digitalisation
+Source: https://alex-huang.dev/posts/project-public-sector-form-digitalisation
 
 Why it is high-signal:
 
@@ -105,7 +105,7 @@ Why it is high-signal:
 Key evidence:
 
 - replaced a paper-based process with an LWC Experience Cloud solution
-- integrated Address Lookup and Google reCAPTCHA
+- composed the portal's existing reusable components rather than rebuilding
 - deployed 180+ metadata components
 
 ### Broader Engineering Capability

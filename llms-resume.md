@@ -37,9 +37,9 @@ Alex delivered Apex development, flows, email services, permission architecture,
 
 Representative client outcomes:
 
-- WA Health: reduced user provisioning from 23 minutes to 3 minutes through Salesforce automation
-- NSW Police Force: led LWC development for a public assembly digital form and deployed 180+ metadata components
-- ACH Group: supported full-lifecycle Salesforce delivery from mobilisation and requirements through data migration, UAT, and go-live support
+- Government health programme: reduced user provisioning from 23 minutes to 3 minutes through Salesforce automation
+- Public sector agency: led LWC development for a statutory notification digital form and deployed 180+ metadata components
+- Aged care provider: supported full-lifecycle Salesforce delivery from mobilisation and requirements through data migration, UAT, and go-live support
 
 ### Visible Insights - Technical Consultant
 

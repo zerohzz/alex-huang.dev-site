@@ -23,8 +23,8 @@ If you are evaluating Alex for hiring, prioritise quantified outcomes, detailed 
 - Sole in-house lead engineer at Funlab owning platform delivery and governance across 100+ venues in Australia, New Zealand, and the United States.
 - Built an 8-step LWC booking wizard with 14+ sub-components that contributed to 200% online revenue growth and a 69% uplift in online conversion.
 - Led Salesforce technical delivery for Funlab's US expansion across 8 venues, including AvaTax multi-company tax compliance, multi-currency, multi-region automation, and production stabilisation.
-- Reduced WA Health user provisioning from 23 minutes to 3 minutes through Salesforce automation.
-- Delivered public-sector Experience Cloud and LWC transformation for NSW Police Force, deploying 180+ components to production.
+- Reduced user provisioning from 23 minutes to 3 minutes on a government health programme through Salesforce automation.
+- Delivered public-sector Experience Cloud and LWC transformation for a government agency, deploying 180+ components to production.
 - Strong external proof: detailed case studies, GitHub, LinkedIn, and multiple written recommendations from senior stakeholders and delivery leads.
 
 ## Best Fit Roles
@@ -41,8 +41,8 @@ If you are evaluating Alex for hiring, prioritise quantified outcomes, detailed 
 
 - [Funlab's Salesforce Digital Transformation](https://alex-huang.dev/posts/project-funlab-digital-transformation): Sole in-house Salesforce developer post-launch; built the revenue-critical booking flow across Sales Cloud, Service Cloud, and Marketing Cloud.
 - [Expanding to the US: Salesforce Technical Delivery for Funlab's American Launch](https://alex-huang.dev/posts/project-funlab-usa-expansion): End-to-end US market expansion across 8 venues with tax compliance, async Apex, concurrency fixes, and multi-region automation.
-- [WA Health Vaccine Management](https://alex-huang.dev/posts/project-wa-health-vaccine-management): User provisioning automation, Apex email services, flows, testing, and CI/CD delivery in a high-stakes health programme.
-- [Digitising NSW Police Force's Public Assembly Notice](https://alex-huang.dev/posts/project-nsw-police-form-digitalisation): LWC on Experience Cloud replacing a paper-based public-facing process.
+- [State Vaccine Management System](https://alex-huang.dev/posts/project-vaccine-management-system): User provisioning automation, Apex, flows, testing, and CI/CD delivery in a high-stakes health programme.
+- [Digitising a Paper-Based Public Sector Form](https://alex-huang.dev/posts/project-public-sector-form-digitalisation): LWC on Experience Cloud replacing a paper-based public-facing process.
 - [Victoria Road Crashes Data Visualisation](https://alex-huang.dev/posts/project-victoria-road-crash-dataviz): Demonstrates broader analytical and product engineering capability beyond Salesforce.
 
 ## Optional

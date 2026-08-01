@@ -38,7 +38,7 @@
         "end": "Present",
         "summary": "Sole in-house Salesforce engineer owning a 60+ venue platform across AU, NZ, and the US — delivering the LWC booking wizard that drove 200% revenue growth and leading 55 sprint releases over 26 months",
         "highlights": [
-          "Salesforce Platform Engineering: Sole in-house Senior/Lead Salesforce Engineer owning end-to-end delivery and technical governance of a business-critical Salesforce platform supporting 100+ venues across AU, NZ, and the US. Lead development across an 8-step LWC function-booking wizard (14+ sub-components), Apex trigger frameworks, asynchronous Apex (Queueable, @future, Batch), governor-limit optimisation, bulkification, Flow automation, and REST integrations spanning AvaTax, Stripe/AAkPay, and Funlab's proprietary booking stack.",
+          "Salesforce Platform Engineering: Sole in-house Senior/Lead Salesforce Engineer owning end-to-end delivery and technical governance of a business-critical Salesforce platform supporting 100+ venues across AU, NZ, and the US. Lead development across an 8-step LWC function-booking wizard (14+ sub-components), Apex trigger frameworks, asynchronous Apex (Queueable, @future, Batch), governor-limit optimisation, bulkification, Flow automation, and REST integrations spanning AvaTax, multiple payment providers, and an internal proprietary booking stack.",
           "DevOps & Release Engineering: Maintained Azure DevOps CI/CD pipelines using SFDX Git Delta to support reliable delta deployments across Dev, QA, UAT, and Production, enabling a sustained fortnightly release cadence across a multi-org Salesforce estate (led 55 successfully sprint releases over 26 months).",
           "Technical Leadership & Platform Resilience: Delivered critical initiatives supporting US expansion, AvaTax tax compliance, connected booking experiences, and omni-channel operational improvements. Led production support, incident response, and remediation across 1,000+ service requests, including revenue-critical hotfixes, payment processing stabilisation, payment reminder Batch Apex automation, and multi-region SFMC trigger repairs across AU, NZ, and the US.",
           "Engineering Enablement, Quality & Governance: Engineered sandbox lifecycle automation tooling and built reusable technical assets including an Apex script repository, SOQL query library, and onboarding guides, reducing ramp-up time by 40%. Independently designed and delivered a greenfield Playwright automation framework, augmented by agentic AI workflows and governance policy, covering Salesforce LWC components and the public booking experience—materially reducing manual regression effort and improving release confidence."
@@ -51,7 +51,7 @@
         "location": "Sydney – Melbourne, Australia",
         "start": "Mar 2021",
         "end": "Jun 2023",
-        "summary": "Delivered full-cycle Salesforce implementations across NSW Police Force, WA Health, and ACH Group — spanning Apex development, data migration, client workshops, and go-live support in an Agile consulting environment",
+        "summary": "Delivered full-cycle Salesforce implementations across public sector, government health, and aged care clients — spanning Apex development, data migration, client workshops, and go-live support in an Agile consulting environment",
         "highlights": [
           "Salesforce Development & Configuration: Delivered Apex development, Flows, Email Services, Custom Objects, Custom Metadata, and Permission Set architecture across multiple client engagements — alongside data migration and cleansing via Salesforce Data Loader.",
           "DevOps & CI/CD: Managed feature branch workflows, pull requests, and peer code reviews in Git — resolving merge conflicts and defects to maintain release integrity across parallel workstreams in a structured Agile delivery environment.",
@@ -180,19 +180,19 @@
         "url": "https://alex-huang.dev/posts/project-funlab-digital-transformation/"
       },
       {
-        "name": "NSW Police Force — Form Digital Transformation",
-        "context": "Deloitte Digital (Client: NSW Police Force)",
+        "name": "Public Sector — Form Digital Transformation",
+        "context": "Deloitte Digital (Public Sector Client)",
         "start": "Dec 2022",
         "end": "Apr 2023",
-        "summary": "Digitised the NSW Police Force's public assembly permit process — replacing paper forms with an LWC Experience Cloud solution and deploying 180+ components to production.",
+        "summary": "Digitised a paper-based statutory notification process for a government agency — replacing paper forms with an LWC Experience Cloud solution and deploying 180+ components to production.",
         "keyMetrics": [
           "180+ components",
-          "NSW Police Force"
+          "Experience Cloud"
         ],
         "details": [
-          "Led as main developer to digitise the NSW Police Force's Notice to Hold a Public Assembly — replacing paper-based forms with an LWC digital form embedded in the existing Salesforce Experience Cloud community portal.",
-          "Built the LWC form body integrating existing components (Google reCAPTCHA, Address Lookup) and connecting to Salesforce custom objects, ensuring data integrity and seamless portal user experience.",
-          "Successfully deployed 180+ components via Change Set Deployment, managing git feature branches and pull requests throughout the build — then conducted smoke testing, post-deployment validation, and on-site/remote demo workshops with NSW Police Force stakeholders."
+          "Led as main developer to digitise a paper-based statutory notification process — replacing paper forms with an LWC digital form embedded in the agency's existing Salesforce Experience Cloud community portal.",
+          "Built the LWC form body by composing the portal's existing reusable components and connecting to Salesforce custom objects, ensuring data integrity and a seamless portal user experience.",
+          "Successfully deployed 180+ components via Change Set Deployment, managing git feature branches and pull requests throughout the build — then conducted smoke testing, post-deployment validation, and on-site/remote demo workshops with agency stakeholders."
         ],
         "tags": [
           "LWC",
@@ -200,34 +200,34 @@
           "Change Sets",
           "Public Sector"
         ],
-        "url": "https://alex-huang.dev/posts/project-nsw-police-form-digitalisation/"
+        "url": "https://alex-huang.dev/posts/project-public-sector-form-digitalisation/"
       },
       {
-        "name": "WA Health — Vaccine Management System",
-        "context": "Deloitte Digital (Client: WA Health)",
+        "name": "State Health — Vaccine Management System",
+        "context": "Deloitte Digital (Government Health Client)",
         "start": "Jan 2022",
         "end": "Aug 2022",
-        "summary": "Cut user account provisioning from 23 to 3 minutes through Salesforce automation — delivering across Apex Email Services, Flows, Permission Sets, and Azure CI/CD pipelines.",
+        "summary": "Cut user account provisioning from 23 to 3 minutes through Salesforce automation — delivering across Apex, Flows, Permission Sets, and Azure CI/CD pipelines.",
         "keyMetrics": [
           "23 to 3 minutes"
         ],
         "details": [
           "Joined the CI/CD stream to design and build User Provisioning automation, reducing manual effort from 23 to 3 minutes per user account.",
-          "Delivered Apex Email Service handlers and test classes, configured Permission Set Groups, created Custom Objects and Custom Metadata, and built 7 flows covering distinctive system features.",
+          "Delivered Apex handlers and test classes, configured role-based permission architecture, created Custom Objects and Custom Metadata, and built 7 flows covering distinctive system features.",
           "Managed feature branch workflows, pull requests, merge conflict resolution, and deployment package maintenance throughout the project lifecycle in a structured Agile delivery environment."
         ],
         "tags": [
           "Apex",
           "Flows",
-          "Email Service",
+          "Automation",
           "DevOps",
           "Healthcare"
         ],
-        "url": "https://alex-huang.dev/posts/project-wa-health-vaccine-management/"
+        "url": "https://alex-huang.dev/posts/project-vaccine-management-system/"
       },
       {
-        "name": "ACH Group — Salesforce Implementation",
-        "context": "Deloitte Digital (Client: ACH Group)",
+        "name": "Aged Care — Salesforce Implementation",
+        "context": "Deloitte Digital (Aged Care Client)",
         "start": "Jun 2021",
         "end": "Nov 2021",
         "summary": "Full-lifecycle Salesforce delivery for an aged care provider — from mobilisation and requirements through data migration, UAT, and go-live support.",
@@ -247,7 +247,7 @@
           "QA",
           "Aged Care"
         ],
-        "url": "https://alex-huang.dev/posts/project-ach-group-salesforce/"
+        "url": "https://alex-huang.dev/posts/project-aged-care-salesforce/"
       }
     ],
     "skills": [
@@ -321,7 +321,7 @@
         "skills": [
           "AvaTax",
           "Stripe",
-          "AakPay",
+          "REST Integrations",
           "Sandbox Management",
           "Salesforce Data Loader"
         ]
@@ -443,7 +443,7 @@
         "name": "Heya Al-Khudairy",
         "title": "Principal, AI Consulting",
         "company": "V2 AI",
-        "relationship": "Functional Lead at VaccinateWA (WA Health)",
+        "relationship": "Functional Lead on the vaccine management program",
         "quote": "In awe of how Alex carries himself in challenging environments — technical depth and stakeholder savvy in one.",
         "linkedinUrl": "https://www.linkedin.com/in/heya-alkhudairy"
       }

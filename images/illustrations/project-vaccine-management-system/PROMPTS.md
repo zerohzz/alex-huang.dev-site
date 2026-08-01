@@ -1,4 +1,4 @@
-# Illustrations — project-wa-health-vaccine-management
+# Illustrations — project-vaccine-management-system
 
 Skill: `zz-material-illustration`. Style: clean Swiss editorial 3D on off-white studio background, site palette, Fraunces/Outfit type, English labels. Generator: `blog-image-hero/scripts/generate.mjs` (APIMART gpt-image-2), `--size 1280x720 --resolution 1k`.
 

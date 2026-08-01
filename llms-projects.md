@@ -16,7 +16,7 @@ Key evidence:
 
 - 8-step LWC booking wizard with 14+ sub-components
 - Sales Cloud, Service Cloud, and Marketing Cloud working as a connected system
-- Live integrations with Funhouse API, Stripe, AakPay, AvaTax, and Conga
+- Live integrations with an internal venue API, payment providers, AvaTax, and Conga
 - 200% online revenue growth
 - 69% increase in online conversion
 - Platform operated across 100+ venues in AU, NZ, and US
@@ -39,9 +39,9 @@ Key evidence:
 - Resolved `UNABLE_TO_LOCK_ROW` concurrency failures
 - Fixed trigger/flow double-firing and governor limit issues
 
-### WA Health Vaccine Management
+### State Vaccine Management System
 
-Link: [https://alex-huang.dev/posts/project-wa-health-vaccine-management](https://alex-huang.dev/posts/project-wa-health-vaccine-management)
+Link: [https://alex-huang.dev/posts/project-vaccine-management-system](https://alex-huang.dev/posts/project-vaccine-management-system)
 
 Why it matters:
 
@@ -52,11 +52,11 @@ Key evidence:
 
 - Reduced user provisioning from 23 minutes to 3 minutes
 - Built 7 flows across distinct system features
-- Delivered Apex email services, permission architecture, and deployment package support
+- Delivered Apex automation, role-based permission architecture, and deployment package support
 
-### Digitising NSW Police Force's Public Assembly Notice
+### Digitising a Paper-Based Public Sector Form
 
-Link: [https://alex-huang.dev/posts/project-nsw-police-form-digitalisation](https://alex-huang.dev/posts/project-nsw-police-form-digitalisation)
+Link: [https://alex-huang.dev/posts/project-public-sector-form-digitalisation](https://alex-huang.dev/posts/project-public-sector-form-digitalisation)
 
 Why it matters:
 
@@ -66,7 +66,7 @@ Why it matters:
 Key evidence:
 
 - Replaced a paper-based process with an LWC Experience Cloud solution
-- Integrated Address Lookup and Google reCAPTCHA into the submission flow
+- Composed the portal's existing reusable components rather than rebuilding them
 - Deployed 180+ metadata components to production
 
 ## Broader Capability Beyond Salesforce
