@@ -1,0 +1,274 @@
+{
+ "source": "python-fde-lab.html",
+ "baseline_sha256": "40215d9dc263ae7385b17cb5220e322d8a16398f4dc812422197fa0c5a8e2a21",
+ "totals": {
+  "exercises": 46,
+  "assertions": 276
+ },
+ "exercises": [
+  {
+   "kind": "lesson",
+   "id": "l01",
+   "cases": 4
+  },
+  {
+   "kind": "lesson",
+   "id": "l02",
+   "cases": 5
+  },
+  {
+   "kind": "lesson",
+   "id": "l03",
+   "cases": 4
+  },
+  {
+   "kind": "lesson",
+   "id": "l04",
+   "cases": 4
+  },
+  {
+   "kind": "lesson",
+   "id": "l05",
+   "cases": 4
+  },
+  {
+   "kind": "lesson",
+   "id": "l06",
+   "cases": 6
+  },
+  {
+   "kind": "lesson",
+   "id": "l07",
+   "cases": 5
+  },
+  {
+   "kind": "lesson",
+   "id": "l08",
+   "cases": 4
+  },
+  {
+   "kind": "lesson",
+   "id": "l09",
+   "cases": 6
+  },
+  {
+   "kind": "lesson",
+   "id": "l10",
+   "cases": 6
+  },
+  {
+   "kind": "lesson",
+   "id": "l11",
+   "cases": 6
+  },
+  {
+   "kind": "lesson",
+   "id": "l12",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d01",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d02",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d03",
+   "cases": 7
+  },
+  {
+   "kind": "drill",
+   "id": "d04",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d05",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d06",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d07",
+   "cases": 4
+  },
+  {
+   "kind": "drill",
+   "id": "d08",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d09",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d10",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d11",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d12",
+   "cases": 7
+  },
+  {
+   "kind": "drill",
+   "id": "d13",
+   "cases": 7
+  },
+  {
+   "kind": "drill",
+   "id": "d14",
+   "cases": 6
+  },
+  {
+   "kind": "drill",
+   "id": "d15",
+   "cases": 5
+  },
+  {
+   "kind": "drill",
+   "id": "d16",
+   "cases": 7
+  },
+  {
+   "kind": "drill",
+   "id": "d17",
+   "cases": 8
+  },
+  {
+   "kind": "drill",
+   "id": "d18",
+   "cases": 7
+  },
+  {
+   "kind": "exam",
+   "id": "e1",
+   "cases": 6,
+   "stage": 0,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e1",
+   "cases": 6,
+   "stage": 1,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e1",
+   "cases": 6,
+   "stage": 2,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e1",
+   "cases": 7,
+   "stage": 3,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e2",
+   "cases": 6,
+   "stage": 0,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e2",
+   "cases": 6,
+   "stage": 1,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e2",
+   "cases": 7,
+   "stage": 2,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e3",
+   "cases": 5,
+   "stage": 0,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e3",
+   "cases": 6,
+   "stage": 1,
+   "deps": [
+    0
+   ]
+  },
+  {
+   "kind": "exam",
+   "id": "e3",
+   "cases": 7,
+   "stage": 2,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e4",
+   "cases": 6,
+   "stage": 0,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e4",
+   "cases": 7,
+   "stage": 1,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e4",
+   "cases": 10,
+   "stage": 2,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e5",
+   "cases": 7,
+   "stage": 0,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e5",
+   "cases": 6,
+   "stage": 1,
+   "deps": []
+  },
+  {
+   "kind": "exam",
+   "id": "e5",
+   "cases": 6,
+   "stage": 2,
+   "deps": []
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+
+<div class="eyebrow"><span class="tag">速查</span><span>面试前一晚扫一遍</span></div>
+<h1>速查与打法</h1>
+<p class="lead">这一页不做练习，只放两样东西：临场想不起来的语法，和这一轮到底在考什么。</p>
+
+<h2>怎么用这个练习台</h2>
+<ul>
+<li><b>教程</b>把语法捡回来。每课十分钟，读完就写下面那道小题，别跳。</li>
+<li><b>练习</b>建手感。L1 是语法，L2 是数据处理，L3 是 LLM 工程。按顺序做。</li>
+<li><b>真题</b>练题型。每道题分 3–4 个阶段，<b>不要提前看后面的阶段</b>——真实面试里你看不到。点"开始计时"，逼自己在时限内推进。</li>
+<li>答案默认锁着，需要点两次才展开。看过答案的题会在目录里标成 <span style="color:var(--iris)">○</span>，第二天回来重做。</li>
+<li>这个页面不联网、不调用任何模型。<b>练的时候不要开另一个窗口问 AI</b>——那一轮面试你没有。</li>
+</ul>
+
+<h2>临场最容易卡住的十行</h2>
+<div class="pane"><pre class="demo">from collections import Counter, defaultdict, deque, OrderedDict
+import re, json, itertools, heapq, functools, math, asyncio
+
+counts = Counter(xs).most_common(3)          # top-k
+groups = defaultdict(list); groups[k].append(v)
+win    = deque(maxlen=5)                      # 滑动窗口
+rows.sort(key=lambda r: (-r["n"], r["name"])) # 多级排序
+best   = max(xs, key=len, default=None)       # 空序列不炸
+uniq   = list(dict.fromkeys(xs))              # 保序去重
+parts  = re.findall(r"[a-z0-9]+", s.lower())  # 分词
+merged = {**a, **b}                           # 右边覆盖左边
+pairs  = [(k, v) for k, v in d.items() if v]
+flat   = [x for sub in nested for x in sub]   # 展平一层
+first  = next((x for x in xs if pred(x)), None)</pre></div>
+
+<h2>写给面试官看的四个信号</h2>
+<div class="grid2">
+<div class="stat"><div class="l">类型注解</div><p class="fine" style="margin:8px 0 0">签名上写 <code>def f(rows: list[dict], limit: int = 10) -&gt; dict[str, int]:</code>。三秒钟的事，直接把代码从"脚本"抬到"生产代码"。</p></div>
+<div class="stat"><div class="l">依赖注入</div><p class="fine" style="margin:8px 0 0">时钟、sleep、HTTP 客户端做成构造参数。说一句"这样能测"，比写十行测试更有效。</p></div>
+<div class="stat"><div class="l">边界情况先说</div><p class="fine" style="margin:8px 0 0">动手前口述："空输入、重复键、超长单条、时间戳乱序——我先按这四个来。" 面试官会点头。</p></div>
+<div class="stat"><div class="l">明确取舍</div><p class="fine" style="margin:8px 0 0">"我这里跳过坏行并收集起来，因为这是批处理。如果是转账我会反过来。" 这一句是 FDE 和 SWE 的分界线。</p></div>
+</div>
+
+<h2>FDE 的一轮 45 分钟怎么分</h2>
+<div class="pane"><pre class="demo">0-3   min  澄清。问数据规模、问输入格式、问谁用、问失败了会怎样。
+           把假设写成注释放在文件顶部。
+3-8   min  写签名和数据结构，口述你打算怎么做。不要沉默地敲。
+8-30  min  实现。先跑通最朴素的版本，再优化。
+           每写完一块就说一句这块在干什么。
+30-40 min  自己找边界：空输入、重复、超长、乱序。当场加测试。
+40-45 min  说出你没做的部分和为什么。"如果给我多一小时，我会加 X。"</pre></div>
+<div class="note"><b>最常见的死法</b>不是写不出来，是<b>沉默地写</b>。面试官打不出分。哪怕卡住了也要说："我在想用 dict 还是 heap，dict 更简单我先用 dict。"</div>
+
+<h2>这个岗位的编码轮和 LeetCode 不一样</h2>
+<ul>
+<li>题目通常<b>分阶段追加需求</b>，逼你重构前面写的代码。第一阶段的可扩展性比速度重要。</li>
+<li>数据是<b>脏的</b>：缺字段、类型混乱、编码乱、时间戳乱序。处理脏数据的判断力就是分数。</li>
+<li>还有一轮<b>模糊案例题</b>：客户扔一个含糊的问题，你要拆成方案。这一轮权重最高、通过率最低，而且不写代码。</li>
+<li>所以别把全部时间投在刷算法题上。把 Python 练到"不用查文档就能流畅写"，然后去练拆解和沟通。</li>
+</ul>
+
+<h2>面试当天的三条</h2>
+<ul>
+<li>先把函数签名和 <code>return</code> 的形状写出来，再填中间。这样任何时候被打断都有能跑的东西。</li>
+<li>不确定库函数的确切名字就说出来："这里我要一个稳定排序，标准库里应该是 sorted，我先这么写。" 面试官通常会直接告诉你。</li>
+<li>最后五分钟留给自我批评。主动说出你代码里的弱点，比让面试官发现好得多。</li>
+</ul>

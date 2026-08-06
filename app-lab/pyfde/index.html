@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PY/FDE LAB — Python 面试练习台</title>
+<script>
+  // coi-serviceworker config. On hosts that can't send COOP/COEP (GitHub
+  // Pages), the service worker injects them so the instant interrupt works.
+  // It self-detects: when the server already sends the headers (serve.py),
+  // crossOriginIsolated is true and nothing registers. All assets are
+  // same-origin, so require-corp is forced (no credentialless double-reload).
+  // Tests can suppress registration with ?nocoi=1.
+  window.coi = {
+    coepCredentialless: () => false,
+    shouldRegister: () => !new URLSearchParams(window.location.search).has("nocoi"),
+  };
+</script>
+<script src="coi-serviceworker.min.js"></script>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+<script>
+  // Apply the stored theme before first paint to avoid a flash.
+  try {
+    var s = JSON.parse(localStorage.getItem("pyfde.v2") || "{}");
+    var t = s.settings && s.settings.theme;
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<header id="rail">
+  <button class="btn ghost" id="sidetoggle" aria-label="切换目录" aria-expanded="true">☰</button>
+  <div class="brand">PY<small>/</small>FDE LAB<small>本地练习台 · 无 AI</small></div>
+  <nav id="modes" aria-label="模式">
+    <button class="mode" data-mode="learn" aria-current="true">教程</button>
+    <button class="mode" data-mode="drill" aria-current="false">练习</button>
+    <button class="mode" data-mode="exam" aria-current="false">真题</button>
+    <button class="mode" data-mode="ref" aria-current="false">速查</button>
+  </nav>
+  <button class="btn ghost" id="themetoggle" aria-label="切换到浅色主题">主题</button>
+  <div id="status">
+    <span class="lamp warm" id="lamp"></span><span id="statustext">正在启动 Python…</span>
+  </div>
+  <span id="a11y-status" class="sr-only" role="status"></span>
+</header>
+<div id="loadbar" aria-hidden="true"></div>
+
+<div id="shell">
+  <aside id="side" aria-label="目录"></aside>
+  <main id="main"></main>
+</div>
+
+<noscript><p style="padding:80px 20px">这个练习台需要 JavaScript 才能运行。</p></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+[
+ {
+  "id": "d01",
+  "level": 1,
+  "title": "展平任意深度的嵌套列表",
+  "tag": "递归",
+  "prompt": "写 <code>flatten(xs)</code>：把任意深度嵌套的 list 压成一维 list，顺序不变。只有 <code>list</code> 算作要展开的容器（tuple、str 都当成普通元素）。",
+  "starter": "def flatten(xs):\n    ...\n",
+  "tests": "check_eq(\"两层\", lambda: flatten([1,[2,3],4]), [1,2,3,4])\ncheck_eq(\"深层\", lambda: flatten([1,[2,[3,[4]]]]), [1,2,3,4])\ncheck_eq(\"空的内层\", lambda: flatten([[],[1],[]]), [1])\ncheck_eq(\"字符串不拆\", lambda: flatten([\"ab\",[\"cd\"]]), [\"ab\",\"cd\"])\ncheck_eq(\"tuple 不拆\", lambda: flatten([(1,2),[3]]), [(1,2),3])\ncheck_eq(\"空输入\", lambda: flatten([]), [])",
+  "hints": [
+   "递归：遇到 list 就把递归结果 <code>extend</code> 进去，否则 <code>append</code>。",
+   "用 <code>isinstance(x, list)</code> 判断，不要用 <code>type(x) == list</code>。"
+  ],
+  "solution": "def flatten(xs):\n    out = []\n    for x in xs:\n        if isinstance(x, list):\n            out.extend(flatten(x))\n        else:\n            out.append(x)\n    return out"
+ },
+ {
+  "id": "d02",
+  "level": 1,
+  "title": "深度合并两个字典",
+  "tag": "dict / 递归",
+  "prompt": "写 <code>deep_merge(a, b)</code>：返回新 dict。<br>· 两边都是 dict 的键 → 递归合并<br>· 两边都是数字的键 → 相加<br>· 其他冲突 → 用 <code>b</code> 的值<br>不修改 <code>a</code> 和 <code>b</code>。",
+  "starter": "def deep_merge(a, b):\n    ...\n",
+  "tests": "check_eq(\"数字相加\", lambda: deep_merge({\"x\":1},{\"x\":2}), {\"x\":3})\ncheck_eq(\"嵌套递归\", lambda: deep_merge({\"u\":{\"in\":1,\"out\":2}},{\"u\":{\"in\":5}}), {\"u\":{\"in\":6,\"out\":2}})\ncheck_eq(\"b 覆盖非数字\", lambda: deep_merge({\"n\":\"a\"},{\"n\":\"b\"}), {\"n\":\"b\"})\ncheck_eq(\"类型不同用 b\", lambda: deep_merge({\"k\":1},{\"k\":\"s\"}), {\"k\":\"s\"})\ncheck_eq(\"互不相干的键都保留\", lambda: deep_merge({\"a\":1},{\"b\":2}), {\"a\":1,\"b\":2})\n\n@case(\"不修改输入\")\ndef _():\n    a = {\"u\": {\"in\": 1}}\n    deep_merge(a, {\"u\": {\"in\": 1}})\n    assert a == {\"u\": {\"in\": 1}}, \"a 被改了\"",
+  "hints": [
+   "<code>bool</code> 也是 <code>int</code> 的子类，用 <code>isinstance(v, (int, float)) and not isinstance(v, bool)</code> 更严谨。",
+   "先 <code>out = dict(a)</code>，然后只遍历 <code>b</code> 的键。"
+  ],
+  "solution": "def _num(v):\n    return isinstance(v, (int, float)) and not isinstance(v, bool)\n\ndef deep_merge(a, b):\n    out = dict(a)\n    for k, bv in b.items():\n        if k not in out:\n            out[k] = bv\n        elif isinstance(out[k], dict) and isinstance(bv, dict):\n            out[k] = deep_merge(out[k], bv)\n        elif _num(out[k]) and _num(bv):\n            out[k] = out[k] + bv\n        else:\n            out[k] = bv\n    return out"
+ },
+ {
+  "id": "d03",
+  "level": 1,
+  "title": "解析 key=value 配置串",
+  "tag": "字符串",
+  "prompt": "写 <code>parse_kv(s)</code>：解析 <code>\"model=opus; temp=0.7 ;stream=true;tags=a,b\"</code> 这种串，返回 dict。<br>· 用 <code>;</code> 分段，段内第一个 <code>=</code> 分键值，键值各自去首尾空白<br>· <code>\"true\"</code>/<code>\"false\"</code>（忽略大小写）转成 bool；纯整数转 int；能转 float 的转 float；否则保持字符串<br>· 忽略空段；没有 <code>=</code> 的段抛 <code>ValueError</code>",
+  "starter": "def parse_kv(s):\n    ...\n",
+  "tests": "check_eq(\"综合\", lambda: parse_kv(\"model=opus; temp=0.7 ;stream=true\"),\n         {\"model\":\"opus\",\"temp\":0.7,\"stream\":True})\ncheck_eq(\"整数\", lambda: parse_kv(\"n=10\"), {\"n\":10})\ncheck_eq(\"False 忽略大小写\", lambda: parse_kv(\"f=FALSE\"), {\"f\":False})\ncheck_eq(\"值里有等号只切第一个\", lambda: parse_kv(\"q=a=b\"), {\"q\":\"a=b\"})\ncheck_eq(\"忽略空段\", lambda: parse_kv(\"a=1;;b=2;\"), {\"a\":1,\"b\":2})\ncheck_eq(\"空串\", lambda: parse_kv(\"\"), {})\n\n@case(\"没有等号要抛 ValueError\")\ndef _():\n    try:\n        parse_kv(\"oops\")\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+  "hints": [
+   "<code>seg.split(\"=\", 1)</code> 的第二个参数限制只切一次。",
+   "转换顺序很重要：先 bool，再 int，再 float，最后原样返回。<code>\"10\"</code> 要变成 int 不是 float。"
+  ],
+  "solution": "def _coerce(v):\n    low = v.lower()\n    if low == \"true\":\n        return True\n    if low == \"false\":\n        return False\n    try:\n        return int(v)\n    except ValueError:\n        pass\n    try:\n        return float(v)\n    except ValueError:\n        return v\n\ndef parse_kv(s):\n    out = {}\n    for seg in s.split(\";\"):\n        seg = seg.strip()\n        if not seg:\n            continue\n        if \"=\" not in seg:\n            raise ValueError(f\"missing '=' in segment: {seg!r}\")\n        k, v = seg.split(\"=\", 1)\n        out[k.strip()] = _coerce(v.strip())\n    return out"
+ },
+ {
+  "id": "d04",
+  "level": 1,
+  "title": "括号匹配，并报出错位置",
+  "tag": "栈",
+  "prompt": "写 <code>check_brackets(s)</code>：检查 <code>()[]{}</code> 是否配对。<br>· 全部配对 → 返回 <code>None</code><br>· 多余的右括号 → 返回它的下标<br>· 有未闭合的左括号 → 返回<b>最后一个</b>未闭合左括号的下标<br>· 类型不匹配（如 <code>\"(]\"</code>）→ 返回右括号的下标<br>非括号字符忽略。",
+  "starter": "def check_brackets(s):\n    ...\n",
+  "tests": "check_eq(\"正常\", lambda: check_brackets(\"a(b[c]{d})\"), None)\ncheck_eq(\"空串\", lambda: check_brackets(\"\"), None)\ncheck_eq(\"多余右括号\", lambda: check_brackets(\"()) \"), 2)\ncheck_eq(\"类型不匹配\", lambda: check_brackets(\"(]\"), 1)\ncheck_eq(\"未闭合取最后一个\", lambda: check_brackets(\"(a[b\"), 2)\ncheck_eq(\"全是未闭合\", lambda: check_brackets(\"((\"), 1)",
+  "hints": [
+   "栈里存 <code>(下标, 字符)</code> 而不是只存字符——报位置需要下标。",
+   "走完之后栈非空说明有未闭合，取 <code>stack[-1]</code> 的下标。"
+  ],
+  "solution": "PAIRS = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n\ndef check_brackets(s):\n    stack = []\n    for i, ch in enumerate(s):\n        if ch in \"([{\":\n            stack.append((i, ch))\n        elif ch in PAIRS:\n            if not stack or stack[-1][1] != PAIRS[ch]:\n                return i\n            stack.pop()\n    if stack:\n        return stack[-1][0]\n    return None"
+ },
+ {
+  "id": "d05",
+  "level": 1,
+  "title": "合并重叠区间",
+  "tag": "排序",
+  "prompt": "写 <code>merge_intervals(spans)</code>：<code>spans</code> 是 <code>(start, end)</code> 列表，可能乱序、可能重叠。返回按起点升序排好的、互不重叠的区间列表。<b>相邻但不重叠的区间要合并</b>（<code>(1,2)</code> 和 <code>(2,3)</code> 合成 <code>(1,3)</code>）。",
+  "starter": "def merge_intervals(spans):\n    ...\n",
+  "tests": "check_eq(\"重叠\", lambda: merge_intervals([(1,3),(2,6),(8,10)]), [(1,6),(8,10)])\ncheck_eq(\"乱序\", lambda: merge_intervals([(8,10),(1,3)]), [(1,3),(8,10)])\ncheck_eq(\"首尾相接要合并\", lambda: merge_intervals([(1,2),(2,3)]), [(1,3)])\ncheck_eq(\"完全包含\", lambda: merge_intervals([(1,10),(2,3)]), [(1,10)])\ncheck_eq(\"空\", lambda: merge_intervals([]), [])\ncheck_eq(\"单个\", lambda: merge_intervals([(5,7)]), [(5,7)])",
+  "hints": [
+   "先按起点排序，问题就变成一次线性扫描。",
+   "当前区间的起点 <code>&lt;=</code> 上一个区间的终点就合并，终点取 <code>max</code>。"
+  ],
+  "solution": "def merge_intervals(spans):\n    if not spans:\n        return []\n    out = []\n    for start, end in sorted(spans):\n        if out and start <= out[-1][1]:\n            out[-1] = (out[-1][0], max(out[-1][1], end))\n        else:\n            out.append((start, end))\n    return out"
+ },
+ {
+  "id": "d06",
+  "level": 1,
+  "title": "滑动窗口平均值",
+  "tag": "deque",
+  "prompt": "写 <code>rolling_mean(xs, n)</code>：返回每个位置<b>往前看最多 n 个元素</b>的平均值列表，长度和 <code>xs</code> 一致。前几个不足 n 个就用现有的算。结果保留 4 位小数（<code>round(v, 4)</code>）。<code>n &lt; 1</code> 抛 <code>ValueError</code>。",
+  "starter": "from collections import deque\n\ndef rolling_mean(xs, n):\n    ...\n",
+  "tests": "check_eq(\"n=2\", lambda: rolling_mean([1,2,3,4], 2), [1.0,1.5,2.5,3.5])\ncheck_eq(\"n=1 就是原值\", lambda: rolling_mean([5,6], 1), [5.0,6.0])\ncheck_eq(\"n 大于长度\", lambda: rolling_mean([2,4], 10), [2.0,3.0])\ncheck_eq(\"空\", lambda: rolling_mean([], 3), [])\ncheck_eq(\"四舍五入到 4 位\", lambda: rolling_mean([1,2,2], 3), [1.0,1.5,1.6667])\n\n@case(\"n=0 抛 ValueError\")\ndef _():\n    try:\n        rolling_mean([1], 0)\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+  "hints": [
+   "<code>deque(maxlen=n)</code> 会自动把超出的旧元素挤掉，不用自己 pop。",
+   "进阶：维护一个 running sum 可以做到 O(n) 而不是 O(n·k)——面试时说出这一点。"
+  ],
+  "solution": "from collections import deque\n\ndef rolling_mean(xs, n):\n    if n < 1:\n        raise ValueError(\"n must be >= 1\")\n    win = deque(maxlen=n)\n    total = 0.0\n    out = []\n    for x in xs:\n        if len(win) == n:\n            total -= win[0]\n        win.append(x)\n        total += x\n        out.append(round(total / len(win), 4))\n    return out"
+ },
+ {
+  "id": "d07",
+  "level": 2,
+  "title": "清洗一批脏记录",
+  "tag": "脏数据",
+  "prompt": "写 <code>clean(rows)</code>：<code>rows</code> 是一堆 dict，字段可能缺失、类型混乱、有多余空白。返回 <code>(clean_rows, report)</code>。<br>\n清洗规则：<code>name</code> 去首尾空白并转小写，缺失或清洗后为空 → 丢弃，原因 <code>\"no name\"</code>；<code>amount</code> 去掉 <code>$</code> 和 <code>,</code> 后转 float，转不了 → 丢弃，原因 <code>\"bad amount\"</code>；<code>amount</code> 为负 → 丢弃，原因 <code>\"negative\"</code>。<br>\n<code>report</code> 是 <code>{原因: 条数}</code>，只包含真的出现过的原因。输出行只保留 <code>name</code> 和 <code>amount</code> 两个键。",
+  "starter": "def clean(rows):\n    ...\n",
+  "tests": "ROWS = [\n    {\"name\": \" Ann \", \"amount\": \"$1,200.50\"},\n    {\"name\": \"\", \"amount\": \"5\"},\n    {\"amount\": \"5\"},\n    {\"name\": \"bob\", \"amount\": \"oops\"},\n    {\"name\": \"cy\", \"amount\": -3},\n    {\"name\": \"dee\", \"amount\": 7},\n]\nok, rep = clean(ROWS)\ncheck_eq(\"清洗结果\", lambda: ok, [{\"name\":\"ann\",\"amount\":1200.5},{\"name\":\"dee\",\"amount\":7.0}])\ncheck_eq(\"报告\", lambda: rep, {\"no name\":2,\"bad amount\":1,\"negative\":1})\ncheck_eq(\"空输入\", lambda: clean([]), ([], {}))\ncheck_eq(\"只保留两个键\", lambda: clean([{\"name\":\"x\",\"amount\":1,\"extra\":9}])[0], [{\"name\":\"x\",\"amount\":1.0}])",
+  "hints": [
+   "<code>row.get(\"name\")</code> 可能是 None，先 <code>or \"\"</code> 再 strip。",
+   "amount 可能已经是数字，<code>str(v)</code> 一下再统一处理，或者先判 <code>isinstance</code>。",
+   "report 用 <code>rep[why] = rep.get(why, 0) + 1</code>。"
+  ],
+  "solution": "def clean(rows):\n    out, report = [], {}\n\n    def fail(why):\n        report[why] = report.get(why, 0) + 1\n\n    for row in rows:\n        name = str(row.get(\"name\") or \"\").strip().lower()\n        if not name:\n            fail(\"no name\")\n            continue\n        raw = row.get(\"amount\")\n        try:\n            amount = float(str(raw).replace(\"$\", \"\").replace(\",\", \"\").strip())\n        except (ValueError, TypeError):\n            fail(\"bad amount\")\n            continue\n        if amount < 0:\n            fail(\"negative\")\n            continue\n        out.append({\"name\": name, \"amount\": amount})\n    return out, report"
+ },
+ {
+  "id": "d08",
+  "level": 2,
+  "title": "把日志行解析成结构化记录",
+  "tag": "正则 / 聚合",
+  "prompt": "日志格式：<code>\"2026-08-04T09:12:33Z ERROR api.search took=142ms msg=timeout\"</code><br>\n写 <code>parse_logs(lines)</code>，返回 <code>{\"records\": [...], \"by_level\": {...}, \"p50_ms\": float|None}</code>。<br>\n· 每条记录：<code>{\"ts\": str, \"level\": str, \"logger\": str, \"took_ms\": int, \"msg\": str}</code><br>\n· 格式不符（前三段缺失、或 <code>took=</code> 不是整数毫秒）的行整条跳过<br>\n· <code>msg=</code> 之后的内容<b>全部</b>算 msg（可能带空格）；没有 <code>msg=</code> 则为 <code>\"\"</code><br>\n· <code>by_level</code> 是各级别条数；<code>p50_ms</code> 是 took 的中位数（偶数个取<b>较小</b>的中间值），无记录时为 <code>None</code>",
+  "starter": "import re\n\ndef parse_logs(lines):\n    ...\n",
+  "tests": "L = [\n \"2026-08-04T09:12:33Z ERROR api.search took=142ms msg=timeout after 3 tries\",\n \"2026-08-04T09:12:34Z INFO api.health took=2ms\",\n \"garbage line\",\n \"2026-08-04T09:12:35Z ERROR api.search took=NAms msg=x\",\n \"2026-08-04T09:12:36Z INFO api.search took=40ms msg=ok\",\n]\nr = parse_logs(L)\ncheck_eq(\"记录条数\", lambda: len(r[\"records\"]), 3)\ncheck_eq(\"第一条\", lambda: r[\"records\"][0],\n  {\"ts\":\"2026-08-04T09:12:33Z\",\"level\":\"ERROR\",\"logger\":\"api.search\",\"took_ms\":142,\"msg\":\"timeout after 3 tries\"})\ncheck_eq(\"没有 msg 时为空串\", lambda: r[\"records\"][1][\"msg\"], \"\")\ncheck_eq(\"按级别聚合\", lambda: r[\"by_level\"], {\"ERROR\":1,\"INFO\":2})\ncheck_eq(\"中位数取较小的中间值\", lambda: r[\"p50_ms\"], 40)\ncheck_eq(\"空输入\", lambda: parse_logs([]), {\"records\":[],\"by_level\":{},\"p50_ms\":None})",
+  "hints": [
+   "一个正则搞定：<code>r\"^(\\S+) (\\S+) (\\S+) took=(\\d+)ms(?: msg=(.*))?$\"</code>。",
+   "没有匹配到的分组是 <code>None</code>，用 <code>m.group(5) or \"\"</code>。",
+   "中位数取较小中间值：排序后 <code>vals[(len(vals) - 1) // 2]</code>。"
+  ],
+  "solution": "import re\n\nPAT = re.compile(r\"^(\\S+) (\\S+) (\\S+) took=(\\d+)ms(?: msg=(.*))?$\")\n\ndef parse_logs(lines):\n    records, by_level = [], {}\n    for line in lines:\n        m = PAT.match(line.strip())\n        if not m:\n            continue\n        rec = {\n            \"ts\": m.group(1),\n            \"level\": m.group(2),\n            \"logger\": m.group(3),\n            \"took_ms\": int(m.group(4)),\n            \"msg\": m.group(5) or \"\",\n        }\n        records.append(rec)\n        by_level[rec[\"level\"]] = by_level.get(rec[\"level\"], 0) + 1\n    vals = sorted(r[\"took_ms\"] for r in records)\n    p50 = vals[(len(vals) - 1) // 2] if vals else None\n    return {\"records\": records, \"by_level\": by_level, \"p50_ms\": p50}"
+ },
+ {
+  "id": "d09",
+  "level": 2,
+  "title": "把嵌套 JSON 压成点号路径",
+  "tag": "递归",
+  "prompt": "写 <code>flatten_json(obj, sep=\".\")</code>：把嵌套结构压成一层，键是路径。<br>\n· dict → <code>\"a.b\"</code>；list → 用下标 <code>\"a.0\"</code><br>\n· 空 dict / 空 list 保留成叶子（值就是 <code>{}</code> / <code>[]</code>）<br>\n· 顶层就是标量时返回 <code>{\"\": 值}</code>",
+  "starter": "def flatten_json(obj, sep=\".\"):\n    ...\n",
+  "tests": "check_eq(\"嵌套 dict\", lambda: flatten_json({\"a\":{\"b\":1,\"c\":2}}), {\"a.b\":1,\"a.c\":2})\ncheck_eq(\"list 用下标\", lambda: flatten_json({\"xs\":[10,20]}), {\"xs.0\":10,\"xs.1\":20})\ncheck_eq(\"混合\", lambda: flatten_json({\"a\":[{\"b\":1}]}), {\"a.0.b\":1})\ncheck_eq(\"空容器是叶子\", lambda: flatten_json({\"a\":{},\"b\":[]}), {\"a\":{},\"b\":[]})\ncheck_eq(\"自定义分隔符\", lambda: flatten_json({\"a\":{\"b\":1}}, sep=\"/\"), {\"a/b\":1})\ncheck_eq(\"顶层标量\", lambda: flatten_json(5), {\"\":5})",
+  "hints": [
+   "写一个内部递归函数 <code>walk(node, prefix)</code>，把结果写进外层的 <code>out</code>。",
+   "拼前缀：<code>prefix + sep + key if prefix else key</code>。",
+   "非空 dict / 非空 list 才继续递归，其他一律当叶子。"
+  ],
+  "solution": "def flatten_json(obj, sep=\".\"):\n    out = {}\n\n    def walk(node, prefix):\n        if isinstance(node, dict) and node:\n            for k, v in node.items():\n                walk(v, prefix + sep + str(k) if prefix else str(k))\n        elif isinstance(node, list) and node:\n            for i, v in enumerate(node):\n                walk(v, prefix + sep + str(i) if prefix else str(i))\n        else:\n            out[prefix] = node\n\n    walk(obj, \"\")\n    return out"
+ },
+ {
+  "id": "d10",
+  "level": 2,
+  "title": "手写 LRU 缓存",
+  "tag": "必考",
+  "prompt": "实现 <code>class LRU</code>：<br>\n· <code>LRU(capacity)</code>，容量 &lt; 1 抛 <code>ValueError</code><br>\n· <code>get(key, default=None)</code>：命中则把该键标记为最近使用<br>\n· <code>put(key, value)</code>：满了就淘汰最久未使用的；已存在的键更新值并标记为最近使用<br>\n· <code>keys()</code> 返回按<b>最久未使用 → 最近使用</b>排列的键列表<br>\n不许用 <code>functools.lru_cache</code>。",
+  "starter": "class LRU:\n    def __init__(self, capacity):\n        ...\n",
+  "tests": "@case(\"基本读写\")\ndef _():\n    c = LRU(2); c.put(\"a\",1); c.put(\"b\",2)\n    assert c.get(\"a\") == 1 and c.get(\"b\") == 2\n\n@case(\"淘汰最久未使用\")\ndef _():\n    c = LRU(2); c.put(\"a\",1); c.put(\"b\",2); c.put(\"c\",3)\n    assert c.get(\"a\") is None, \"a 应该被淘汰\"\n    assert c.keys() == [\"b\",\"c\"], c.keys()\n\n@case(\"get 会刷新使用顺序\")\ndef _():\n    c = LRU(2); c.put(\"a\",1); c.put(\"b\",2)\n    c.get(\"a\")\n    c.put(\"c\",3)\n    assert c.get(\"b\") is None, \"b 才应该被淘汰\"\n    assert c.keys() == [\"a\",\"c\"], c.keys()\n\n@case(\"更新已有键不增加容量\")\ndef _():\n    c = LRU(2); c.put(\"a\",1); c.put(\"b\",2); c.put(\"a\",9)\n    assert c.keys() == [\"b\",\"a\"] and c.get(\"a\") == 9, c.keys()\n\n@case(\"default 参数\")\ndef _():\n    assert LRU(1).get(\"nope\", \"fallback\") == \"fallback\"\n\n@case(\"容量 0 抛 ValueError\")\ndef _():\n    try:\n        LRU(0)\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+  "hints": [
+   "<code>OrderedDict</code> 的 <code>move_to_end(k)</code> 和 <code>popitem(last=False)</code> 正好对应这两个动作。",
+   "不用 OrderedDict 也行：普通 dict 从 3.7 起保序，<code>d[k] = d.pop(k)</code> 就能把键移到末尾。",
+   "面试时先说时间复杂度：get 和 put 都是 O(1)。"
+  ],
+  "solution": "from collections import OrderedDict\n\nclass LRU:\n    def __init__(self, capacity):\n        if capacity < 1:\n            raise ValueError(\"capacity must be >= 1\")\n        self.capacity = capacity\n        self._d = OrderedDict()\n\n    def get(self, key, default=None):\n        if key not in self._d:\n            return default\n        self._d.move_to_end(key)\n        return self._d[key]\n\n    def put(self, key, value):\n        if key in self._d:\n            self._d.move_to_end(key)\n        self._d[key] = value\n        if len(self._d) > self.capacity:\n            self._d.popitem(last=False)\n\n    def keys(self):\n        return list(self._d.keys())"
+ },
+ {
+  "id": "d11",
+  "level": 2,
+  "title": "依赖解析（拓扑排序）",
+  "tag": "图",
+  "prompt": "写 <code>resolve(deps)</code>：<code>deps</code> 是 <code>{任务: [它依赖的任务]}</code>。返回一个合法的执行顺序。<br>\n· 同时可执行的任务按<b>名字字母序</b>输出（保证结果唯一）<br>\n· 只出现在依赖列表里、没有自己条目的任务也要算进去<br>\n· 有环 → 抛 <code>ValueError</code>",
+  "starter": "def resolve(deps):\n    ...\n",
+  "tests": "check_eq(\"链式\", lambda: resolve({\"c\":[\"b\"],\"b\":[\"a\"],\"a\":[]}), [\"a\",\"b\",\"c\"])\ncheck_eq(\"并列按字母序\", lambda: resolve({\"z\":[],\"a\":[]}), [\"a\",\"z\"])\ncheck_eq(\"隐式节点\", lambda: resolve({\"b\":[\"a\"]}), [\"a\",\"b\"])\ncheck_eq(\"菱形\", lambda: resolve({\"d\":[\"b\",\"c\"],\"b\":[\"a\"],\"c\":[\"a\"],\"a\":[]}), [\"a\",\"b\",\"c\",\"d\"])\ncheck_eq(\"空\", lambda: resolve({}), [])\n\n@case(\"有环抛 ValueError\")\ndef _():\n    try:\n        resolve({\"a\":[\"b\"],\"b\":[\"a\"]})\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+  "hints": [
+   "Kahn 算法：统计每个节点的入度，把入度为 0 的放进候选集，反复取出。",
+   "要字母序就用 <code>heapq</code> 当候选集，或者每轮 <code>min(candidates)</code>。",
+   "输出长度小于节点总数 = 有环。"
+  ],
+  "solution": "import heapq\n\ndef resolve(deps):\n    nodes = set(deps)\n    for prereqs in deps.values():\n        nodes.update(prereqs)\n\n    indeg = {n: 0 for n in nodes}\n    children = {n: [] for n in nodes}\n    for node, prereqs in deps.items():\n        for p in prereqs:\n            children[p].append(node)\n            indeg[node] += 1\n\n    ready = [n for n in nodes if indeg[n] == 0]\n    heapq.heapify(ready)\n    order = []\n    while ready:\n        n = heapq.heappop(ready)\n        order.append(n)\n        for child in children[n]:\n            indeg[child] -= 1\n            if indeg[child] == 0:\n                heapq.heappush(ready, child)\n\n    if len(order) != len(nodes):\n        raise ValueError(\"cycle detected\")\n    return order"
+ },
+ {
+  "id": "d12",
+  "level": 2,
+  "title": "归并多路有序流",
+  "tag": "生成器 / heapq",
+  "prompt": "写生成器 <code>merge_streams(streams, key=None)</code>：<code>streams</code> 是若干个<b>各自已按 key 升序</b>的可迭代对象（可能是生成器，也可能非常长）。按序产出所有元素。<br>\n· key 相同时，<b>靠前的流优先</b>（稳定）<br>\n· 必须是生成器，不能把所有流都读进内存",
+  "starter": "import heapq\n\ndef merge_streams(streams, key=None):\n    ...\n",
+  "tests": "check_eq(\"两路\", lambda: list(merge_streams([[1,3,5],[2,4]])), [1,2,3,4,5])\ncheck_eq(\"三路含空\", lambda: list(merge_streams([[1],[],[0,2]])), [0,1,2])\ncheck_eq(\"没有流\", lambda: list(merge_streams([])), [])\ncheck_eq(\"带 key\", lambda: list(merge_streams([[(\"a\",1)],[(\"b\",0)]], key=lambda t: t[1])), [(\"b\",0),(\"a\",1)])\ncheck_eq(\"同 key 靠前的流优先\", lambda: list(merge_streams([[\"x\"],[\"y\"]], key=lambda s: 0)), [\"x\",\"y\"])\n\n@case(\"必须是生成器\")\ndef _():\n    import types\n    assert isinstance(merge_streams([[1]]), types.GeneratorType), \"返回的不是生成器\"\n\n@case(\"能处理生成器输入\")\ndef _():\n    g = (i for i in [1,3])\n    h = (i for i in [2,4])\n    assert list(merge_streams([g,h])) == [1,2,3,4]",
+  "hints": [
+   "<code>heapq.merge(*streams, key=key)</code> 一行就够——它本身就是稳定的惰性归并。",
+   "想手写：堆里放 <code>(key值, 流序号, 元素, 迭代器)</code>，流序号做 tie-break 就保证了稳定性。"
+  ],
+  "solution": "import heapq\n\ndef merge_streams(streams, key=None):\n    if key is None:\n        yield from heapq.merge(*streams)\n    else:\n        yield from heapq.merge(*streams, key=key)"
+ },
+ {
+  "id": "d13",
+  "level": 3,
+  "title": "RAG 文本分块器",
+  "tag": "LLM",
+  "prompt": "写 <code>chunk_sentences(sentences, max_chars, overlap)</code>：把句子列表打包成若干 chunk 字符串。<br>\n· 贪心装填：句子用 <code>\" \"</code> 连接，chunk 长度不超过 <code>max_chars</code><br>\n· 开新 chunk 时，把上一个 chunk 的<b>最后 <code>overlap</code> 句</b>带过来做重叠<br>\n· 单句本身超长 → 它自己单独成一个 chunk（允许超长）<br>\n· <code>max_chars &lt; 1</code> 或 <code>overlap &lt; 0</code> → <code>ValueError</code>",
+  "starter": "def chunk_sentences(sentences, max_chars, overlap):\n    ...\n",
+  "tests": "S = [\"aaa\", \"bbb\", \"ccc\", \"ddd\"]\ncheck_eq(\"无重叠\", lambda: chunk_sentences(S, 7, 0), [\"aaa bbb\",\"ccc ddd\"])\ncheck_eq(\"重叠一句\", lambda: chunk_sentences(S, 7, 1), [\"aaa bbb\",\"bbb ccc\",\"ccc ddd\"])\ncheck_eq(\"全装得下\", lambda: chunk_sentences([\"a\",\"b\"], 100, 1), [\"a b\"])\ncheck_eq(\"超长句单独成块\", lambda: chunk_sentences([\"short\",\"x\"*20,\"tail\"], 8, 0), [\"short\",\"x\"*20,\"tail\"])\ncheck_eq(\"空输入\", lambda: chunk_sentences([], 10, 1), [])\n\n@case(\"非法参数抛 ValueError\")\ndef _():\n    for args in [([\"a\"], 0, 1), ([\"a\"], 10, -1)]:\n        try:\n            chunk_sentences(*args)\n        except ValueError:\n            continue\n        assert False, f\"{args} 没有抛 ValueError\"\n\n@case(\"重叠不会造成死循环\")\ndef _():\n    out = chunk_sentences([\"aa\"]*6, 5, 1)\n    assert len(out) < 20, \"疑似死循环\"",
+  "hints": [
+   "维护 <code>cur</code>（当前句子列表）。加一句之前先算 <code>len(\" \".join(cur + [s]))</code> 会不会超。",
+   "超了就把 <code>cur</code> 收成一个 chunk，然后 <code>cur = cur[-overlap:] if overlap else []</code>。",
+   "关键坑：如果重叠部分本身就已经塞满了，加新句还是超——这时候要把重叠丢掉，否则死循环。"
+  ],
+  "solution": "def chunk_sentences(sentences, max_chars, overlap):\n    if max_chars < 1:\n        raise ValueError(\"max_chars must be >= 1\")\n    if overlap < 0:\n        raise ValueError(\"overlap must be >= 0\")\n\n    chunks, cur = [], []\n    for s in sentences:\n        candidate = cur + [s]\n        if cur and len(\" \".join(candidate)) > max_chars:\n            chunks.append(\" \".join(cur))\n            cur = cur[-overlap:] if overlap else []\n            # 重叠部分自己就装不下新句时，放弃重叠\n            if cur and len(\" \".join(cur + [s])) > max_chars:\n                cur = []\n        cur.append(s)\n    if cur:\n        chunks.append(\" \".join(cur))\n    return chunks"
+ },
+ {
+  "id": "d14",
+  "level": 3,
+  "title": "词袋检索 top-k",
+  "tag": "LLM",
+  "prompt": "写 <code>search(docs, query, k)</code>：<code>docs</code> 是 <code>{doc_id: text}</code>。<br>\n· 分词：转小写，按<b>非字母数字</b>切分，丢弃空串<br>\n· 得分：先比<b>命中的不同查询词数量</b>，再比<b>总命中次数</b>，都相同按 <code>doc_id</code> 升序<br>\n· 得分为 0 的文档不返回<br>\n· 返回 <code>[(doc_id, 不同词数, 总次数), ...]</code>，最多 k 条",
+  "starter": "import re\n\ndef search(docs, query, k):\n    ...\n",
+  "tests": "D = {\n \"a\": \"the cat sat on the mat\",\n \"b\": \"cat cat cat\",\n \"c\": \"dogs only here\",\n \"d\": \"a cat and a mat\",\n}\ncheck_eq(\"不同词数优先于总次数\", lambda: search(D, \"cat mat\", 3), [(\"a\",2,2),(\"d\",2,2),(\"b\",1,3)])\ncheck_eq(\"过滤 0 分\", lambda: search(D, \"cat\", 10), [(\"b\",1,3),(\"a\",1,1),(\"d\",1,1)])\ncheck_eq(\"k 截断\", lambda: search(D, \"cat\", 1), [(\"b\",1,3)])\ncheck_eq(\"查询没命中\", lambda: search(D, \"zebra\", 5), [])\ncheck_eq(\"空查询\", lambda: search(D, \"\", 5), [])\ncheck_eq(\"标点也能切开\", lambda: search({\"x\":\"Cat, MAT!\"}, \"cat mat\", 5), [(\"x\",2,2)])",
+  "hints": [
+   "<code>re.findall(r\"[a-z0-9]+\", text.lower())</code> 一步完成小写和切分。",
+   "文档侧用 <code>Counter</code>；查询词去重后遍历，累加命中。",
+   "排序 key：<code>(-distinct, -total, doc_id)</code>。"
+  ],
+  "solution": "import re\nfrom collections import Counter\n\ndef _tok(s):\n    return re.findall(r\"[a-z0-9]+\", s.lower())\n\ndef search(docs, query, k):\n    terms = list(dict.fromkeys(_tok(query)))\n    if not terms:\n        return []\n    scored = []\n    for doc_id, text in docs.items():\n        counts = Counter(_tok(text))\n        hits = [counts[t] for t in terms if counts[t] > 0]\n        if not hits:\n            continue\n        scored.append((doc_id, len(hits), sum(hits)))\n    scored.sort(key=lambda r: (-r[1], -r[2], r[0]))\n    return scored[:k]"
+ },
+ {
+  "id": "d15",
+  "level": 3,
+  "title": "指数退避重试装饰器",
+  "tag": "LLM",
+  "prompt": "写 <code>with_retry(max_attempts=3, base=0.5, retry_on=(Exception,), sleeper=None)</code>，返回一个装饰器。<br>\n· 被装饰函数抛出 <code>retry_on</code> 中的异常就重试，最多总共尝试 <code>max_attempts</code> 次<br>\n· 第 i 次失败后（i 从 0 开始）调用 <code>sleeper(base * 2 ** i)</code>；<code>sleeper</code> 为 None 时用 <code>time.sleep</code><br>\n· 最后一次失败<b>不再 sleep</b>，直接把原异常抛出去<br>\n· 不在 <code>retry_on</code> 里的异常立刻抛出，不重试<br>\n· 用 <code>functools.wraps</code> 保留原函数的 <code>__name__</code>",
+  "starter": "import time, functools\n\ndef with_retry(max_attempts=3, base=0.5, retry_on=(Exception,), sleeper=None):\n    ...\n",
+  "tests": "delays = []\n\n@case(\"第三次成功\")\ndef _():\n    delays.clear()\n    state = {\"n\": 0}\n    @with_retry(max_attempts=3, base=1, sleeper=delays.append)\n    def flaky():\n        state[\"n\"] += 1\n        if state[\"n\"] < 3:\n            raise IOError(\"nope\")\n        return \"ok\"\n    assert flaky() == \"ok\"\n    assert state[\"n\"] == 3, state[\"n\"]\n    assert delays == [1, 2], f\"退避序列不对: {delays}\"\n\n@case(\"耗尽后抛原异常，且不多睡一次\")\ndef _():\n    delays.clear()\n    @with_retry(max_attempts=2, base=1, sleeper=delays.append)\n    def always():\n        raise KeyError(\"boom\")\n    try:\n        always()\n        assert False, \"应该抛出来\"\n    except KeyError:\n        pass\n    assert delays == [1], f\"最后一次不该 sleep: {delays}\"\n\n@case(\"不匹配的异常不重试\")\ndef _():\n    delays.clear()\n    @with_retry(max_attempts=5, base=1, retry_on=(IOError,), sleeper=delays.append)\n    def wrong():\n        raise ValueError(\"different\")\n    try:\n        wrong()\n    except ValueError:\n        pass\n    assert delays == [], \"不该重试\"\n\n@case(\"保留函数名\")\ndef _():\n    @with_retry()\n    def named():\n        return 1\n    assert named.__name__ == \"named\", named.__name__\n\n@case(\"一次成功不 sleep\")\ndef _():\n    delays.clear()\n    @with_retry(sleeper=delays.append)\n    def fine():\n        return 42\n    assert fine() == 42 and delays == []",
+  "hints": [
+   "三层结构：<code>with_retry</code> 返回 <code>deco</code>，<code>deco</code> 返回 <code>wrapper</code>。",
+   "循环 <code>for i in range(max_attempts)</code>，成功就 return；失败时判断 <code>if i == max_attempts - 1: raise</code>。",
+   "把 sleeper 做成参数是为了可测试——面试时主动说这一点，是很强的信号。"
+  ],
+  "solution": "import time, functools\n\ndef with_retry(max_attempts=3, base=0.5, retry_on=(Exception,), sleeper=None):\n    sleep = sleeper if sleeper is not None else time.sleep\n\n    def deco(fn):\n        @functools.wraps(fn)\n        def wrapper(*args, **kwargs):\n            for i in range(max_attempts):\n                try:\n                    return fn(*args, **kwargs)\n                except retry_on:\n                    if i == max_attempts - 1:\n                        raise\n                    sleep(base * 2 ** i)\n        return wrapper\n    return deco"
+ },
+ {
+  "id": "d16",
+  "level": 3,
+  "title": "按 token 预算裁剪对话历史",
+  "tag": "LLM",
+  "prompt": "写 <code>trim(messages, budget, count)</code>：<code>messages</code> 是 <code>{\"role\",\"content\"}</code> 列表，<code>count(text)</code> 返回该文本的 token 数。<br>\n· 第一条如果 <code>role == \"system\"</code>，<b>永远保留</b>，且它先占预算<br>\n· 剩下的预算从<b>最新的消息往回</b>装，装不下就停<br>\n· 返回时恢复原始顺序<br>\n· 如果 system 本身就超预算，只返回 system<br>\n· 不修改输入",
+  "starter": "def trim(messages, budget, count):\n    ...\n",
+  "tests": "n = lambda s: len(s)\nM = [\n {\"role\":\"system\",\"content\":\"S\"},\n {\"role\":\"user\",\"content\":\"11\"},\n {\"role\":\"assistant\",\"content\":\"222\"},\n {\"role\":\"user\",\"content\":\"4444\"},\n]\ncheck_eq(\"从最新往回装\", lambda: [m[\"content\"] for m in trim(M, 8, n)], [\"S\",\"222\",\"4444\"])\ncheck_eq(\"预算刚好只够 system\", lambda: [m[\"content\"] for m in trim(M, 1, n)], [\"S\"])\ncheck_eq(\"system 超预算也保留\", lambda: [m[\"content\"] for m in trim(M, 0, n)], [\"S\"])\ncheck_eq(\"预算充足全保留\", lambda: len(trim(M, 999, n)), 4)\ncheck_eq(\"没有 system\", lambda: [m[\"content\"] for m in trim(M[1:], 7, n)], [\"222\",\"4444\"])\ncheck_eq(\"空输入\", lambda: trim([], 10, n), [])\n\n@case(\"不修改输入\")\ndef _():\n    src = [{\"role\":\"user\",\"content\":\"x\"}]\n    trim(src, 0, n)\n    assert src == [{\"role\":\"user\",\"content\":\"x\"}]",
+  "hints": [
+   "先切出 <code>head</code>（system 或空）和 <code>rest</code>。",
+   "倒序遍历 <code>reversed(rest)</code>，累加 token，超了就 <code>break</code>。",
+   "收集到的是倒序，最后 <code>list(reversed(kept))</code> 再拼上 head。"
+  ],
+  "solution": "def trim(messages, budget, count):\n    if not messages:\n        return []\n    head, rest = [], list(messages)\n    if messages[0][\"role\"] == \"system\":\n        head, rest = [messages[0]], list(messages[1:])\n\n    used = sum(count(m[\"content\"]) for m in head)\n    kept = []\n    for m in reversed(rest):\n        cost = count(m[\"content\"])\n        if used + cost > budget:\n            break\n        used += cost\n        kept.append(m)\n    return head + list(reversed(kept))"
+ },
+ {
+  "id": "d17",
+  "level": 3,
+  "title": "时间窗内的幂等去重",
+  "tag": "流处理",
+  "prompt": "写 <code>dedupe_stream(events, window)</code>：<code>events</code> 是 <code>(ts, key, payload)</code>，按 <code>ts</code> 升序到达。<br>\n· 某个 key 上一次<b>被放行</b>之后的 <code>window</code> 秒内（含边界）再次出现 → 抑制<br>\n· 超过 <code>window</code> 才放行，并<b>刷新</b>该 key 的放行时间<br>\n· 返回放行的事件列表<br>\n· <code>window &lt; 0</code> → <code>ValueError</code>",
+  "starter": "def dedupe_stream(events, window):\n    ...\n",
+  "tests": "E = [(0,\"a\",\"1\"),(3,\"a\",\"2\"),(11,\"a\",\"3\"),(12,\"b\",\"4\"),(21,\"a\",\"5\")]\ncheck_eq(\"窗口 10s\", lambda: [e[2] for e in dedupe_stream(E, 10)], [\"1\",\"3\",\"4\"])\ncheck_eq(\"边界值被抑制\", lambda: [e[2] for e in dedupe_stream([(0,\"a\",\"1\"),(10,\"a\",\"2\")], 10)], [\"1\"])\ncheck_eq(\"超过一秒就放行\", lambda: [e[2] for e in dedupe_stream([(0,\"a\",\"1\"),(11,\"a\",\"2\")], 10)], [\"1\",\"2\"])\ncheck_eq(\"window=0 全放行\", lambda: len(dedupe_stream(E, 0)), 5)\ncheck_eq(\"不同 key 互不影响\", lambda: len(dedupe_stream([(0,\"a\",\"1\"),(0,\"b\",\"2\")], 10)), 2)\ncheck_eq(\"空\", lambda: dedupe_stream([], 5), [])\n\n@case(\"刷新的是放行时间不是到达时间\")\ndef _():\n    got = [e[2] for e in dedupe_stream([(0,\"a\",\"1\"),(9,\"a\",\"2\"),(15,\"a\",\"3\")], 10)]\n    assert got == [\"1\",\"3\"], got\n\n@case(\"负 window 抛 ValueError\")\ndef _():\n    try:\n        dedupe_stream([], -1)\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+  "hints": [
+   "一个 dict <code>last_emitted[key] = ts</code> 就够了。",
+   "抑制条件是 <code>ts - last &lt;= window</code>；注意<b>被抑制的事件不更新时间戳</b>，这正是最后一个测试在查的。"
+  ],
+  "solution": "def dedupe_stream(events, window):\n    if window < 0:\n        raise ValueError(\"window must be >= 0\")\n    last = {}\n    out = []\n    for ts, key, payload in events:\n        if key in last and ts - last[key] <= window:\n            continue\n        last[key] = ts\n        out.append((ts, key, payload))\n    return out"
+ },
+ {
+  "id": "d18",
+  "level": 3,
+  "title": "对比两次 eval，找出回归",
+  "tag": "evals",
+  "prompt": "写 <code>diff_runs(before, after)</code>：两个参数都是 <code>{case_id: bool}</code>（是否通过）。返回：<br>\n<code>{\"regressions\": [...], \"fixes\": [...], \"added\": [...], \"removed\": [...], \"pass_rate_delta\": float}</code><br>\n· <code>regressions</code>：两边都有、从 True 变 False 的 case_id<br>\n· <code>fixes</code>：从 False 变 True<br>\n· <code>added</code> / <code>removed</code>：只在 after / 只在 before 里的<br>\n· 四个列表都按 case_id 升序<br>\n· <code>pass_rate_delta</code> = after 的通过率 − before 的通过率，<code>round(x, 4)</code>；某一边为空则其通过率算 0.0",
+  "starter": "def diff_runs(before, after):\n    ...\n",
+  "tests": "B = {\"t1\":True,\"t2\":True,\"t3\":False,\"t4\":True}\nA = {\"t1\":True,\"t2\":False,\"t3\":True,\"t5\":False}\nr = diff_runs(B, A)\ncheck_eq(\"回归\", lambda: r[\"regressions\"], [\"t2\"])\ncheck_eq(\"修复\", lambda: r[\"fixes\"], [\"t3\"])\ncheck_eq(\"新增\", lambda: r[\"added\"], [\"t5\"])\ncheck_eq(\"移除\", lambda: r[\"removed\"], [\"t4\"])\ncheck_eq(\"通过率变化\", lambda: r[\"pass_rate_delta\"], -0.25)\ncheck_eq(\"两边都空\", lambda: diff_runs({}, {})[\"pass_rate_delta\"], 0.0)\ncheck_eq(\"排序生效\", lambda: diff_runs({\"b\":True,\"a\":True},{\"b\":False,\"a\":False})[\"regressions\"], [\"a\",\"b\"])",
+  "hints": [
+   "先算 <code>shared = set(before) & set(after)</code>，回归和修复都只在 shared 里找。",
+   "通过率：<code>sum(d.values()) / len(d) if d else 0.0</code>——<code>True</code> 求和就是 1。",
+   "所有列表记得 <code>sorted(...)</code>，不然结果不稳定。"
+  ],
+  "solution": "def _rate(d):\n    return sum(1 for v in d.values() if v) / len(d) if d else 0.0\n\ndef diff_runs(before, after):\n    shared = set(before) & set(after)\n    return {\n        \"regressions\": sorted(c for c in shared if before[c] and not after[c]),\n        \"fixes\": sorted(c for c in shared if not before[c] and after[c]),\n        \"added\": sorted(set(after) - set(before)),\n        \"removed\": sorted(set(before) - set(after)),\n        \"pass_rate_delta\": round(_rate(after) - _rate(before), 4),\n    }"
+ }
+]

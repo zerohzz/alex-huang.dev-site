@@ -1,0 +1,258 @@
+[
+ {
+  "id": "e1",
+  "title": "缓存：四次加需求",
+  "minutes": 45,
+  "source": "Anthropic FDE 编码轮报告过的原题形态——先实现 LRU，然后逐阶段扩展。",
+  "brief": "每个阶段都会追加一条新需求。<b>不要看后面的阶段再动手</b>——真实面试里你看不到。<br>\n这一轮考的不是 LRU 算法，是你第一阶段的代码能不能承受第四阶段的需求。",
+  "tips": [
+   "第一阶段就把状态收进类，把每个动作切成小方法。写成一坨顶层函数，第三阶段就得重写。",
+   "时钟、回调这类外部依赖做成构造参数注入——这既是可测试性，也是面试官想听到的词。",
+   "每完成一个阶段，说一句\"我这样设计是为了后面好扩展\"，比闷头写快两分钟更有用。"
+  ],
+  "stages": [
+   {
+    "title": "阶段 1 · 基础 LRU",
+    "prompt": "实现 <code>class Cache</code>：<br>\n· <code>Cache(capacity)</code>，<code>capacity &lt; 1</code> → <code>ValueError</code><br>\n· <code>get(key, default=None)</code>，命中则标记为最近使用<br>\n· <code>put(key, value)</code>，超容量时淘汰最久未使用的<br>\n· <code>keys()</code> 按 最久未使用 → 最近使用 返回<br>\n· <code>len(cache)</code> 可用",
+    "starter": "class Cache:\n    def __init__(self, capacity):\n        ...\n",
+    "tests": "@case(\"读写与容量\")\ndef _():\n    c = Cache(2); c.put(\"a\",1); c.put(\"b\",2)\n    assert (c.get(\"a\"), c.get(\"b\"), len(c)) == (1, 2, 2)\n\n@case(\"淘汰最久未使用\")\ndef _():\n    c = Cache(2); c.put(\"a\",1); c.put(\"b\",2); c.put(\"c\",3)\n    assert c.get(\"a\") is None and c.keys() == [\"b\",\"c\"], c.keys()\n\n@case(\"get 刷新顺序\")\ndef _():\n    c = Cache(2); c.put(\"a\",1); c.put(\"b\",2); c.get(\"a\"); c.put(\"c\",3)\n    assert c.get(\"b\") is None and c.keys() == [\"a\",\"c\"], c.keys()\n\n@case(\"重复 put 不增容量\")\ndef _():\n    c = Cache(2); c.put(\"a\",1); c.put(\"a\",2)\n    assert len(c) == 1 and c.get(\"a\") == 2\n\n@case(\"default 生效\")\ndef _():\n    assert Cache(1).get(\"x\", \"none\") == \"none\"\n\n@case(\"capacity 0 抛 ValueError\")\ndef _():\n    try:\n        Cache(0)\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+    "hints": [
+     "<code>OrderedDict</code> 的 <code>move_to_end</code> / <code>popitem(last=False)</code> 正好对应两个动作。",
+     "把\"淘汰一个\"单独写成 <code>self._evict()</code>——后面三个阶段都要往这里加东西。"
+    ],
+    "solution": "from collections import OrderedDict\n\nclass Cache:\n    def __init__(self, capacity):\n        if capacity < 1:\n            raise ValueError(\"capacity must be >= 1\")\n        self.capacity = capacity\n        self._d = OrderedDict()\n\n    def get(self, key, default=None):\n        if key not in self._d:\n            return default\n        self._d.move_to_end(key)\n        return self._d[key]\n\n    def put(self, key, value):\n        if key in self._d:\n            self._d.move_to_end(key)\n        self._d[key] = value\n        while len(self._d) > self.capacity:\n            self._evict()\n\n    def _evict(self):\n        self._d.popitem(last=False)\n\n    def keys(self):\n        return list(self._d)\n\n    def __len__(self):\n        return len(self._d)"
+   },
+   {
+    "title": "阶段 2 · 加 TTL",
+    "prompt": "现在每一项可以有过期时间。<br>\n· <code>Cache(capacity, clock=None)</code>，<code>clock()</code> 返回当前秒数，默认 <code>time.monotonic</code><br>\n· <code>put(key, value, ttl=None)</code>，<code>ttl</code> 为秒数；<code>None</code> 表示不过期<br>\n· <code>get</code> 时如果 <code>clock() &gt;= 存入时刻 + ttl</code>，视为未命中，返回 default，并把这一项<b>删掉</b><br>\n· <code>keys()</code> 和 <code>len()</code> 不主动清理过期项（惰性过期）",
+    "starter": "# 把上一阶段的实现继续写下去（可以点下面的“载入上一阶段参考实现”）\n",
+    "tests": "clock = {\"t\": 0.0}\nnow = lambda: clock[\"t\"]\n\n@case(\"未过期正常命中\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\", 1, ttl=10)\n    clock[\"t\"] = 9.9\n    assert c.get(\"a\") == 1\n\n@case(\"到点即过期（含边界）\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\", 1, ttl=10)\n    clock[\"t\"] = 10\n    assert c.get(\"a\") is None\n\n@case(\"过期项被删除\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\", 1, ttl=1)\n    clock[\"t\"] = 5\n    c.get(\"a\")\n    assert len(c) == 0 and c.keys() == [], c.keys()\n\n@case(\"ttl=None 永不过期\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\", 1)\n    clock[\"t\"] = 10 ** 9\n    assert c.get(\"a\") == 1\n\n@case(\"阶段 1 的行为没被破坏\")\ndef _():\n    c = Cache(2, clock=now); c.put(\"a\",1); c.put(\"b\",2); c.put(\"c\",3)\n    assert c.keys() == [\"b\",\"c\"], c.keys()\n\n@case(\"重新 put 会重置过期时间\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\", 1, ttl=10)\n    clock[\"t\"] = 9\n    c.put(\"a\", 2, ttl=10)\n    clock[\"t\"] = 18\n    assert c.get(\"a\") == 2",
+    "hints": [
+     "值不能再裸存了——存 <code>(value, expires_at)</code> 或一个小 dataclass。这就是第一阶段该预料到的变化。",
+     "把过期判断抽成 <code>self._expired(key)</code>，第三阶段统计和第四阶段回调都要复用它。",
+     "<code>clock or time.monotonic</code> 有坑（clock 可能是合法的假值吗？这里不会，但写 <code>if clock is None</code> 更稳）。"
+    ],
+    "solution": "import time\nfrom collections import OrderedDict\n\nclass Cache:\n    def __init__(self, capacity, clock=None):\n        if capacity < 1:\n            raise ValueError(\"capacity must be >= 1\")\n        self.capacity = capacity\n        self._clock = time.monotonic if clock is None else clock\n        self._d = OrderedDict()          # key -> (value, expires_at | None)\n\n    def _expired(self, key):\n        _, exp = self._d[key]\n        return exp is not None and self._clock() >= exp\n\n    def get(self, key, default=None):\n        if key not in self._d:\n            return default\n        if self._expired(key):\n            del self._d[key]\n            return default\n        self._d.move_to_end(key)\n        return self._d[key][0]\n\n    def put(self, key, value, ttl=None):\n        exp = None if ttl is None else self._clock() + ttl\n        if key in self._d:\n            self._d.move_to_end(key)\n        self._d[key] = (value, exp)\n        while len(self._d) > self.capacity:\n            self._evict()\n\n    def _evict(self):\n        self._d.popitem(last=False)\n\n    def keys(self):\n        return list(self._d)\n\n    def __len__(self):\n        return len(self._d)"
+   },
+   {
+    "title": "阶段 3 · 加统计",
+    "prompt": "加一个 <code>stats()</code>，返回：<br>\n<code>{\"hits\",\"misses\",\"evictions\",\"expirations\",\"hit_rate\"}</code><br>\n· 命中 → hits+1；未命中（键不存在<b>或</b>已过期）→ misses+1<br>\n· 因过期而未命中，额外 expirations+1<br>\n· 因超容量被淘汰 → evictions+1（覆盖同一个键不算）<br>\n· <code>hit_rate = hits / (hits + misses)</code>，<code>round(x, 4)</code>，分母为 0 时是 <code>0.0</code>",
+    "starter": "# 在阶段 2 的基础上加统计\n",
+    "tests": "clock = {\"t\": 0.0}\nnow = lambda: clock[\"t\"]\n\n@case(\"命中与未命中计数\")\ndef _():\n    c = Cache(2, clock=now); c.put(\"a\",1)\n    c.get(\"a\"); c.get(\"a\"); c.get(\"zzz\")\n    s = c.stats()\n    assert (s[\"hits\"], s[\"misses\"]) == (2, 1), s\n    assert s[\"hit_rate\"] == 0.6667, s[\"hit_rate\"]\n\n@case(\"淘汰计数\")\ndef _():\n    c = Cache(1, clock=now); c.put(\"a\",1); c.put(\"b\",2); c.put(\"c\",3)\n    assert c.stats()[\"evictions\"] == 2, c.stats()\n\n@case(\"覆盖同一个键不算淘汰\")\ndef _():\n    c = Cache(2, clock=now); c.put(\"a\",1); c.put(\"a\",2)\n    assert c.stats()[\"evictions\"] == 0, c.stats()\n\n@case(\"过期既算 miss 也算 expiration\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\",1,ttl=1)\n    clock[\"t\"] = 5\n    c.get(\"a\")\n    s = c.stats()\n    assert (s[\"misses\"], s[\"expirations\"]) == (1, 1), s\n\n@case(\"没有访问时 hit_rate 是 0.0\")\ndef _():\n    assert Cache(2, clock=now).stats()[\"hit_rate\"] == 0.0\n\n@case(\"前两阶段没被破坏\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\",1,ttl=10); c.put(\"b\",2); c.put(\"c\",3)\n    assert c.keys() == [\"b\",\"c\"] and c.get(\"b\") == 2",
+    "hints": [
+     "计数器放 <code>__init__</code> 里，别用类属性——类属性会在所有实例间共享，这是个经典 bug。",
+     "<code>_evict</code> 里加 evictions+1，就自动排除了\"覆盖同一个键\"的情况（因为那条路径不走 _evict）。",
+     "<code>stats()</code> 每次现算 hit_rate，不要维护一个会不同步的字段。"
+    ],
+    "solution": "import time\nfrom collections import OrderedDict\n\nclass Cache:\n    def __init__(self, capacity, clock=None):\n        if capacity < 1:\n            raise ValueError(\"capacity must be >= 1\")\n        self.capacity = capacity\n        self._clock = time.monotonic if clock is None else clock\n        self._d = OrderedDict()\n        self._hits = 0\n        self._misses = 0\n        self._evictions = 0\n        self._expirations = 0\n\n    def _expired(self, key):\n        _, exp = self._d[key]\n        return exp is not None and self._clock() >= exp\n\n    def get(self, key, default=None):\n        if key not in self._d:\n            self._misses += 1\n            return default\n        if self._expired(key):\n            del self._d[key]\n            self._misses += 1\n            self._expirations += 1\n            return default\n        self._d.move_to_end(key)\n        self._hits += 1\n        return self._d[key][0]\n\n    def put(self, key, value, ttl=None):\n        exp = None if ttl is None else self._clock() + ttl\n        if key in self._d:\n            self._d.move_to_end(key)\n        self._d[key] = (value, exp)\n        while len(self._d) > self.capacity:\n            self._evict()\n\n    def _evict(self):\n        self._d.popitem(last=False)\n        self._evictions += 1\n\n    def stats(self):\n        looked = self._hits + self._misses\n        return {\n            \"hits\": self._hits,\n            \"misses\": self._misses,\n            \"evictions\": self._evictions,\n            \"expirations\": self._expirations,\n            \"hit_rate\": round(self._hits / looked, 4) if looked else 0.0,\n        }\n\n    def keys(self):\n        return list(self._d)\n\n    def __len__(self):\n        return len(self._d)"
+   },
+   {
+    "title": "阶段 4 · 回调与 get_or_compute",
+    "prompt": "最后两条：<br>\n· <code>Cache(capacity, clock=None, on_evict=None)</code>。每当一项<b>离开缓存</b>时调用 <code>on_evict(key, value, reason)</code>，<code>reason</code> 是 <code>\"capacity\"</code> 或 <code>\"expired\"</code>。覆盖同一个键<b>不</b>触发。<br>\n· <code>get_or_compute(key, fn, ttl=None)</code>：命中就直接返回；未命中则调用 <code>fn()</code>，把结果存进去再返回。计数按普通 get/put 的规则走。<br>\n· <code>on_evict</code> 抛异常不能影响缓存本身的正确性（吞掉即可）。",
+    "starter": "# 在阶段 3 的基础上加回调\n",
+    "tests": "clock = {\"t\": 0.0}\nnow = lambda: clock[\"t\"]\n\n@case(\"容量淘汰触发回调\")\ndef _():\n    seen = []\n    c = Cache(1, clock=now, on_evict=lambda k,v,r: seen.append((k,v,r)))\n    c.put(\"a\",1); c.put(\"b\",2)\n    assert seen == [(\"a\",1,\"capacity\")], seen\n\n@case(\"过期触发回调\")\ndef _():\n    seen = []\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now, on_evict=lambda k,v,r: seen.append((k,v,r)))\n    c.put(\"a\",1,ttl=1)\n    clock[\"t\"] = 5\n    c.get(\"a\")\n    assert seen == [(\"a\",1,\"expired\")], seen\n\n@case(\"覆盖不触发回调\")\ndef _():\n    seen = []\n    c = Cache(2, clock=now, on_evict=lambda k,v,r: seen.append(k))\n    c.put(\"a\",1); c.put(\"a\",2)\n    assert seen == [], seen\n\n@case(\"get_or_compute 未命中会计算并缓存\")\ndef _():\n    calls = {\"n\": 0}\n    def make():\n        calls[\"n\"] += 1\n        return \"V\"\n    c = Cache(2, clock=now)\n    assert c.get_or_compute(\"k\", make) == \"V\"\n    assert c.get_or_compute(\"k\", make) == \"V\"\n    assert calls[\"n\"] == 1, f\"fn 被调用了 {calls['n']} 次\"\n\n@case(\"get_or_compute 也进统计\")\ndef _():\n    c = Cache(2, clock=now)\n    c.get_or_compute(\"k\", lambda: 1)\n    c.get_or_compute(\"k\", lambda: 1)\n    s = c.stats()\n    assert (s[\"hits\"], s[\"misses\"]) == (1, 1), s\n\n@case(\"回调抛异常不影响缓存\")\ndef _():\n    def boom(k, v, r):\n        raise RuntimeError(\"callback failed\")\n    c = Cache(1, clock=now, on_evict=boom)\n    c.put(\"a\",1); c.put(\"b\",2)\n    assert c.get(\"b\") == 2 and c.keys() == [\"b\"], c.keys()\n\n@case(\"前三阶段没被破坏\")\ndef _():\n    clock[\"t\"] = 0\n    c = Cache(2, clock=now); c.put(\"a\",1); c.get(\"a\"); c.get(\"nope\")\n    assert c.stats()[\"hit_rate\"] == 0.5, c.stats()",
+    "hints": [
+     "把\"移除一项\"统一收进 <code>self._remove(key, reason)</code>，让容量淘汰和过期共用同一条出口——回调只写一次。",
+     "回调外面包 <code>try / except Exception: pass</code>。面试时说一句\"回调是用户代码，不能让它污染缓存的不变量\"。",
+     "<code>get_or_compute</code> 直接复用 <code>get</code> 和 <code>put</code>，用一个哨兵对象区分\"存的就是 None\"和\"没存\"。"
+    ],
+    "solution": "import time\nfrom collections import OrderedDict\n\n_MISSING = object()\n\nclass Cache:\n    def __init__(self, capacity, clock=None, on_evict=None):\n        if capacity < 1:\n            raise ValueError(\"capacity must be >= 1\")\n        self.capacity = capacity\n        self._clock = time.monotonic if clock is None else clock\n        self._on_evict = on_evict\n        self._d = OrderedDict()\n        self._hits = self._misses = self._evictions = self._expirations = 0\n\n    def _expired(self, key):\n        _, exp = self._d[key]\n        return exp is not None and self._clock() >= exp\n\n    def _remove(self, key, reason):\n        value, _ = self._d.pop(key)\n        if reason == \"capacity\":\n            self._evictions += 1\n        if self._on_evict is not None:\n            try:\n                self._on_evict(key, value, reason)\n            except Exception:\n                pass\n\n    def get(self, key, default=None):\n        if key not in self._d:\n            self._misses += 1\n            return default\n        if self._expired(key):\n            self._expirations += 1\n            self._misses += 1\n            self._remove(key, \"expired\")\n            return default\n        self._d.move_to_end(key)\n        self._hits += 1\n        return self._d[key][0]\n\n    def put(self, key, value, ttl=None):\n        exp = None if ttl is None else self._clock() + ttl\n        if key in self._d:\n            self._d.move_to_end(key)\n        self._d[key] = (value, exp)\n        while len(self._d) > self.capacity:\n            self._remove(next(iter(self._d)), \"capacity\")\n\n    def get_or_compute(self, key, fn, ttl=None):\n        found = self.get(key, _MISSING)\n        if found is not _MISSING:\n            return found\n        value = fn()\n        self.put(key, value, ttl=ttl)\n        return value\n\n    def stats(self):\n        looked = self._hits + self._misses\n        return {\n            \"hits\": self._hits, \"misses\": self._misses,\n            \"evictions\": self._evictions, \"expirations\": self._expirations,\n            \"hit_rate\": round(self._hits / looked, 4) if looked else 0.0,\n        }\n\n    def keys(self):\n        return list(self._d)\n\n    def __len__(self):\n        return len(self._d)"
+   }
+  ]
+ },
+ {
+  "id": "e2",
+  "title": "采样调用栈 → 执行轨迹",
+  "minutes": 40,
+  "source": "Anthropic FDE 编码轮报告过的原题：把采样到的调用栈数据转换成执行轨迹。",
+  "brief": "性能分析器每隔几毫秒对进程采一次样，记下当时的调用栈（从最外层到最内层）。<br>\n现在给你一堆这样的样本，把它们变成人能看的东西。",
+  "tips": [
+   "先问清楚：\"栈是 root→leaf 还是反过来？\" 这种澄清问题本身就是得分点。",
+   "递归会让同一个函数在一个栈里出现多次——主动提出这个边界情况。",
+   "第三阶段的 self time 和 total time 的区别，是 profiler 的核心概念，值得口头解释一遍。"
+  ],
+  "stages": [
+   {
+    "title": "阶段 1 · 聚合成调用树",
+    "prompt": "写 <code>build_tree(samples)</code>。<code>samples</code> 是若干调用栈，每个栈是从<b>最外层到最内层</b>的函数名列表。<br>\n返回嵌套结构：<code>{函数名: {\"count\": 经过这里的样本数, \"children\": {同样的结构}}}</code>",
+    "starter": "def build_tree(samples):\n    ...\n",
+    "tests": "check_eq(\"单条\", lambda: build_tree([[\"a\",\"b\"]]),\n  {\"a\":{\"count\":1,\"children\":{\"b\":{\"count\":1,\"children\":{}}}}})\n\ncheck_eq(\"共享前缀\", lambda: build_tree([[\"a\",\"b\"],[\"a\",\"c\"]]),\n  {\"a\":{\"count\":2,\"children\":{\n     \"b\":{\"count\":1,\"children\":{}},\n     \"c\":{\"count\":1,\"children\":{}}}}})\n\ncheck_eq(\"重复完全相同的栈\", lambda: build_tree([[\"a\"],[\"a\"]]),\n  {\"a\":{\"count\":2,\"children\":{}}})\n\ncheck_eq(\"多个根\", lambda: sorted(build_tree([[\"a\"],[\"b\"]])), [\"a\",\"b\"])\ncheck_eq(\"空样本集\", lambda: build_tree([]), {})\ncheck_eq(\"空栈被忽略\", lambda: build_tree([[], [\"a\"]]), {\"a\":{\"count\":1,\"children\":{}}})",
+    "hints": [
+     "一层循环走样本，内层循环走这个栈的每一帧，用一个\"游标\"指向当前所在的 children dict。",
+     "<code>node = level.setdefault(frame, {\"count\":0,\"children\":{}})</code> 然后 <code>node[\"count\"] += 1</code>，再 <code>level = node[\"children\"]</code>。"
+    ],
+    "solution": "def build_tree(samples):\n    root = {}\n    for stack in samples:\n        level = root\n        for frame in stack:\n            node = level.setdefault(frame, {\"count\": 0, \"children\": {}})\n            node[\"count\"] += 1\n            level = node[\"children\"]\n    return root"
+   },
+   {
+    "title": "阶段 2 · 输出折叠格式",
+    "prompt": "火焰图工具吃的是\"折叠栈\"格式：一行一个<b>完整栈</b>，帧之间用 <code>;</code> 连接，空格后跟出现次数。<br>\n写 <code>folded(samples)</code>，返回字符串列表，<b>按整行字符串升序</b>排序。空栈忽略。",
+    "starter": "def folded(samples):\n    ...\n",
+    "tests": "check_eq(\"基本\", lambda: folded([[\"a\",\"b\"],[\"a\",\"b\"],[\"a\",\"c\"]]),\n         [\"a;b 2\",\"a;c 1\"])\ncheck_eq(\"排序按整行\", lambda: folded([[\"z\"],[\"a\"]]), [\"a 1\",\"z 1\"])\ncheck_eq(\"空\", lambda: folded([]), [])\ncheck_eq(\"忽略空栈\", lambda: folded([[],[\"a\"]]), [\"a 1\"])\ncheck_eq(\"单帧栈\", lambda: folded([[\"main\"]]), [\"main 1\"])\n\n@case(\"与 build_tree 的总数一致\")\ndef _():\n    S = [[\"a\",\"b\"],[\"a\",\"b\"],[\"a\",\"c\"],[\"d\"]]\n    total = sum(int(line.split(\" \")[-1]) for line in folded(S))\n    assert total == 4, total",
+    "hints": [
+     "<code>Counter(tuple(s) for s in samples if s)</code> 一步到位。",
+     "拼行：<code>f\"{';'.join(stack)} {n}\"</code>，最后 <code>sorted(lines)</code>。"
+    ],
+    "solution": "from collections import Counter\n\ndef folded(samples):\n    counts = Counter(tuple(s) for s in samples if s)\n    lines = [\";\".join(stack) + \" \" + str(n) for stack, n in counts.items()]\n    return sorted(lines)"
+   },
+   {
+    "title": "阶段 3 · self time 与 total time",
+    "prompt": "写 <code>report(samples)</code>，对每个出现过的函数统计：<br>\n· <code>total</code>：有多少个样本的栈里<b>出现过</b>这个函数（同一个栈里出现多次只算一次——递归）<br>\n· <code>self</code>：有多少个样本的<b>栈顶</b>（最内层）是它<br>\n返回 <code>[{\"name\",\"total\",\"self\"}, ...]</code>，按 <code>total</code> 降序、同值按 <code>name</code> 升序。",
+    "starter": "def report(samples):\n    ...\n",
+    "tests": "S = [[\"main\",\"load\",\"parse\"],[\"main\",\"load\",\"parse\"],[\"main\",\"load\"],[\"main\",\"render\"]]\nr = report(S)\ncheck_eq(\"main 全覆盖\", lambda: r[0], {\"name\":\"main\",\"total\":4,\"self\":0})\ncheck_eq(\"load 的 self 是 1\", lambda: [x for x in r if x[\"name\"]==\"load\"][0],\n         {\"name\":\"load\",\"total\":3,\"self\":1})\ncheck_eq(\"parse\", lambda: [x for x in r if x[\"name\"]==\"parse\"][0],\n         {\"name\":\"parse\",\"total\":2,\"self\":2})\ncheck_eq(\"函数总数\", lambda: len(r), 4)\ncheck_eq(\"空\", lambda: report([]), [])\n\n@case(\"递归在一个样本里只算一次 total\")\ndef _():\n    got = report([[\"f\",\"g\",\"f\"]])\n    f = [x for x in got if x[\"name\"]==\"f\"][0]\n    assert f == {\"name\":\"f\",\"total\":1,\"self\":1}, f\n\n@case(\"同 total 按名字升序\")\ndef _():\n    got = [x[\"name\"] for x in report([[\"b\"],[\"a\"]])]\n    assert got == [\"a\",\"b\"], got",
+    "hints": [
+     "total 用 <code>set(stack)</code> 去重后再计数——这就是递归那条测试在查的。",
+     "self 只看 <code>stack[-1]</code>。",
+     "两个 Counter 合起来输出，注意只在 self 里出现的函数也要有条目（虽然实际不可能，但写 <code>counts_total</code> 为准就够了）。"
+    ],
+    "solution": "from collections import Counter\n\ndef report(samples):\n    total = Counter()\n    own = Counter()\n    for stack in samples:\n        if not stack:\n            continue\n        total.update(set(stack))\n        own[stack[-1]] += 1\n    rows = [{\"name\": n, \"total\": total[n], \"self\": own[n]} for n in total]\n    rows.sort(key=lambda r: (-r[\"total\"], r[\"name\"]))\n    return rows"
+   }
+  ]
+ },
+ {
+  "id": "e3",
+  "title": "文件去重",
+  "minutes": 35,
+  "source": "Anthropic FDE 编码轮报告过的原题：读一组文件并去重。",
+  "brief": "这里没有真实文件系统，所以文件用 <code>{路径: 内容}</code> 表示。<br>\n第三阶段会让你把前面写死的\"按内容相等\"变成可插拔的——<b>提前想想怎么留这个口子</b>。",
+  "tips": [
+   "真实场景里第一句应该问：\"文件有多大？能全读进内存吗？\" 然后说出\"先按文件大小分桶，只对同大小的算哈希\"这个优化。",
+   "\"保留哪一个\"是业务决策，不是技术决策——主动问，或者明确声明你的假设。",
+   "第三阶段本质是把 stage 1 的相等判断抽成 key 函数。抽得干净，这一轮就赢了。"
+  ],
+  "stages": [
+   {
+    "title": "阶段 1 · 找出内容完全相同的文件",
+    "prompt": "写 <code>exact_dupes(files)</code>：<code>files</code> 是 <code>{path: content}</code>。<br>\n返回重复组的列表，每组是<b>路径升序</b>的列表；只返回大小 ≥ 2 的组；组之间按<b>组内第一个路径</b>升序。",
+    "starter": "def exact_dupes(files):\n    ...\n",
+    "tests": "F = {\"/b.txt\":\"x\",\"/a.txt\":\"x\",\"/c.txt\":\"y\",\"/d.txt\":\"y\",\"/e.txt\":\"z\"}\ncheck_eq(\"两组\", lambda: exact_dupes(F), [[\"/a.txt\",\"/b.txt\"],[\"/c.txt\",\"/d.txt\"]])\ncheck_eq(\"无重复\", lambda: exact_dupes({\"/a\":\"1\",\"/b\":\"2\"}), [])\ncheck_eq(\"空\", lambda: exact_dupes({}), [])\ncheck_eq(\"三个一样\", lambda: exact_dupes({\"/c\":\"x\",\"/a\":\"x\",\"/b\":\"x\"}), [[\"/a\",\"/b\",\"/c\"]])\ncheck_eq(\"空内容也算一组\", lambda: exact_dupes({\"/a\":\"\",\"/b\":\"\"}), [[\"/a\",\"/b\"]])",
+    "hints": [
+     "按内容分组：<code>groups.setdefault(content, []).append(path)</code>。",
+     "面试口播：真实文件应该存 <code>hashlib.sha256(data).hexdigest()</code> 而不是内容本身，否则内存扛不住。"
+    ],
+    "solution": "def exact_dupes(files):\n    groups = {}\n    for path, content in files.items():\n        groups.setdefault(content, []).append(path)\n    dupes = [sorted(paths) for paths in groups.values() if len(paths) > 1]\n    dupes.sort(key=lambda g: g[0])\n    return dupes"
+   },
+   {
+    "title": "阶段 2 · 生成删除方案",
+    "prompt": "写 <code>plan(files)</code>，返回 <code>{\"keep\": [...], \"delete\": [...], \"bytes_saved\": int}</code>。<br>\n· 每组重复只保留<b>路径升序第一个</b>，其余进 delete<br>\n· 没有重复的文件也在 keep 里<br>\n· keep 和 delete 都按路径升序<br>\n· <code>bytes_saved</code> = 所有被删文件内容的 <code>len()</code> 之和",
+    "starter": "# 复用阶段 1 的 exact_dupes\n\ndef plan(files):\n    ...\n",
+    "tests": "F = {\"/b\":\"xxx\",\"/a\":\"xxx\",\"/c\":\"y\",\"/d\":\"zz\",\"/e\":\"zz\"}\np = plan(F)\ncheck_eq(\"保留\", lambda: p[\"keep\"], [\"/a\",\"/c\",\"/d\"])\ncheck_eq(\"删除\", lambda: p[\"delete\"], [\"/b\",\"/e\"])\ncheck_eq(\"省下的字节\", lambda: p[\"bytes_saved\"], 5)\ncheck_eq(\"无重复时不删\", lambda: plan({\"/a\":\"1\"}), {\"keep\":[\"/a\"],\"delete\":[],\"bytes_saved\":0})\ncheck_eq(\"空\", lambda: plan({}), {\"keep\":[],\"delete\":[],\"bytes_saved\":0})\n\n@case(\"三个一样只留一个\")\ndef _():\n    got = plan({\"/a\":\"q\",\"/b\":\"q\",\"/c\":\"q\"})\n    assert got[\"keep\"] == [\"/a\"] and got[\"delete\"] == [\"/b\",\"/c\"], got",
+    "hints": [
+     "先算出 delete 集合，keep 就是 <code>所有路径 - delete</code>。",
+     "别在这一步重新实现分组——直接调阶段 1 的函数。面试官在看你会不会复用。"
+    ],
+    "solution": "def plan(files):\n    delete = []\n    for group in exact_dupes(files):\n        delete.extend(group[1:])\n    delete_set = set(delete)\n    keep = sorted(p for p in files if p not in delete_set)\n    return {\n        \"keep\": keep,\n        \"delete\": sorted(delete),\n        \"bytes_saved\": sum(len(files[p]) for p in delete),\n    }"
+   },
+   {
+    "title": "阶段 3 · 近似重复",
+    "prompt": "同一份文档换了缩进、大小写、加了空行，也应该算重复。<br>\n把分组逻辑抽成 <code>group_files(files, key=None)</code>：<code>key(content)</code> 返回用于比较的指纹，默认 <code>None</code> 表示用内容本身。返回值格式和阶段 1 的 <code>exact_dupes</code> 完全一致。<br>\n再写 <code>normalize(content)</code>：每行去首尾空白、丢弃空行、整体转小写、用 <code>\"\\n\"</code> 重新连接。<br>\n<b>要求：<code>exact_dupes(files)</code> 必须仍然能用</b>（用 <code>group_files</code> 重新实现它）。",
+    "starter": "def group_files(files, key=None):\n    ...\n\ndef normalize(content):\n    ...\n\ndef exact_dupes(files):\n    ...\n",
+    "tests": "check_eq(\"normalize 去空行和缩进\", lambda: normalize(\"  Hello \\n\\n  WORLD\\n\"), \"hello\\nworld\")\ncheck_eq(\"normalize 全空白\", lambda: normalize(\"  \\n\\n\"), \"\")\n\nF = {\"/a\":\"Hello\\nWorld\",\"/b\":\"  hello  \\n\\n  world  \",\"/c\":\"other\"}\ncheck_eq(\"近似分组\", lambda: group_files(F, key=normalize), [[\"/a\",\"/b\"]])\ncheck_eq(\"默认 key 等价于精确匹配\", lambda: group_files(F), [])\ncheck_eq(\"exact_dupes 仍然可用\", lambda: exact_dupes({\"/b\":\"x\",\"/a\":\"x\"}), [[\"/a\",\"/b\"]])\ncheck_eq(\"空\", lambda: group_files({}, key=normalize), [])\n\n@case(\"key 可以是任意函数\")\ndef _():\n    got = group_files({\"/a\":\"abc\",\"/b\":\"axx\",\"/c\":\"zzz\"}, key=lambda c: c[0])\n    assert got == [[\"/a\",\"/b\"]], got",
+    "hints": [
+     "<code>fp = content if key is None else key(content)</code>——一行就把可插拔性做出来了。",
+     "<code>normalize</code>：<code>[ln.strip() for ln in content.lower().splitlines()]</code>，过滤掉空串后 join。",
+     "<code>exact_dupes</code> 现在就是 <code>return group_files(files)</code>，一行。这就是重构做对了的样子。"
+    ],
+    "solution": "def group_files(files, key=None):\n    groups = {}\n    for path, content in files.items():\n        fp = content if key is None else key(content)\n        groups.setdefault(fp, []).append(path)\n    dupes = [sorted(paths) for paths in groups.values() if len(paths) > 1]\n    dupes.sort(key=lambda g: g[0])\n    return dupes\n\ndef normalize(content):\n    lines = [ln.strip() for ln in content.lower().splitlines()]\n    return \"\\n\".join(ln for ln in lines if ln)\n\ndef exact_dupes(files):\n    return group_files(files)"
+   }
+  ]
+ },
+ {
+  "id": "e4",
+  "title": "Eval Harness",
+  "minutes": 45,
+  "source": "Anthropic / OpenAI 型 FDE 的核心工作：给客户搭一套能跑、能聚合、能演进的评测框架。",
+  "brief": "客户要评测他们的 LLM 应用。你要写跑测试用例的框架。<br>\n第三阶段会把\"通过/不通过\"改成\"0 到 1 的分数\"——这是这类系统最常见的演进方向，也是最容易把前面代码推倒重来的一次。",
+  "tips": [
+   "第一阶段就别把 <code>ok = (got == expected)</code> 写死在循环里，抽成一个函数。第三阶段你会谢自己。",
+   "\"一个 case 抛异常整批就挂了\"是这类框架的头号事故。第二阶段专门在考这个。",
+   "说出\"评测结果要能和上一次比对\"这句话，即使题目没要求——这是 FDE 的判断力。"
+  ],
+  "stages": [
+   {
+    "title": "阶段 1 · 跑一批用例",
+    "prompt": "写 <code>run_evals(cases, fn)</code>。<code>cases</code> 是 <code>{\"id\",\"input\",\"expected\"}</code> 的列表，<code>fn(input)</code> 返回实际输出。<br>\n返回 <code>{\"results\": [...], \"pass_rate\": float}</code>。每条结果是 <code>{\"id\",\"ok\",\"got\"}</code>，<code>ok</code> 为 <code>got == expected</code>。<br>\n<code>pass_rate</code> 保留 4 位小数，空用例集时为 <code>0.0</code>。结果顺序与输入一致。",
+    "starter": "def run_evals(cases, fn):\n    ...\n",
+    "tests": "C = [{\"id\":\"t1\",\"input\":1,\"expected\":2},\n     {\"id\":\"t2\",\"input\":2,\"expected\":9},\n     {\"id\":\"t3\",\"input\":3,\"expected\":6}]\nr = run_evals(C, lambda x: x * 2)\ncheck_eq(\"结果条数与顺序\", lambda: [x[\"id\"] for x in r[\"results\"]], [\"t1\",\"t2\",\"t3\"])\ncheck_eq(\"第一条通过\", lambda: r[\"results\"][0], {\"id\":\"t1\",\"ok\":True,\"got\":2})\ncheck_eq(\"第二条失败\", lambda: r[\"results\"][1], {\"id\":\"t2\",\"ok\":False,\"got\":4})\ncheck_eq(\"通过率\", lambda: r[\"pass_rate\"], 0.6667)\ncheck_eq(\"空用例集\", lambda: run_evals([], lambda x: x), {\"results\":[],\"pass_rate\":0.0})\ncheck_eq(\"全通过\", lambda: run_evals([{\"id\":\"a\",\"input\":1,\"expected\":1}], lambda x: x)[\"pass_rate\"], 1.0)",
+    "hints": [
+     "把比较抽成 <code>def _match(got, expected): return got == expected</code>，后面就有地方挂钩子。",
+     "pass_rate 用 <code>sum(1 for r in results if r[\"ok\"]) / len(results)</code>。"
+    ],
+    "solution": "def _match(got, expected):\n    return got == expected\n\ndef run_evals(cases, fn):\n    results = []\n    for c in cases:\n        got = fn(c[\"input\"])\n        results.append({\"id\": c[\"id\"], \"ok\": _match(got, c[\"expected\"]), \"got\": got})\n    passed = sum(1 for r in results if r[\"ok\"])\n    rate = round(passed / len(results), 4) if results else 0.0\n    return {\"results\": results, \"pass_rate\": rate}"
+   },
+   {
+    "title": "阶段 2 · 容错与按标签聚合",
+    "prompt": "两条新需求：<br>\n<b>a)</b> 某条 case 让 <code>fn</code> 抛异常时，不能中断整批。该条结果为 <code>{\"id\",\"ok\":False,\"got\":None,\"error\":\"异常类名: 消息\"}</code>。没出错的结果<b>不带</b> <code>error</code> 键。<br>\n<b>b)</b> case 可能有 <code>\"tags\": [...]</code>。输出增加 <code>\"by_tag\": {标签: {\"total\",\"passed\",\"pass_rate\"}}</code>。一条 case 有多个标签就在每个标签下都算一次；没有标签的归到 <code>\"untagged\"</code>。<code>by_tag</code> 按标签名升序。",
+    "starter": "# 在阶段 1 的基础上加容错和聚合\n",
+    "tests": "def fn(x):\n    if x == \"boom\":\n        raise ValueError(\"kaput\")\n    return x\n\nC = [\n {\"id\":\"a\",\"input\":1,\"expected\":1,\"tags\":[\"math\",\"fast\"]},\n {\"id\":\"b\",\"input\":\"boom\",\"expected\":1,\"tags\":[\"math\"]},\n {\"id\":\"c\",\"input\":2,\"expected\":3},\n]\nr = run_evals(C, fn)\n\ncheck_eq(\"异常不中断\", lambda: len(r[\"results\"]), 3)\ncheck_eq(\"异常条目\", lambda: r[\"results\"][1],\n         {\"id\":\"b\",\"ok\":False,\"got\":None,\"error\":\"ValueError: kaput\"})\ncheck_eq(\"正常条目不带 error\", lambda: \"error\" in r[\"results\"][0], False)\ncheck_eq(\"按标签聚合\", lambda: r[\"by_tag\"], {\n  \"fast\":{\"total\":1,\"passed\":1,\"pass_rate\":1.0},\n  \"math\":{\"total\":2,\"passed\":1,\"pass_rate\":0.5},\n  \"untagged\":{\"total\":1,\"passed\":0,\"pass_rate\":0.0}})\ncheck_eq(\"标签升序\", lambda: list(r[\"by_tag\"]), [\"fast\",\"math\",\"untagged\"])\ncheck_eq(\"总通过率\", lambda: r[\"pass_rate\"], 0.3333)\ncheck_eq(\"空\", lambda: run_evals([], fn), {\"results\":[],\"pass_rate\":0.0,\"by_tag\":{}})",
+    "hints": [
+     "只包 <code>fn(...)</code> 那一行的 try，别把整个循环体包进去——否则分不清是 fn 出错还是你自己的代码出错。",
+     "聚合时先收集 <code>{tag: [ok布尔值]}</code>，最后一次性算比率，比边走边算清楚得多。",
+     "<code>c.get(\"tags\") or [\"untagged\"]</code> 同时处理了缺键和空列表。"
+    ],
+    "solution": "def _match(got, expected):\n    return got == expected\n\ndef run_evals(cases, fn):\n    results = []\n    buckets = {}\n    for c in cases:\n        try:\n            got = fn(c[\"input\"])\n        except Exception as e:\n            row = {\"id\": c[\"id\"], \"ok\": False, \"got\": None,\n                   \"error\": f\"{type(e).__name__}: {e}\"}\n        else:\n            row = {\"id\": c[\"id\"], \"ok\": _match(got, c[\"expected\"]), \"got\": got}\n        results.append(row)\n        for tag in (c.get(\"tags\") or [\"untagged\"]):\n            buckets.setdefault(tag, []).append(row[\"ok\"])\n\n    by_tag = {}\n    for tag in sorted(buckets):\n        oks = buckets[tag]\n        by_tag[tag] = {\n            \"total\": len(oks),\n            \"passed\": sum(1 for o in oks if o),\n            \"pass_rate\": round(sum(1 for o in oks if o) / len(oks), 4),\n        }\n\n    passed = sum(1 for r in results if r[\"ok\"])\n    rate = round(passed / len(results), 4) if results else 0.0\n    return {\"results\": results, \"pass_rate\": rate, \"by_tag\": by_tag}"
+   },
+   {
+    "title": "阶段 3 · 从布尔到分数",
+    "prompt": "客户说\"完全相等太严格了，我要部分分\"。<br>\n· <code>run_evals(cases, fn, graders=None, threshold=1.0)</code><br>\n· <code>graders</code> 是 <code>{名字: 函数(got, expected) -> 0.0~1.0}</code>。case 用 <code>\"grader\"</code> 指定名字；没指定则用内置的 <code>\"exact\"</code>（相等 1.0，否则 0.0）<br>\n· 指定了不存在的 grader → 不调用 <code>fn</code>，该条 <code>ok=False</code>、<code>got=None</code>、<code>score=0.0</code>、<code>error=\"unknown grader: 名字\"</code><br>\n· 每条结果增加 <code>\"score\"</code>（<code>round(x, 4)</code>）；<code>ok</code> 变成 <code>score &gt;= threshold</code><br>\n· 顶层增加 <code>\"mean_score\"</code>（<code>round(x, 4)</code>，空集为 <code>0.0</code>）；<code>by_tag</code> 每个桶也增加 <code>\"mean_score\"</code><br>\n· 异常条目的 <code>score</code> 是 <code>0.0</code>",
+    "starter": "# 在阶段 2 的基础上把布尔改成分数\n",
+    "tests": "def half(got, expected):\n    return 0.5\n\ndef prefix(got, expected):\n    return 1.0 if str(got).startswith(str(expected)) else 0.0\n\nG = {\"half\": half, \"prefix\": prefix}\n\nC = [\n {\"id\":\"a\",\"input\":\"abc\",\"expected\":\"abc\"},\n {\"id\":\"b\",\"input\":\"abc\",\"expected\":\"ab\",\"grader\":\"prefix\",\"tags\":[\"loose\"]},\n {\"id\":\"c\",\"input\":\"x\",\"expected\":\"y\",\"grader\":\"half\",\"tags\":[\"loose\"]},\n {\"id\":\"d\",\"input\":\"x\",\"expected\":\"y\",\"grader\":\"nope\"},\n]\nr = run_evals(C, lambda x: x, graders=G)\n\ncheck_eq(\"默认 exact\", lambda: r[\"results\"][0][\"score\"], 1.0)\ncheck_eq(\"自定义 grader\", lambda: r[\"results\"][1][\"score\"], 1.0)\ncheck_eq(\"部分分默认不算通过\", lambda: (r[\"results\"][2][\"score\"], r[\"results\"][2][\"ok\"]), (0.5, False))\ncheck_eq(\"未知 grader\", lambda: r[\"results\"][3],\n         {\"id\":\"d\",\"ok\":False,\"got\":None,\"score\":0.0,\"error\":\"unknown grader: nope\"})\ncheck_eq(\"平均分\", lambda: r[\"mean_score\"], 0.625)\ncheck_eq(\"桶里也有平均分\", lambda: r[\"by_tag\"][\"loose\"], {\"total\":2,\"passed\":1,\"pass_rate\":0.5,\"mean_score\":0.75})\n\nr2 = run_evals(C, lambda x: x, graders=G, threshold=0.5)\ncheck_eq(\"放宽阈值后部分分算过\", lambda: r2[\"results\"][2][\"ok\"], True)\ncheck_eq(\"阈值影响通过率\", lambda: r2[\"pass_rate\"], 0.75)\ncheck_eq(\"空集\", lambda: run_evals([], lambda x: x)[\"mean_score\"], 0.0)\n\n@case(\"异常条目得 0 分\")\ndef _():\n    def boom(x):\n        raise RuntimeError(\"no\")\n    got = run_evals([{\"id\":\"e\",\"input\":1,\"expected\":1}], boom)[\"results\"][0]\n    assert got[\"score\"] == 0.0 and got[\"ok\"] is False, got",
+    "hints": [
+     "grader 查找表：<code>table = {\"exact\": _exact, **(graders or {})}</code>——用户可以覆盖内置的，这通常是想要的行为。",
+     "每条 case 的处理逻辑现在有三种结局（异常 / 未知 grader / 正常），把它抽成 <code>_run_one(case, fn, table, threshold)</code>，主循环就干净了。",
+     "<code>ok</code> 不再是独立事实，而是 <code>score</code> 的派生值。这就是这一阶段真正的改动。"
+    ],
+    "solution": "def _exact(got, expected):\n    return 1.0 if got == expected else 0.0\n\ndef _run_one(c, fn, table, threshold):\n    name = c.get(\"grader\", \"exact\")\n    if name not in table:\n        return {\"id\": c[\"id\"], \"ok\": False, \"got\": None, \"score\": 0.0,\n                \"error\": f\"unknown grader: {name}\"}\n    try:\n        got = fn(c[\"input\"])\n    except Exception as e:\n        return {\"id\": c[\"id\"], \"ok\": False, \"got\": None, \"score\": 0.0,\n                \"error\": f\"{type(e).__name__}: {e}\"}\n    score = round(float(table[name](got, c[\"expected\"])), 4)\n    return {\"id\": c[\"id\"], \"ok\": score >= threshold, \"got\": got, \"score\": score}\n\ndef run_evals(cases, fn, graders=None, threshold=1.0):\n    table = {\"exact\": _exact, **(graders or {})}\n    results, buckets = [], {}\n    for c in cases:\n        row = _run_one(c, fn, table, threshold)\n        results.append(row)\n        for tag in (c.get(\"tags\") or [\"untagged\"]):\n            buckets.setdefault(tag, []).append(row)\n\n    def agg(rows):\n        n = len(rows)\n        return {\n            \"total\": n,\n            \"passed\": sum(1 for r in rows if r[\"ok\"]),\n            \"pass_rate\": round(sum(1 for r in rows if r[\"ok\"]) / n, 4),\n            \"mean_score\": round(sum(r[\"score\"] for r in rows) / n, 4),\n        }\n\n    by_tag = {tag: agg(buckets[tag]) for tag in sorted(buckets)}\n    n = len(results)\n    return {\n        \"results\": results,\n        \"pass_rate\": round(sum(1 for r in results if r[\"ok\"]) / n, 4) if n else 0.0,\n        \"mean_score\": round(sum(r[\"score\"] for r in results) / n, 4) if n else 0.0,\n        \"by_tag\": by_tag,\n    }"
+   }
+  ]
+ },
+ {
+  "id": "e5",
+  "title": "解析流式响应",
+  "minutes": 40,
+  "source": "Anthropic / OpenAI 型 FDE 日常：客户的流式集成挂了，你得读懂事件流并把它稳稳地拼回来。",
+  "brief": "模型 API 的流式响应是一串事件。文本一段段来，工具调用的参数是<b>被切碎的 JSON 片段</b>，要全部收齐才能解析。<br>\n第二阶段开始，流会变得不干净——这才是客户现场的真实样子。",
+  "tips": [
+   "先把事件类型列出来问一遍：\"还有哪些事件类型？我可以忽略未知类型吗？\"",
+   "工具参数 JSON 只有拼完整才能 parse，中途 parse 一定失败——主动说出这一点。",
+   "第三阶段的生成器版本是真实产品需求：用户要看到字一个个出来，不能等整条消息结束。"
+  ],
+  "stages": [
+   {
+    "title": "阶段 1 · 把事件拼成消息",
+    "prompt": "写 <code>assemble(events)</code>，返回内容块列表，<b>按 index 升序</b>。<br>\n事件类型：<br>\n· <code>{\"type\":\"content_block_start\",\"index\":i,\"block\":{\"type\":\"text\"}}</code> 或 <code>{\"type\":\"tool_use\",\"id\":..,\"name\":..}</code><br>\n· <code>{\"type\":\"content_block_delta\",\"index\":i,\"delta\":{\"type\":\"text_delta\",\"text\":\"..\"}}</code> 或 <code>{\"type\":\"input_json_delta\",\"partial_json\":\"..\"}</code><br>\n· <code>{\"type\":\"content_block_stop\",\"index\":i}</code><br>\n输出：文本块 <code>{\"type\":\"text\",\"text\":拼接结果}</code>；工具块 <code>{\"type\":\"tool_use\",\"id\",\"name\",\"input\":解析出的 dict}</code>。<br>\n<code>partial_json</code> 全部为空时 <code>input</code> 是 <code>{}</code>。",
+    "starter": "import json\n\ndef assemble(events):\n    ...\n",
+    "tests": "E = [\n {\"type\":\"message_start\"},\n {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Hel\"}},\n {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"lo\"}},\n {\"type\":\"content_block_stop\",\"index\":0},\n {\"type\":\"content_block_start\",\"index\":1,\"block\":{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"search\"}},\n {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":'{\"q\": '}},\n {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":'\"cats\"}'}},\n {\"type\":\"content_block_stop\",\"index\":1},\n {\"type\":\"message_stop\"},\n]\nout = assemble(E)\ncheck_eq(\"两个块\", lambda: len(out), 2)\ncheck_eq(\"文本拼接\", lambda: out[0], {\"type\":\"text\",\"text\":\"Hello\"})\ncheck_eq(\"工具参数解析\", lambda: out[1],\n         {\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"search\",\"input\":{\"q\":\"cats\"}})\ncheck_eq(\"空事件流\", lambda: assemble([]), [])\ncheck_eq(\"空文本块\", lambda: assemble([\n  {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n  {\"type\":\"content_block_stop\",\"index\":0}]), [{\"type\":\"text\",\"text\":\"\"}])\ncheck_eq(\"无参数工具\", lambda: assemble([\n  {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"tool_use\",\"id\":\"i\",\"name\":\"n\"}},\n  {\"type\":\"content_block_stop\",\"index\":0}])[0][\"input\"], {})\n\n@case(\"index 乱序也按序输出\")\ndef _():\n    ev = [\n      {\"type\":\"content_block_start\",\"index\":1,\"block\":{\"type\":\"text\"}},\n      {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"text_delta\",\"text\":\"B\"}},\n      {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n      {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"A\"}},\n    ]\n    assert [b[\"text\"] for b in assemble(ev)] == [\"A\",\"B\"]",
+    "hints": [
+     "用 <code>blocks = {}</code> 以 index 为键累积状态，最后 <code>for i in sorted(blocks)</code> 输出——顺便就解决了乱序。",
+     "文本片段先收进 list，最后 <code>\"\".join(...)</code>，别用 <code>s += ...</code>。",
+     "JSON 片段同理：全部拼完再 <code>json.loads</code>。空串要特判成 <code>{}</code>。"
+    ],
+    "solution": "import json\n\ndef assemble(events):\n    blocks = {}\n    for ev in events:\n        t = ev.get(\"type\")\n        if t == \"content_block_start\":\n            i = ev[\"index\"]\n            b = ev[\"block\"]\n            blocks[i] = {\"kind\": b[\"type\"], \"meta\": b, \"parts\": []}\n        elif t == \"content_block_delta\":\n            i = ev[\"index\"]\n            if i not in blocks:\n                continue\n            d = ev[\"delta\"]\n            blocks[i][\"parts\"].append(d.get(\"text\") or d.get(\"partial_json\") or \"\")\n\n    out = []\n    for i in sorted(blocks):\n        b = blocks[i]\n        joined = \"\".join(b[\"parts\"])\n        if b[\"kind\"] == \"text\":\n            out.append({\"type\": \"text\", \"text\": joined})\n        else:\n            out.append({\n                \"type\": \"tool_use\",\n                \"id\": b[\"meta\"][\"id\"],\n                \"name\": b[\"meta\"][\"name\"],\n                \"input\": json.loads(joined) if joined.strip() else {},\n            })\n    return out"
+   },
+   {
+    "title": "阶段 2 · 流会断、会脏",
+    "prompt": "客户的流不干净。加固 <code>assemble</code>：<br>\n· 未知的事件类型直接忽略（已经这样了，确认一下）<br>\n· <b>没有收到 <code>content_block_stop</code></b> 的块 → 输出里加 <code>\"incomplete\": True</code><br>\n· 工具块的 JSON 拼完仍解析失败 → <code>input</code> 为 <code>None</code>，加 <code>\"incomplete\": True</code>，并加 <code>\"raw\": 拼接后的原始串</code><br>\n· 收到了 <code>delta</code> 却没有对应的 <code>content_block_start</code> → 当成一个文本块处理，同样标记 <code>incomplete</code><br>\n· 正常完成的块<b>不带</b> <code>incomplete</code> 键",
+    "starter": "# 在阶段 1 的基础上加固\n",
+    "tests": "OK = [\n {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"hi\"}},\n {\"type\":\"content_block_stop\",\"index\":0},\n]\ncheck_eq(\"正常块不带 incomplete\", lambda: assemble(OK), [{\"type\":\"text\",\"text\":\"hi\"}])\ncheck_eq(\"未知事件被忽略\", lambda: assemble([{\"type\":\"ping\"}] + OK + [{\"type\":\"weird\",\"index\":9}]),\n         [{\"type\":\"text\",\"text\":\"hi\"}])\n\n@case(\"流被截断\")\ndef _():\n    got = assemble(OK[:2])\n    assert got == [{\"type\":\"text\",\"text\":\"hi\",\"incomplete\":True}], got\n\n@case(\"JSON 拼不完整\")\ndef _():\n    ev = [\n      {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"f\"}},\n      {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":'{\"a\":'}},\n      {\"type\":\"content_block_stop\",\"index\":0},\n    ]\n    got = assemble(ev)[0]\n    assert got[\"input\"] is None and got[\"incomplete\"] is True and got[\"raw\"] == '{\"a\":', got\n\n@case(\"孤儿 delta 也能收\")\ndef _():\n    got = assemble([{\"type\":\"content_block_delta\",\"index\":3,\n                     \"delta\":{\"type\":\"text_delta\",\"text\":\"orphan\"}}])\n    assert got == [{\"type\":\"text\",\"text\":\"orphan\",\"incomplete\":True}], got\n\n@case(\"一个坏块不影响别的块\")\ndef _():\n    ev = OK + [\n      {\"type\":\"content_block_start\",\"index\":1,\"block\":{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"f\"}},\n      {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{oops\"}},\n      {\"type\":\"content_block_stop\",\"index\":1},\n    ]\n    got = assemble(ev)\n    assert got[0] == {\"type\":\"text\",\"text\":\"hi\"}, got[0]\n    assert got[1][\"incomplete\"] is True",
+    "hints": [
+     "给每个块记一个 <code>closed</code> 布尔值，<code>content_block_stop</code> 时置 True。",
+     "孤儿 delta：在 delta 分支里用 <code>blocks.setdefault(i, {...默认文本块...})</code> 顺手建出来。",
+     "只在需要时才写 <code>out[\"incomplete\"] = True</code>，别无条件写 <code>False</code>——测试在查这个。"
+    ],
+    "solution": "import json\n\ndef assemble(events):\n    blocks = {}\n\n    def slot(i, kind=\"text\", meta=None):\n        return blocks.setdefault(i, {\n            \"kind\": kind, \"meta\": meta or {}, \"parts\": [],\n            \"closed\": False, \"orphan\": meta is None,\n        })\n\n    for ev in events:\n        t = ev.get(\"type\")\n        if t == \"content_block_start\":\n            b = ev[\"block\"]\n            blocks[ev[\"index\"]] = {\"kind\": b[\"type\"], \"meta\": b, \"parts\": [],\n                                   \"closed\": False, \"orphan\": False}\n        elif t == \"content_block_delta\":\n            d = ev.get(\"delta\") or {}\n            s = slot(ev[\"index\"])\n            s[\"parts\"].append(d.get(\"text\") or d.get(\"partial_json\") or \"\")\n        elif t == \"content_block_stop\":\n            if ev[\"index\"] in blocks:\n                blocks[ev[\"index\"]][\"closed\"] = True\n\n    out = []\n    for i in sorted(blocks):\n        b = blocks[i]\n        joined = \"\".join(b[\"parts\"])\n        broken = b[\"orphan\"] or not b[\"closed\"]\n\n        if b[\"kind\"] == \"text\":\n            item = {\"type\": \"text\", \"text\": joined}\n        else:\n            item = {\"type\": \"tool_use\", \"id\": b[\"meta\"].get(\"id\"),\n                    \"name\": b[\"meta\"].get(\"name\")}\n            try:\n                item[\"input\"] = json.loads(joined) if joined.strip() else {}\n            except json.JSONDecodeError:\n                item[\"input\"] = None\n                item[\"raw\"] = joined\n                broken = True\n\n        if broken:\n            item[\"incomplete\"] = True\n        out.append(item)\n    return out"
+   },
+   {
+    "title": "阶段 3 · 边到边吐出来",
+    "prompt": "产品要求用户能看到字一个个出现，不能等整条消息结束。<br>\n写生成器 <code>stream(events)</code>，边消费边产出元组：<br>\n· 每个 <code>text_delta</code> → <code>(\"text\", 这段文本)</code>（空字符串跳过）<br>\n· 每个工具块的 <code>content_block_start</code> → <code>(\"tool_start\", 工具名)</code><br>\n· 每个工具块<b>收齐并解析成功</b>时 → <code>(\"tool_input\", 参数 dict)</code><br>\n· 工具块解析失败 → <code>(\"tool_error\", 原始串)</code><br>\n· 流结束时 → <code>(\"done\", None)</code>，且必须<b>永远</b>产出这一条<br>\n必须是生成器，不能内部先把所有事件走一遍。",
+    "starter": "import json\n\ndef stream(events):\n    ...\n",
+    "tests": "E = [\n {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Hi\"}},\n {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"!\"}},\n {\"type\":\"content_block_stop\",\"index\":0},\n {\"type\":\"content_block_start\",\"index\":1,\"block\":{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"search\"}},\n {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":'{\"q\":1}'}},\n {\"type\":\"content_block_stop\",\"index\":1},\n]\ncheck_eq(\"完整序列\", lambda: list(stream(E)),\n  [(\"text\",\"Hi\"),(\"text\",\"!\"),(\"tool_start\",\"search\"),(\"tool_input\",{\"q\":1}),(\"done\",None)])\ncheck_eq(\"空流也有 done\", lambda: list(stream([])), [(\"done\",None)])\ncheck_eq(\"空文本片段跳过\", lambda: list(stream([\n  {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"text\"}},\n  {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"\"}}])),\n  [(\"done\",None)])\n\n@case(\"必须是生成器\")\ndef _():\n    import types\n    assert isinstance(stream([]), types.GeneratorType), \"返回的不是生成器\"\n\n@case(\"坏 JSON 产出 tool_error\")\ndef _():\n    ev = [\n      {\"type\":\"content_block_start\",\"index\":0,\"block\":{\"type\":\"tool_use\",\"id\":\"t\",\"name\":\"f\"}},\n      {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{bad\"}},\n      {\"type\":\"content_block_stop\",\"index\":0},\n    ]\n    assert list(stream(ev)) == [(\"tool_start\",\"f\"),(\"tool_error\",\"{bad\"),(\"done\",None)]\n\n@case(\"真的是惰性的\")\ndef _():\n    consumed = {\"n\": 0}\n    def feed():\n        for e in E:\n            consumed[\"n\"] += 1\n            yield e\n    g = stream(feed())\n    first = next(g)\n    assert first == (\"text\",\"Hi\"), first\n    assert consumed[\"n\"] <= 3, f\"一口气读了 {consumed['n']} 个事件\"",
+    "hints": [
+     "只需要记住\"当前打开的工具块\"的缓冲：<code>pending = {index: (name, parts)}</code>。文本可以直接吐，不用缓冲。",
+     "<code>done</code> 用 <code>try / finally</code> 保证吗？不用——放在 for 循环之后就行，因为生成器被完整消费时会走到那里。",
+     "惰性那条测试在查你有没有偷偷写 <code>events = list(events)</code>。"
+    ],
+    "solution": "import json\n\ndef stream(events):\n    pending = {}\n    for ev in events:\n        t = ev.get(\"type\")\n        if t == \"content_block_start\":\n            b = ev[\"block\"]\n            if b[\"type\"] == \"tool_use\":\n                pending[ev[\"index\"]] = [b.get(\"name\"), []]\n                yield (\"tool_start\", b.get(\"name\"))\n        elif t == \"content_block_delta\":\n            d = ev.get(\"delta\") or {}\n            i = ev.get(\"index\")\n            if d.get(\"type\") == \"input_json_delta\" and i in pending:\n                pending[i][1].append(d.get(\"partial_json\") or \"\")\n            else:\n                text = d.get(\"text\") or \"\"\n                if text:\n                    yield (\"text\", text)\n        elif t == \"content_block_stop\":\n            i = ev.get(\"index\")\n            if i in pending:\n                _, parts = pending.pop(i)\n                raw = \"\".join(parts)\n                try:\n                    yield (\"tool_input\", json.loads(raw) if raw.strip() else {})\n                except json.JSONDecodeError:\n                    yield (\"tool_error\", raw)\n    yield (\"done\", None)"
+   }
+  ]
+ }
+]
