@@ -270,5 +270,128 @@
    "stage": 2,
    "deps": []
   }
- ]
+ ],
+ "foundation": {
+  "totals": {
+   "exercises": 23,
+   "assertions": 95
+  },
+  "exercises": [
+   {
+    "kind": "lesson",
+    "id": "b01",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b02",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b03",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b04",
+    "cases": 5
+   },
+   {
+    "kind": "lesson",
+    "id": "b05",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b06",
+    "cases": 3
+   },
+   {
+    "kind": "lesson",
+    "id": "b07",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b08",
+    "cases": 4
+   },
+   {
+    "kind": "lesson",
+    "id": "b09",
+    "cases": 3
+   },
+   {
+    "kind": "lesson",
+    "id": "b10",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f01",
+    "cases": 5
+   },
+   {
+    "kind": "drill",
+    "id": "f02",
+    "cases": 5
+   },
+   {
+    "kind": "drill",
+    "id": "f03",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f04",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f05",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f06",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f07",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f08",
+    "cases": 5
+   },
+   {
+    "kind": "drill",
+    "id": "f09",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f10",
+    "cases": 5
+   },
+   {
+    "kind": "drill",
+    "id": "f11",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f12",
+    "cases": 4
+   },
+   {
+    "kind": "drill",
+    "id": "f13",
+    "cases": 4
+   }
+  ]
+ }
 }

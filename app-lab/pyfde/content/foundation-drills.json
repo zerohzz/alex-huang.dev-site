@@ -1,0 +1,187 @@
+[
+ {
+  "id": "f01",
+  "level": 0,
+  "title": "用切片取子列表",
+  "tag": "切片",
+  "prompt": "用切片写四个函数，都不许写循环：<br>· <code>first_n(xs, n)</code>：前 n 个元素<br>· <code>last_n(xs, n)</code>：后 n 个元素（n 至少为 1）<br>· <code>reverse(xs)</code>：倒序的新列表<br>· <code>every_other(xs)</code>：从第一个开始每隔一个取一个<br>Apex 里要写循环拷贝的事，Python 切片一步完成。",
+  "starter": "def first_n(xs, n):\n    ...\n\n\ndef last_n(xs, n):\n    ...\n\n\ndef reverse(xs):\n    ...\n\n\ndef every_other(xs):\n    ...\n",
+  "tests": "check_eq(\"前 3 个\", lambda: first_n([1, 2, 3, 4, 5], 3), [1, 2, 3])\ncheck_eq(\"n 超过长度不报错\", lambda: first_n([1, 2], 10), [1, 2])\ncheck_eq(\"后 2 个\", lambda: last_n([1, 2, 3, 4, 5], 2), [4, 5])\ncheck_eq(\"倒序\", lambda: reverse([1, 2, 3]), [3, 2, 1])\ncheck_eq(\"隔一个取一个\", lambda: every_other([1, 2, 3, 4, 5]), [1, 3, 5])",
+  "hints": [
+   "切片语法 <code>xs[start:stop:step]</code>，三个位置都可以省略。",
+   "后 n 个是 <code>xs[-n:]</code>，倒序是 <code>xs[::-1]</code>，隔一个取一个是 <code>xs[::2]</code>。"
+  ],
+  "solution": "def first_n(xs, n):\n    return xs[:n]\n\n\ndef last_n(xs, n):\n    return xs[-n:]\n\n\ndef reverse(xs):\n    return xs[::-1]\n\n\ndef every_other(xs):\n    return xs[::2]"
+ },
+ {
+  "id": "f02",
+  "level": 0,
+  "title": "dict 的增查改删",
+  "tag": "dict",
+  "prompt": "写四个函数练 dict 基本操作：<br>· <code>get_price(prices, name)</code>：取价格，没有就返回 0<br>· <code>set_price(prices, name, value)</code>：新增或更新，然后返回 prices<br>· <code>remove_price(prices, name)</code>：删掉这个键（不存在也不能报错），返回 prices<br>· <code>has_item(prices, name)</code>：这个键在不在<br>Apex 的 <code>Map.get(k)</code> 拿不到返回 null；Python 的 <code>d[k]</code> 拿不到直接报错，安全写法是 <code>d.get(k, 默认值)</code>。",
+  "starter": "def get_price(prices, name):\n    ...\n\n\ndef set_price(prices, name, value):\n    ...\n\n\ndef remove_price(prices, name):\n    ...\n\n\ndef has_item(prices, name):\n    ...\n",
+  "tests": "check_eq(\"get 命中\", lambda: get_price({\"a\": 10}, \"a\"), 10)\ncheck_eq(\"get 有默认值\", lambda: get_price({\"a\": 10}, \"b\"), 0)\ncheck_eq(\"新增或更新\", lambda: set_price({}, \"a\", 5), {\"a\": 5})\ncheck_eq(\"pop 不存在的键不报错\", lambda: remove_price({\"a\": 1}, \"x\"), {\"a\": 1})\ncheck_eq(\"in 判断键\", lambda: has_item({\"a\": 1}, \"a\"), True)",
+  "hints": [
+   "取值用 <code>prices.get(name, 0)</code>，第二个参数就是默认值。",
+   "删除用 <code>prices.pop(name, None)</code>——给了第二个参数，键不存在也不会报错。",
+   "判断存在直接写 <code>name in prices</code>。"
+  ],
+  "solution": "def get_price(prices, name):\n    return prices.get(name, 0)\n\n\ndef set_price(prices, name, value):\n    prices[name] = value\n    return prices\n\n\ndef remove_price(prices, name):\n    prices.pop(name, None)\n    return prices\n\n\ndef has_item(prices, name):\n    return name in prices"
+ },
+ {
+  "id": "f03",
+  "level": 0,
+  "title": "清洗一个字符串",
+  "tag": "字符串",
+  "prompt": "写 <code>clean_words(s)</code>：去掉首尾空白、全部转小写、把中间连续的空格压成一个。例如 <code>\"  Hello   World \"</code> 变成 <code>\"hello world\"</code>。会用到 <code>strip</code>、<code>lower</code>、<code>split</code>、<code>join</code> 四个方法。",
+  "starter": "def clean_words(s):\n    ...\n",
+  "tests": "check_eq(\"基本清洗\", lambda: clean_words(\"  Hello World  \"), \"hello world\")\ncheck_eq(\"连续空格压成一个\", lambda: clean_words(\"a   b   c\"), \"a b c\")\ncheck_eq(\"本来就干净的不变\", lambda: clean_words(\"ok\"), \"ok\")\ncheck_eq(\"全是空格得到空串\", lambda: clean_words(\"   \"), \"\")",
+  "hints": [
+   "不带参数的 <code>s.split()</code> 按任意空白切，连续空格自动只算一个分隔。",
+   "切完用 <code>\" \".join(词列表)</code> 拼回去。",
+   "串起来就是一行：<code>\" \".join(s.strip().lower().split())</code>。"
+  ],
+  "solution": "def clean_words(s):\n    return \" \".join(s.strip().lower().split())"
+ },
+ {
+  "id": "f04",
+  "level": 0,
+  "title": "f-string 数字格式化",
+  "tag": "格式化",
+  "prompt": "用 f-string 写三个函数，都返回字符串：<br>· <code>two_dp(x)</code>：保留两位小数，如 <code>\"3.14\"</code><br>· <code>with_commas(n)</code>：加千分位逗号，如 <code>\"1,234,567\"</code><br>· <code>pad_left(s, width)</code>：宽度不足时在左边补空格（右对齐）<br>Apex 里拼 <code>String.format</code> 的事，f-string 一行解决。",
+  "starter": "def two_dp(x):\n    ...\n\n\ndef with_commas(n):\n    ...\n\n\ndef pad_left(s, width):\n    ...\n",
+  "tests": "check_eq(\"两位小数\", lambda: two_dp(3.14159), \"3.14\")\ncheck_eq(\"整数也补零\", lambda: two_dp(7), \"7.00\")\ncheck_eq(\"千分位\", lambda: with_commas(1234567), \"1,234,567\")\ncheck_eq(\"右对齐补空格\", lambda: pad_left(\"ab\", 5), \"   ab\")",
+  "hints": [
+   "两位小数：<code>f\"{x:.2f}\"</code>，冒号后面是格式说明。",
+   "千分位是 <code>f\"{n:,}\"</code>；右对齐是 <code>f\"{s:>5}\"</code>，宽度也可以用变量：<code>f\"{s:>{width}}\"</code>。"
+  ],
+  "solution": "def two_dp(x):\n    return f\"{x:.2f}\"\n\n\ndef with_commas(n):\n    return f\"{n:,}\"\n\n\ndef pad_left(s, width):\n    return f\"{s:>{width}}\""
+ },
+ {
+  "id": "f05",
+  "level": 0,
+  "title": "区分 None 和 0",
+  "tag": "真值",
+  "prompt": "写 <code>pick(value, default)</code>：只有当 <code>value</code> 是 <code>None</code> 时才返回 <code>default</code>，其他情况原样返回 <code>value</code>。注意 <code>0</code>、<code>\"\"</code>、<code>False</code> 都是有效值，必须原样返回——所以不能写 <code>value or default</code>。Apex 里判 null 用 <code>==</code>，Python 里判 None 要用 <code>is None</code>。",
+  "starter": "def pick(value, default):\n    ...\n",
+  "tests": "check_eq(\"None 才用默认值\", lambda: pick(None, 99), 99)\ncheck_eq(\"0 是有效值\", lambda: pick(0, 99), 0)\ncheck_eq(\"空串是有效值\", lambda: pick(\"\", \"x\"), \"\")\ncheck_eq(\"False 是有效值\", lambda: pick(False, True), False)",
+  "hints": [
+   "判断写 <code>if value is None:</code>，不要用 <code>if not value</code>。",
+   "<code>if not value</code> 在 value 是 0 或空串时也成立，这正是要避开的坑。"
+  ],
+  "solution": "def pick(value, default):\n    if value is None:\n        return default\n    return value"
+ },
+ {
+  "id": "f06",
+  "level": 0,
+  "title": "带条件的列表推导式",
+  "tag": "推导式",
+  "prompt": "写 <code>even_squares(nums)</code>：返回所有偶数的平方组成的列表，顺序不变。要求用一个列表推导式完成（带 <code>if</code> 过滤），不写普通 for 循环。",
+  "starter": "def even_squares(nums):\n    ...\n",
+  "tests": "check_eq(\"基本\", lambda: even_squares([1, 2, 3, 4]), [4, 16])\ncheck_eq(\"没有偶数得到空列表\", lambda: even_squares([1, 3]), [])\ncheck_eq(\"空输入\", lambda: even_squares([]), [])\ncheck_eq(\"负偶数也算\", lambda: even_squares([-2]), [4])",
+  "hints": [
+   "形状是 <code>[表达式 for n in nums if 条件]</code>，if 放在最后。",
+   "偶数判断 <code>n % 2 == 0</code>，平方写 <code>n * n</code>。"
+  ],
+  "solution": "def even_squares(nums):\n    return [n * n for n in nums if n % 2 == 0]"
+ },
+ {
+  "id": "f07",
+  "level": 0,
+  "title": "用 zip 拼 dict",
+  "tag": "zip",
+  "prompt": "写两个函数：<br>· <code>make_dict(keys, values)</code>：把两个列表按位置配对成 dict<br>· <code>invert(d)</code>：把 dict 的键值互换（假定值不重复）<br>分别练 <code>zip</code> 和 dict 推导式。",
+  "starter": "def make_dict(keys, values):\n    ...\n\n\ndef invert(d):\n    ...\n",
+  "tests": "check_eq(\"两个列表拼成 dict\", lambda: make_dict([\"a\", \"b\"], [1, 2]), {\"a\": 1, \"b\": 2})\ncheck_eq(\"长度不等取短的\", lambda: make_dict([\"a\", \"b\", \"c\"], [1]), {\"a\": 1})\ncheck_eq(\"空列表得到空 dict\", lambda: make_dict([], []), {})\ncheck_eq(\"键值互换\", lambda: invert({\"a\": 1, \"b\": 2}), {1: \"a\", 2: \"b\"})",
+  "hints": [
+   "<code>zip(keys, values)</code> 把两个列表按位置配成对，<code>dict(...)</code> 直接吃这些对。",
+   "键值互换用 dict 推导式：<code>{v: k for k, v in d.items()}</code>。"
+  ],
+  "solution": "def make_dict(keys, values):\n    return dict(zip(keys, values))\n\n\ndef invert(d):\n    return {v: k for k, v in d.items()}"
+ },
+ {
+  "id": "f08",
+  "level": 0,
+  "title": "多值解包",
+  "tag": "解包",
+  "prompt": "解包三连，写三个函数：<br>· <code>swap(a, b)</code>：返回 <code>(b 的值, a 的值)</code>，函数体里用 <code>a, b = b, a</code> 这种写法，不用临时变量<br>· <code>split_first(xs)</code>：返回 <code>(第一个元素, 剩下的列表)</code>，用 <code>first, *rest = xs</code><br>· <code>min_max(xs)</code>：一次返回 <code>(最小值, 最大值)</code>",
+  "starter": "def swap(a, b):\n    ...\n\n\ndef split_first(xs):\n    ...\n\n\ndef min_max(xs):\n    ...\n",
+  "tests": "check_eq(\"交换\", lambda: swap(1, 2), (2, 1))\ncheck_eq(\"first 和 rest\", lambda: split_first([1, 2, 3]), (1, [2, 3]))\ncheck_eq(\"只有一个元素时 rest 是空列表\", lambda: split_first([9]), (9, []))\ncheck_eq(\"返回元组\", lambda: min_max([3, 1, 2]), (1, 3))\n\n@case(\"接收端也能解包\")\ndef _():\n    lo, hi = min_max([5, 2, 8])\n    assert lo == 2 and hi == 8, \"解包结果不对\"",
+  "hints": [
+   "Python 交换不需要临时变量：<code>a, b = b, a</code>。",
+   "<code>first, *rest = xs</code> 里 rest 永远是列表，哪怕是空的。",
+   "<code>return min(xs), max(xs)</code> 返回的就是一个元组——是逗号在构造元组。"
+  ],
+  "solution": "def swap(a, b):\n    a, b = b, a\n    return a, b\n\n\ndef split_first(xs):\n    first, *rest = xs\n    return first, rest\n\n\ndef min_max(xs):\n    return min(xs), max(xs)"
+ },
+ {
+  "id": "f09",
+  "level": 0,
+  "title": "用 enumerate 给行编号",
+  "tag": "enumerate",
+  "prompt": "写 <code>number_lines(lines)</code>：给每一行加编号，从 1 开始，每行格式是 <code>\"1. xxx\"</code>（数字、点、空格、原文）。用 <code>enumerate</code>，不要自己维护计数器变量。",
+  "starter": "def number_lines(lines):\n    ...\n",
+  "tests": "check_eq(\"从 1 开始编号\", lambda: number_lines([\"a\", \"b\"]), [\"1. a\", \"2. b\"])\ncheck_eq(\"三行\", lambda: number_lines([\"x\", \"y\", \"z\"]), [\"1. x\", \"2. y\", \"3. z\"])\ncheck_eq(\"单行\", lambda: number_lines([\"only\"]), [\"1. only\"])\ncheck_eq(\"空输入\", lambda: number_lines([]), [])",
+  "hints": [
+   "<code>enumerate(lines, 1)</code> 的第二个参数是起始编号，不给就从 0 开始。",
+   "循环头写 <code>for i, line in enumerate(lines, 1):</code>，拼串用 <code>f\"{i}. {line}\"</code>。"
+  ],
+  "solution": "def number_lines(lines):\n    out = []\n    for i, line in enumerate(lines, 1):\n        out.append(f\"{i}. {line}\")\n    return out"
+ },
+ {
+  "id": "f10",
+  "level": 0,
+  "title": "用 in 判断成员",
+  "tag": "成员判断",
+  "prompt": "写 <code>contains(container, x)</code>：判断 <code>x</code> 在不在 <code>container</code> 里，直接用 <code>in</code>。同一个写法对 list、set、dict、字符串都有效，但注意：dict 用 <code>in</code> 查的是键不是值；字符串查的是子串。",
+  "starter": "def contains(container, x):\n    ...\n",
+  "tests": "check_eq(\"list 里找元素\", lambda: contains([1, 2, 3], 2), True)\ncheck_eq(\"set 里没有\", lambda: contains({1, 2}, 3), False)\ncheck_eq(\"dict 查的是键\", lambda: contains({\"a\": 1}, \"a\"), True)\ncheck_eq(\"dict 不查值\", lambda: contains({\"a\": 1}, 1), False)\ncheck_eq(\"字符串查子串\", lambda: contains(\"hello\", \"ell\"), True)",
+  "hints": [
+   "四种容器都是同一个写法：<code>x in container</code>，一行就够。",
+   "<code>1 in {\"a\": 1}</code> 是 False——dict 的 in 只看键；要查值得写 <code>x in d.values()</code>。"
+  ],
+  "solution": "def contains(container, x):\n    return x in container"
+ },
+ {
+  "id": "f11",
+  "level": 0,
+  "title": "用 try/except 安全转 int",
+  "tag": "异常",
+  "prompt": "写 <code>safe_int(s, default)</code>：把 <code>s</code> 转成 int，转不了就返回 <code>default</code>。只捕获 <code>ValueError</code>——如果写成 <code>except Exception</code>，会把 <code>safe_int(None, 0)</code> 这种类型错误也吞掉，测试会抓这一点。",
+  "starter": "def safe_int(s, default):\n    ...\n",
+  "tests": "check_eq(\"正常转换\", lambda: safe_int(\"42\", 0), 42)\ncheck_eq(\"转不了用默认值\", lambda: safe_int(\"abc\", -1), -1)\ncheck_eq(\"带空格也能转\", lambda: safe_int(\" 7 \", 0), 7)\n\n@case(\"TypeError 不该被吞掉\")\ndef _():\n    try:\n        safe_int(None, 0)\n    except TypeError:\n        return\n    assert False, \"except 只该捕获 ValueError，不要捕获所有异常\"",
+  "hints": [
+   "骨架：<code>try:</code> 里 <code>return int(s)</code>，<code>except ValueError:</code> 里 <code>return default</code>。",
+   "不要写裸的 <code>except:</code> 或 <code>except Exception:</code>——只接住你真正预期的那一种错误。"
+  ],
+  "solution": "def safe_int(s, default):\n    try:\n        return int(s)\n    except ValueError:\n        return default"
+ },
+ {
+  "id": "f12",
+  "level": 0,
+  "title": "最小的类",
+  "tag": "类",
+  "prompt": "写一个计数器类 <code>Tally</code>：<br>· <code>__init__</code>：把计数初始化为 0<br>· <code>add(n)</code>：把 n 加进计数<br>· <code>total()</code>：返回当前计数<br>Apex 里的 <code>this.count</code>，Python 里写 <code>self.count</code>，而且每个方法的第一个参数必须显式写 <code>self</code>。",
+  "starter": "class Tally:\n    def __init__(self):\n        ...\n\n    def add(self, n):\n        ...\n\n    def total(self):\n        ...\n",
+  "tests": "@case(\"初始为 0\")\ndef _():\n    t = Tally()\n    assert t.total() == 0, \"初始计数应该是 0\"\n\n@case(\"add 会累加\")\ndef _():\n    t = Tally()\n    t.add(3)\n    t.add(4)\n    assert t.total() == 7, \"3 + 4 应该是 7\"\n\n@case(\"可以加负数\")\ndef _():\n    t = Tally()\n    t.add(10)\n    t.add(-4)\n    assert t.total() == 6, \"10 - 4 应该是 6\"\n\n@case(\"两个实例互不影响\")\ndef _():\n    a = Tally()\n    b = Tally()\n    a.add(5)\n    assert b.total() == 0, \"b 不该受 a 影响\"",
+  "hints": [
+   "<code>def __init__(self):</code> 里写 <code>self.count = 0</code>。",
+   "每个方法的第一个参数都是 <code>self</code>，调用时不用传：<code>t.add(3)</code>。"
+  ],
+  "solution": "class Tally:\n    def __init__(self):\n        self.count = 0\n\n    def add(self, n):\n        self.count += n\n\n    def total(self):\n        return self.count"
+ },
+ {
+  "id": "f13",
+  "level": 0,
+  "title": "sorted 按字段降序",
+  "tag": "排序",
+  "prompt": "rows 是 <code>{\"name\": ..., \"score\": ...}</code> 的列表。按 score 从高到低排序，写两种：<br>· <code>by_score_desc(rows)</code>：用 <code>sorted(..., key=..., reverse=True)</code><br>· <code>neg_key_desc(rows)</code>：不用 reverse，在 key 里对 score 取负号<br>负号写法只对数字有效，<code>reverse=True</code> 对什么类型都行。",
+  "starter": "def by_score_desc(rows):\n    ...\n\n\ndef neg_key_desc(rows):\n    ...\n",
+  "tests": "ROWS = [{\"name\": \"a\", \"score\": 1}, {\"name\": \"b\", \"score\": 3}, {\"name\": \"c\", \"score\": 2}]\nWANT = [{\"name\": \"b\", \"score\": 3}, {\"name\": \"c\", \"score\": 2}, {\"name\": \"a\", \"score\": 1}]\ncheck_eq(\"reverse=True 降序\", lambda: by_score_desc(ROWS), WANT)\ncheck_eq(\"负号 key 结果相同\", lambda: neg_key_desc(ROWS), WANT)\ncheck_eq(\"空列表\", lambda: by_score_desc([]), [])\n\n@case(\"sorted 不改原列表\")\ndef _():\n    rows = [{\"score\": 2}, {\"score\": 1}]\n    by_score_desc(rows)\n    assert rows == [{\"score\": 2}, {\"score\": 1}], \"原列表被改了\"",
+  "hints": [
+   "<code>key=lambda r: r[\"score\"]</code> 告诉 sorted 按哪个字段比较。",
+   "降序两种写法：加 <code>reverse=True</code>，或者 key 里取负 <code>key=lambda r: -r[\"score\"]</code>。sorted 返回新列表，不改原来的。"
+  ],
+  "solution": "def by_score_desc(rows):\n    return sorted(rows, key=lambda r: r[\"score\"], reverse=True)\n\n\ndef neg_key_desc(rows):\n    return sorted(rows, key=lambda r: -r[\"score\"])"
+ }
+]

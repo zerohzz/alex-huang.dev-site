@@ -4,18 +4,10 @@
 
 import { esc } from "./util.js";
 import {
-  slotKey, slot, allProgress, dueEntries, resetProgress,
+  slotKey, allProgress, dueEntries, resetProgress,
   exportData, importData,
 } from "./store.js";
-
-function glyphFor(k) {
-  const s = allProgress()[k];
-  if (!s) return ["·", ""];
-  if (s.status === "pass") return ["●", "done"];
-  if (s.peeked) return ["○", "peek"];
-  if (s.status === "try") return ["◐", "part"];
-  return ["·", ""];
-}
+import { slotGlyph as glyphFor } from "./status.js";
 
 // State word for screen readers; the glyph itself is aria-hidden.
 const STATE_WORD = { done: "已通过", part: "试过", peek: "看过答案", "": "" };
@@ -68,12 +60,14 @@ export function renderSide(app) {
   const t = tally(content);
   let html = reviewGroupHtml(app);
 
-  if (state.mode === "ref") {
+  if (state.mode === "ref" || state.mode === "plan") {
     html += `<div class="side-group"><div class="side-h"><span>进度</span><b>${t.done}/${t.total}</b></div>` +
-      `<p class="fine" style="padding:0 8px">切回教程、练习或真题继续。</p></div>`;
+      `<p class="fine" style="padding:0 8px">` +
+      (state.mode === "plan" ? "从今天的块开始，做完一块回来勾下一块。" : "切回教程、练习或真题继续。") +
+      `</p></div>`;
   } else if (state.mode === "drill") {
-    [1, 2, 3].forEach((lv) => {
-      const label = { 1: "L1 · 语法手感", 2: "L2 · 数据处理", 3: "L3 · LLM 工程" }[lv];
+    [0, 1, 2, 3].forEach((lv) => {
+      const label = { 0: "L0 · 语法微练", 1: "L1 · 语法手感", 2: "L2 · 数据处理", 3: "L3 · LLM 工程" }[lv];
       html += `<div class="side-group"><div class="side-h"><span>${label}</span></div>`;
       content.drills.filter((d) => d.level === lv).forEach((d) => {
         const [g, cls] = glyphFor(slotKey("drill", d.id));
@@ -84,20 +78,29 @@ export function renderSide(app) {
       });
       html += "</div>";
     });
+  } else if (state.mode === "learn") {
+    for (const tier of ["地基", "进阶"]) {
+      const group = content.lessons.filter((l) => l.tier === tier);
+      const label = tier === "地基"
+        ? `地基 · Apex→Python · ${group.length} 课`
+        : `进阶 · 语法回炉 · ${group.length} 课`;
+      html += `<div class="side-group"><div class="side-h"><span>${label}</span></div>`;
+      group.forEach((it, i) => {
+        const [g, cls] = glyphFor(slotKey("learn", it.id));
+        html += navButton({
+          id: it.id, num: String(i + 1).padStart(2, "0"), glyph: g, cls,
+          title: it.title, current: it.id === state.id,
+        });
+      });
+      html += "</div>";
+    }
   } else {
-    const items = state.mode === "learn" ? content.lessons : content.exams;
-    const label = state.mode === "learn" ? "语法回炉 · 12 课" : "多阶段真题 · 5 道";
-    html += `<div class="side-group"><div class="side-h"><span>${label}</span><b>${t.done}/${t.total}</b></div>`;
-    items.forEach((it, i) => {
-      let g = "·", cls = "";
-      if (state.mode === "learn") {
-        [g, cls] = glyphFor(slotKey("learn", it.id));
-      } else {
-        const st = it.stages.map((_, si) => (allProgress()[slotKey("exam", it.id, si)] || {}).status === "pass");
-        const n = st.filter(Boolean).length;
-        g = n === st.length ? "●" : n > 0 ? "◐" : "·";
-        cls = n === st.length ? "done" : n > 0 ? "part" : "";
-      }
+    html += `<div class="side-group"><div class="side-h"><span>多阶段真题 · 5 道</span><b>${t.done}/${t.total}</b></div>`;
+    content.exams.forEach((it, i) => {
+      const st = it.stages.map((_, si) => (allProgress()[slotKey("exam", it.id, si)] || {}).status === "pass");
+      const n = st.filter(Boolean).length;
+      const g = n === st.length ? "●" : n > 0 ? "◐" : "·";
+      const cls = n === st.length ? "done" : n > 0 ? "part" : "";
       html += navButton({
         id: it.id, num: String(i + 1).padStart(2, "0"), glyph: g, cls,
         title: it.title, current: it.id === state.id,

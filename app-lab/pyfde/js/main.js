@@ -188,16 +188,18 @@ async function start() {
   }
 
   const last = getSetting("last");
-  const valid = last && app.itemsFor(last.mode) &&
-    app.itemsFor(last.mode).some((x) => x.id === last.id);
+  const idless = last && (last.mode === "plan" || last.mode === "ref");
+  const valid = last && (idless ||
+    (app.itemsFor(last.mode) && app.itemsFor(last.mode).some((x) => x.id === last.id)));
   if (valid) {
-    app.state = { mode: last.mode, id: last.id, stage: last.stage || 0 };
+    app.state = { mode: last.mode, id: idless ? null : last.id, stage: last.stage || 0 };
     if (app.state.mode === "exam") {
       const stages = app.current().stages.length;
       if (app.state.stage >= stages) app.state.stage = 0;
     }
   } else {
-    app.state = { mode: "learn", id: app.content.lessons[0].id, stage: 0 };
+    // 新用户落在计划页——每天从这里出发
+    app.state = { mode: "plan", id: null, stage: 0 };
   }
   app.selectModeButton(app.state.mode);
 

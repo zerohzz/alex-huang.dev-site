@@ -1,0 +1,172 @@
+[
+ {
+  "id": "b01",
+  "title": "程序骨架：没有类也能活",
+  "goal": "Apex 里万物皆类。Python 里模块、函数、缩进块就是全部结构。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>public class Greeter {\n    public static String greet(String name) {\n        return 'hi ' + name;\n    }\n}\n// 调用\nSystem.debug(Greeter.greet('ada'));</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>def greet(name):\n    return 'hi ' + name\n\n# 模块顶层代码直接执行\nprint(greet('ada'))</pre></div>\n</div>\n<ul>\n<li>没有 <code>{}</code>，<b>缩进就是块结构</b>。一层缩进固定 4 个空格。</li>\n<li><code>def</code> 定义函数，不需要包在类里。文件本身（模块）就是组织单位。</li>\n<li>没有 <code>public/static/void</code>，没有分号，没有返回类型声明。</li>\n<li>命名约定：函数和变量用 <code>snake_case</code>，类用 <code>PascalCase</code>。面试官会看。</li>\n<li><code>System.debug()</code> → <code>print()</code>。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · 缩进错一格就是语法错误或逻辑错误，tab 和空格混用直接报 <code>TabError</code>。编辑器统一用 4 空格，别想别的。</div>",
+  "demo": "def greet(name):\n    return 'hi ' + name\n\ndef shout(name):\n    return greet(name) + '?'\n\n# 模块顶层代码从上往下直接跑\nprint(greet('ada'))\nprint(shout('bob'))\n\n# 缩进决定归属：下面这行不在任何函数里\nprint('模块级别的代码')",
+  "task": {
+   "prompt": "写两个函数：<br>\n<code>intro(name, age)</code> 返回形如 <code>\"ada, 30 岁\"</code> 的字符串（逗号后有空格）；<br>\n<code>is_adult(age)</code> 返回年龄是否 ≥ 18 的布尔值。",
+   "starter": "def intro(name, age):\n    ...\n\ndef is_adult(age):\n    ...\n",
+   "tests": "check_eq(\"基本拼接\", lambda: intro(\"ada\", 30), \"ada, 30 岁\")\ncheck_eq(\"另一组值\", lambda: intro(\"bob\", 7), \"bob, 7 岁\")\ncheck_eq(\"18 岁算成年\", lambda: is_adult(18), True)\ncheck_eq(\"17 岁不算\", lambda: is_adult(17), False)",
+   "hints": [
+    "字符串拼接可以用 <code>f\"{name}, {age} 岁\"</code>——B6 会细讲 f-string，先照着用。",
+    "布尔直接返回比较结果：<code>return age >= 18</code>，不用写 if。"
+   ],
+   "solution": "def intro(name, age):\n    return f\"{name}, {age} 岁\"\n\ndef is_adult(age):\n    return age >= 18"
+  }
+ },
+ {
+  "id": "b02",
+  "title": "类型、None 与真值",
+  "goal": "动态类型不等于没有类型。None 是 Python 的 null，但真值规则完全不同。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>String s = null;\nInteger n = 0;\nBoolean b;          // null，三态坑\nif (s != null) { ... }</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>s = None\nn = 0\nb = False           # 没有三态\nif s is not None:\n    ...</pre></div>\n</div>\n<ul>\n<li>变量不声明类型，赋值即创建。<code>type(x)</code> 随时看类型。</li>\n<li><code>null</code> → <code>None</code>。判断用 <code>is None</code> / <code>is not None</code>，不用 <code>==</code>。</li>\n<li>真值表：<code>None</code>、<code>0</code>、<code>\"\"</code>、<code>[]</code>、<code>{}</code> 全是假，其他都是真。所以 <code>if items:</code> 就能判非空。</li>\n<li>Apex 的 Boolean 可以是 null（三态）；Python 的 <code>bool</code> 只有两个值，\"缺失\"永远用 <code>None</code> 表达。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · <code>0</code> 和 <code>None</code> 都是假，但含义不同。字段\"数量可能是 0\"时必须写 <code>if count is not None:</code>，写 <code>if count:</code> 会把 0 当成缺失吞掉。这个坑从地基层跟到真题层。</div>",
+  "demo": "x = 42\nprint(type(x).__name__)\nx = \"现在是字符串了\"\nprint(type(x).__name__)\n\nfor v in [None, 0, \"\", [], {}, \"a\", [0], -1]:\n    print(repr(v), \"->\", bool(v))\n\ncount = 0\nprint(\"if count:\", bool(count))\nprint(\"count is None:\", count is None)",
+  "task": {
+   "prompt": "写 <code>pick(value, fallback)</code>：<code>value</code> 是 <code>None</code> 时返回 <code>fallback</code>，否则返回 <code>value</code> 本身。<br>注意 <code>0</code> 和空字符串都是合法的 value，必须原样保留。",
+   "starter": "def pick(value, fallback):\n    ...\n",
+   "tests": "check_eq(\"None 用后备\", lambda: pick(None, 5), 5)\ncheck_eq(\"0 要保留\", lambda: pick(0, 5), 0)\ncheck_eq(\"空串要保留\", lambda: pick(\"\", \"x\"), \"\")\ncheck_eq(\"正常值原样返回\", lambda: pick(\"a\", \"b\"), \"a\")",
+   "hints": [
+    "判断条件写 <code>if value is None</code>，不要写 <code>if not value</code>。",
+    "整个函数三行：if、return fallback、return value。"
+   ],
+   "solution": "def pick(value, fallback):\n    if value is None:\n        return fallback\n    return value"
+  }
+ },
+ {
+  "id": "b03",
+  "title": "集合对照：list、dict、set、tuple",
+  "goal": "List/Map/Set 你都认识，换一套字面量语法和方法名而已。tuple 是新面孔。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>List&lt;String&gt; xs = new List&lt;String&gt;{'a', 'b'};\nxs.add('c');\nxs.get(0);\nMap&lt;String, Integer&gt; m =\n    new Map&lt;String, Integer&gt;{'a' =&gt; 1};\nm.put('b', 2);\nm.containsKey('a');\nSet&lt;String&gt; s = new Set&lt;String&gt;{'x'};</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>xs = ['a', 'b']\nxs.append('c')\nxs[0]\nm = {'a': 1}\nm['b'] = 2\n'a' in m\ns = {'x'}</pre></div>\n</div>\n<ul>\n<li>对照：<code>List</code>→<code>list</code>（<code>[]</code>），<code>Map</code>→<code>dict</code>（<code>{}</code>），<code>Set</code>→<code>set</code>（<code>{x}</code>，空 set 必须写 <code>set()</code>）。</li>\n<li><code>xs.size()</code> → <code>len(xs)</code>。len 是函数不是方法，什么容器都用它。</li>\n<li><code>m.get('k')</code> 缺键返回 <code>None</code> 不报错；<code>m['k']</code> 缺键抛 <code>KeyError</code>。</li>\n<li><code>tuple</code> 是不可变的 list：<code>(1, 2)</code>。函数返回多个值、当 dict 键，都靠它。</li>\n</ul>\n<div class=\"note\"><b>省力点</b> · Python 的字面量语法让\"构造一个测试数据\"从 Apex 的三行 new 变成一行。面试里手速差距一半来自这里。</div>",
+  "demo": "xs = ['a', 'b']\nxs.append('c')\nprint(xs, len(xs))\n\nm = {'a': 1}\nm['b'] = 2\nprint(m, m.get('缺的键'), 'a' in m)\n\ns = {'x', 'y', 'x'}\nprint(s, len(s))\n\nt = (1, 2)\nprint(t[0])\n# t[0] = 9  # 取消注释试试：tuple 不可变，直接报错",
+  "task": {
+   "prompt": "写两个函数：<br>\n<code>count_lengths(names)</code>：返回 <code>{名字: 长度}</code> 的 dict；<br>\n<code>unique_count(names)</code>：返回去重后有几个不同的名字。",
+   "starter": "def count_lengths(names):\n    ...\n\ndef unique_count(names):\n    ...\n",
+   "tests": "check_eq(\"长度表\", lambda: count_lengths([\"ada\", \"bo\"]), {\"ada\": 3, \"bo\": 2})\ncheck_eq(\"空列表\", lambda: count_lengths([]), {})\ncheck_eq(\"去重计数\", lambda: unique_count([\"a\", \"b\", \"a\", \"a\"]), 2)\ncheck_eq(\"全不重复\", lambda: unique_count([\"x\", \"y\"]), 2)",
+   "hints": [
+    "建 dict：先 <code>out = {}</code>，循环里 <code>out[name] = len(name)</code>。",
+    "去重就是 <code>len(set(names))</code>，一行。"
+   ],
+   "solution": "def count_lengths(names):\n    out = {}\n    for name in names:\n        out[name] = len(name)\n    return out\n\ndef unique_count(names):\n    return len(set(names))"
+  }
+ },
+ {
+  "id": "b04",
+  "title": "循环与迭代：忘掉 i++",
+  "goal": "Python 的 for 直接遍历元素，不遍历下标。需要下标时用 enumerate。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>for (Integer i = 0; i &lt; xs.size(); i++) {\n    String x = xs.get(i);\n    System.debug(i + ': ' + x);\n}\nInteger total = 0;\nfor (Integer n : nums) { total += n; }</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>for i, x in enumerate(xs):\n    print(i, x)\n\ntotal = sum(nums)</pre></div>\n</div>\n<ul>\n<li>默认形态是 <code>for x in xs:</code>——直接拿元素。Apex 的增强 for 你已经会了，这就是唯一形态。</li>\n<li>要下标：<code>enumerate(xs)</code>；要 0..n-1：<code>range(n)</code>；要 a..b-1 步长 s：<code>range(a, b, s)</code>。</li>\n<li>没有 <code>++</code> 和 <code>--</code>，写 <code>i += 1</code>。</li>\n<li><code>break</code> / <code>continue</code> / <code>while</code> 行为和 Apex 一样。</li>\n<li>求和、最大值别写循环：<code>sum(nums)</code>、<code>max(nums)</code>、<code>min(nums)</code>。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · 一边遍历一边删元素会跳项。要改就遍历副本：<code>for x in xs[:]:</code>，或者干脆构造一个新 list（B10 的推导式就是干这个的）。</div>",
+  "demo": "xs = ['a', 'b', 'c']\nfor x in xs:\n    print(x)\n\nfor i, x in enumerate(xs):\n    print(i, x)\n\nprint(list(range(5)))\nprint(list(range(2, 10, 3)))\n\nnums = [4, 1, 7]\nprint(sum(nums), max(nums), min(nums))",
+  "task": {
+   "prompt": "写两个函数：<br>\n<code>total_evens(nums)</code>：返回所有偶数的和（偶数判断 <code>n % 2 == 0</code>）；<br>\n<code>count_down(n)</code>：返回 <code>[n, n-1, …, 1]</code> 的 list（用 <code>range</code> 的负步长）。",
+   "starter": "def total_evens(nums):\n    ...\n\ndef count_down(n):\n    ...\n",
+   "tests": "check_eq(\"偶数求和\", lambda: total_evens([1, 2, 3, 4]), 6)\ncheck_eq(\"没有偶数\", lambda: total_evens([1, 3]), 0)\ncheck_eq(\"空输入\", lambda: total_evens([]), 0)\ncheck_eq(\"倒数\", lambda: count_down(3), [3, 2, 1])\ncheck_eq(\"倒数到 1\", lambda: count_down(1), [1])",
+   "hints": [
+    "累加：<code>total = 0</code>，循环里 <code>if n % 2 == 0: total += n</code>。",
+    "负步长：<code>range(n, 0, -1)</code>，终点 0 取不到，正好停在 1。<code>list(...)</code> 转成列表。"
+   ],
+   "solution": "def total_evens(nums):\n    total = 0\n    for n in nums:\n        if n % 2 == 0:\n            total += n\n    return total\n\ndef count_down(n):\n    return list(range(n, 0, -1))"
+  }
+ },
+ {
+  "id": "b05",
+  "title": "函数与参数：没有重载的世界",
+  "goal": "Apex 靠重载给方法多个签名。Python 一个 def 加默认参数就全覆盖了。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>public String connect(String host) { ... }\npublic String connect(String host, Integer port) { ... }\npublic String connect(String host, Integer port,\n                      Integer timeout) { ... }</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>def connect(host, port=443, timeout=5):\n    ...\n\nconnect('a.com')\nconnect('a.com', 8080)\nconnect('a.com', timeout=30)</pre></div>\n</div>\n<ul>\n<li><b>Python 没有方法重载</b>。同名 def 后者直接覆盖前者，不报错——这是 Apex 人最容易撞的墙。</li>\n<li>替代品就是默认参数 + 关键字调用。<code>connect('a.com', timeout=30)</code> 跳过中间参数，调用点自解释。</li>\n<li>返回多个值：<code>return lo, hi</code> 实际返回 tuple，接的时候 <code>lo, hi = f()</code> 直接解开。</li>\n<li><code>*args</code>/<code>**kwargs</code> 收集任意参数——进阶层 l06 细讲，先认识长相。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · 默认值只在 def 执行时创建一次。<code>def f(items=[])</code> 的那个 list 会被所有调用共享。默认值只用不可变的东西；要空列表就写 <code>items=None</code> 再在函数里判。进阶层 l06 专门考这个。</div>",
+  "demo": "def connect(host, port=443, timeout=5):\n    return f\"{host}:{port} (timeout={timeout})\"\n\nprint(connect('a.com'))\nprint(connect('a.com', 8080))\nprint(connect('a.com', timeout=30))\n\ndef span(nums):\n    return min(nums), max(nums)\n\nlo, hi = span([4, 1, 7])\nprint(lo, hi)",
+  "task": {
+   "prompt": "写 <code>make_url(host, path=\"/\", secure=True)</code>：<br>\n返回 <code>\"https://host/path\"</code>；<code>secure=False</code> 时协议换成 <code>http</code>。<code>path</code> 参数总是以 <code>/</code> 开头传入。",
+   "starter": "def make_url(host, path=\"/\", secure=True):\n    ...\n",
+   "tests": "check_eq(\"全默认\", lambda: make_url(\"a.com\"), \"https://a.com/\")\ncheck_eq(\"带路径\", lambda: make_url(\"a.com\", \"/v1\"), \"https://a.com/v1\")\ncheck_eq(\"关掉 https\", lambda: make_url(\"a.com\", secure=False), \"http://a.com/\")\ncheck_eq(\"路径加协议\", lambda: make_url(\"b.io\", \"/x\", False), \"http://b.io/x\")",
+   "hints": [
+    "先算协议：<code>proto = \"https\" if secure else \"http\"</code>。",
+    "拼接：<code>f\"{proto}://{host}{path}\"</code>——path 自带斜杠，别再加。"
+   ],
+   "solution": "def make_url(host, path=\"/\", secure=True):\n    proto = \"https\" if secure else \"http\"\n    return f\"{proto}://{host}{path}\""
+  }
+ },
+ {
+  "id": "b06",
+  "title": "字符串与 f-string",
+  "goal": "把 String.format 和一堆 + 拼接全部换成 f-string，一步到位。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>String msg = String.format(\n    '{0} scored {1}',\n    new List&lt;Object&gt;{name, score});\ns.contains('err');\ns.toLowerCase();\ns.substring(0, 3);</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>msg = f\"{name} scored {score}\"\n'err' in s\ns.lower()\ns[0:3]</pre></div>\n</div>\n<ul>\n<li>f-string 里 <code>{}</code> 内可以放任意表达式：<code>f\"{score * 2}\"</code>、<code>f\"{name.upper()}\"</code>。</li>\n<li>格式说明符跟在冒号后：<code>{x:.2f}</code> 两位小数，<code>{x:,}</code> 千分位，<code>{x:&gt;8}</code> 右对齐补到 8 位。</li>\n<li><code>.contains()</code> → <code>in</code>；<code>substring</code> → 切片 <code>s[a:b]</code>（和 list 切片同一套规则）。</li>\n<li>常用方法：<code>strip()</code> 去首尾空白、<code>split(\",\")</code> 切开、<code>\",\".join(xs)</code> 拼回去、<code>replace(a, b)</code>。</li>\n<li>字符串不可变：所有方法都返回新字符串，原来的不动。</li>\n</ul>\n<div class=\"note\"><b>面试口播</b> · 输出格式题第一反应就是 f-string 的格式说明符，不要手写四舍五入和补位逻辑。</div>",
+  "demo": "name = \"ada\"\nscore = 87.456\nprint(f\"{name} scored {score:.1f}\")\nprint(f\"{1234567:,}\")\nprint(f\"[{name:>8}]\")\n\ns = \"  Hello, World  \"\nprint(s.strip().lower())\nprint(\"err\" in \"no errors here\")\nprint(\"-\".join([\"a\", \"b\", \"c\"]))\nprint(\"a,b,c\".split(\",\"))",
+  "task": {
+   "prompt": "写 <code>badge(name, score)</code>：返回形如 <code>\"ADA · 87.5 分\"</code> 的字符串——名字转大写，分数保留一位小数，中间是 <code>\" · \"</code>。",
+   "starter": "def badge(name, score):\n    ...\n",
+   "tests": "check_eq(\"基本格式\", lambda: badge(\"ada\", 87.456), \"ADA · 87.5 分\")\ncheck_eq(\"整数分数也带一位\", lambda: badge(\"bo\", 90), \"BO · 90.0 分\")\ncheck_eq(\"四舍五入\", lambda: badge(\"cy\", 99.99), \"CY · 100.0 分\")",
+   "hints": [
+    "大写用 <code>name.upper()</code>，直接放进 f-string 的花括号里。",
+    "一位小数是 <code>{score:.1f}</code>。"
+   ],
+   "solution": "def badge(name, score):\n    return f\"{name.upper()} · {score:.1f} 分\""
+  }
+ },
+ {
+  "id": "b07",
+  "title": "类：self 和没有修饰符的世界",
+  "goal": "类你天天写。变化在：self 要显式写，访问修饰符不存在，属性直接访问。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>public class Wallet {\n    private Decimal balance;\n    public Wallet(Decimal opening) {\n        this.balance = opening;\n    }\n    public void deposit(Decimal amount) {\n        this.balance += amount;\n    }\n    public Decimal getBalance() {\n        return this.balance;\n    }\n}</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>class Wallet:\n    def __init__(self, opening):\n        self.balance = opening\n\n    def deposit(self, amount):\n        self.balance += amount\n\nw = Wallet(100)\nw.deposit(50)\nprint(w.balance)</pre></div>\n</div>\n<ul>\n<li>构造器叫 <code>__init__</code>，第一个参数永远是 <code>self</code>（相当于显式的 <code>this</code>），每个方法都带。</li>\n<li>属性在 <code>__init__</code> 里第一次赋值就存在，不用声明。</li>\n<li>没有 <code>private</code>。约定：下划线前缀 <code>self._cache</code> 表示\"别从外面碰\"。够用，面试官认。</li>\n<li>不写 getter/setter，直接 <code>w.balance</code>。真需要计算属性时用 <code>@property</code>（进阶层 l08 细讲）。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · 忘写 <code>self</code> 是第一周最高频报错：方法定义漏了它会报\"takes 1 positional argument but 2 were given\"。看到这句话，先查 self。</div>",
+  "demo": "class Wallet:\n    def __init__(self, opening):\n        self.balance = opening\n\n    def deposit(self, amount):\n        self.balance += amount\n\nw = Wallet(100)\nw.deposit(50)\nw.deposit(25)\nprint(w.balance)\n\nw2 = Wallet(0)\nprint(w2.balance, \"<- 每个实例的状态是独立的\")",
+  "task": {
+   "prompt": "实现 <code>class Order</code>：<br>\n· <code>Order(product, qty)</code> 记住商品名和数量<br>\n· <code>add(n)</code> 数量加 n<br>\n· <code>total(price)</code> 返回 数量 × 单价",
+   "starter": "class Order:\n    def __init__(self, product, qty):\n        ...\n",
+   "tests": "@case(\"初始状态\")\ndef _():\n    o = Order(\"widget\", 2)\n    assert o.total(10) == 20, o.total(10)\n\n@case(\"add 累加数量\")\ndef _():\n    o = Order(\"widget\", 2)\n    o.add(3)\n    assert o.total(10) == 50, o.total(10)\n\n@case(\"两个实例互不影响\")\ndef _():\n    a = Order(\"x\", 1)\n    b = Order(\"y\", 5)\n    a.add(1)\n    assert a.total(2) == 4 and b.total(2) == 10\n\n@case(\"属性能直接读\")\ndef _():\n    o = Order(\"widget\", 2)\n    assert o.product == \"widget\" and o.qty == 2",
+   "hints": [
+    "<code>__init__</code> 里两行：<code>self.product = product</code>、<code>self.qty = qty</code>。",
+    "<code>add</code> 就是 <code>self.qty += n</code>；<code>total</code> 返回 <code>self.qty * price</code>。"
+   ],
+   "solution": "class Order:\n    def __init__(self, product, qty):\n        self.product = product\n        self.qty = qty\n\n    def add(self, n):\n        self.qty += n\n\n    def total(self, price):\n        return self.qty * price"
+  }
+ },
+ {
+  "id": "b08",
+  "title": "异常：except 不是 catch",
+  "goal": "结构和 Apex 几乎一样，换关键字加一条纪律：只捕获你预期的类型。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>try {\n    Integer n = Integer.valueOf(raw);\n} catch (TypeException e) {\n    System.debug(e.getMessage());\n} finally {\n    cleanup();\n}\nthrow new IllegalArgumentException('bad');</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>try:\n    n = int(raw)\nexcept ValueError as e:\n    print(e)\nfinally:\n    cleanup()\n\nraise ValueError('bad')</pre></div>\n</div>\n<ul>\n<li><code>catch</code> → <code>except 类型 as e</code>；<code>throw new X()</code> → <code>raise X(\"消息\")</code>。</li>\n<li>常用异常类型先记三个：<code>ValueError</code>（值不对）、<code>TypeError</code>（类型不对）、<code>KeyError</code>（dict 缺键）。</li>\n<li><code>finally</code> 行为一样；<code>else</code> 块是 Python 特有——try 成功才执行，先知道有这回事。</li>\n<li>一次接多种：<code>except (ValueError, TypeError):</code>。</li>\n</ul>\n<div class=\"note trap\"><b>坑</b> · 永远不要写裸 <code>except:</code>，它连 Ctrl-C 和你自己的拼写错误都吞。面试里只捕获预期的类型，并且说出来：\"这里我只接 ValueError，别的错误应该炸出来让我看到。\"</div>",
+  "demo": "def parse(raw):\n    try:\n        return int(raw)\n    except ValueError as e:\n        print(\"解析失败:\", e)\n        return None\n\nprint(parse(\"42\"))\nprint(parse(\"abc\"))\n\ntry:\n    raise ValueError(\"演示一个抛出\")\nexcept ValueError as e:\n    print(\"接住了:\", e)\nfinally:\n    print(\"finally 总会走到\")",
+  "task": {
+   "prompt": "写两个函数：<br>\n<code>divide(a, b)</code>：<code>b</code> 为 0 时抛 <code>ValueError</code>，否则返回 <code>a / b</code>；<br>\n<code>safe_divide(a, b)</code>：调用 <code>divide</code>，出错时返回 <code>None</code> 而不是抛出。",
+   "starter": "def divide(a, b):\n    ...\n\ndef safe_divide(a, b):\n    ...\n",
+   "tests": "check_eq(\"正常除法\", lambda: divide(10, 4), 2.5)\ncheck_eq(\"safe 正常路径\", lambda: safe_divide(9, 3), 3.0)\ncheck_eq(\"safe 除零返回 None\", lambda: safe_divide(1, 0), None)\n\n@case(\"divide 除零要抛 ValueError\")\ndef _():\n    try:\n        divide(1, 0)\n    except ValueError:\n        return\n    assert False, \"没有抛 ValueError\"",
+   "hints": [
+    "抛出：<code>if b == 0: raise ValueError(\"除数不能为 0\")</code>。",
+    "safe 版本里 <code>try: return divide(a, b)</code>，<code>except ValueError: return None</code>——只接这一种。"
+   ],
+   "solution": "def divide(a, b):\n    if b == 0:\n        raise ValueError(\"除数不能为 0\")\n    return a / b\n\ndef safe_divide(a, b):\n    try:\n        return divide(a, b)\n    except ValueError:\n        return None"
+  }
+ },
+ {
+  "id": "b09",
+  "title": "导入与标准库地图",
+  "goal": "Apex 的全局类换成显式 import。先认识六个天天用的标准库。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">Apex</div><pre>// 全局类直接用\nMath.max(3, 9);\nJSON.serialize(obj);\nJSON.deserializeUntyped(raw);</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>import json\nimport math\n\nmath.floor(3.7)\njson.dumps(obj)\njson.loads(raw)</pre></div>\n</div>\n<ul>\n<li>两种写法：<code>import json</code> 然后 <code>json.loads(...)</code>；或 <code>from collections import Counter</code> 直接用名字。import 放文件顶部。</li>\n<li>标准库地图（对应你在 Apex 里认识的东西）：<code>json</code>（JSON 类）、<code>re</code>（正则，Apex 的 Pattern/Matcher）、<code>collections</code>（加强版容器）、<code>datetime</code>（Datetime）、<code>math</code>（Math）、<code>pathlib</code>（文件路径）。</li>\n<li><code>max</code>/<code>min</code>/<code>sum</code>/<code>len</code>/<code>sorted</code> 是内置函数，不用 import。</li>\n<li>面试新手最常见的浪费：手写标准库已有的东西。不确定就说\"标准库里应该有现成的，我先这么写\"。</li>\n</ul>\n<div class=\"note\"><b>口播加分</b> · JSON 解析在 FDE 面试里必然出现。<code>json.loads</code> 字符串进对象出，<code>json.dumps</code> 反过来——记这一对就够撑过地基阶段，进阶层 l10 再展开。</div>",
+  "demo": "import json\nimport math\n\nraw = '{\"a\": 1, \"b\": 2.5}'\nobj = json.loads(raw)\nprint(obj, type(obj).__name__)\nprint(json.dumps({\"x\": [1, 2]}))\n\nprint(math.floor(3.7), math.ceil(3.2))\n\nfrom collections import Counter\nprint(Counter(\"aabbbc\"))",
+  "task": {
+   "prompt": "写 <code>total_score(raw)</code>：<code>raw</code> 是形如 <code>'{\"ada\": 90, \"bo\": 82.5}'</code> 的 JSON 字符串，解析后返回所有分数之和。",
+   "starter": "import json\n\ndef total_score(raw):\n    ...\n",
+   "tests": "check_eq(\"两个人\", lambda: total_score('{\"ada\": 90, \"bo\": 82.5}'), 172.5)\ncheck_eq(\"一个人\", lambda: total_score('{\"x\": 7}'), 7)\ncheck_eq(\"空对象\", lambda: total_score('{}'), 0)",
+   "hints": [
+    "<code>obj = json.loads(raw)</code> 得到 dict。",
+    "dict 的所有值是 <code>obj.values()</code>，求和 <code>sum(...)</code>。空 dict 的 sum 是 0，不用特判。"
+   ],
+   "solution": "import json\n\ndef total_score(raw):\n    obj = json.loads(raw)\n    return sum(obj.values())"
+  }
+ },
+ {
+  "id": "b10",
+  "title": "SOQL 思维 → 推导式",
+  "goal": "你写了多年 SELECT…WHERE…ORDER BY。列表推导式就是内存里的同一句话。",
+  "body": "<div class=\"compare\">\n<div class=\"cmp\"><div class=\"cmp-h\">SOQL / Apex</div><pre>List&lt;Account&gt; hot = [\n    SELECT Name\n    FROM Account\n    WHERE Amount &gt; 100\n    ORDER BY Name\n];</pre></div>\n<div class=\"cmp\"><div class=\"cmp-h\">Python</div><pre>hot = sorted(\n    a[\"name\"]\n    for a in accounts\n    if a[\"amount\"] > 100\n)</pre></div>\n</div>\n<ul>\n<li>心智映射：<code>SELECT 字段</code> → 推导式最左边的表达式；<code>WHERE</code> → <code>if</code>；<code>FROM</code> → <code>for … in</code>；<code>ORDER BY</code> → 包一层 <code>sorted(..., key=...)</code>。</li>\n<li>基本形态：<code>[表达式 for x in xs if 条件]</code>。没有条件就省略 if。</li>\n<li><code>COUNT()</code> → <code>len([...])</code> 或 <code>sum(1 for ...)</code>；<code>LIMIT n</code> → 切片 <code>[:n]</code>。</li>\n<li><code>GROUP BY</code> 对应 dict 分组（<code>setdefault</code> / <code>Counter</code>），进阶层 l03、l07 专门练。</li>\n<li>纪律：一行放不下、嵌套两层以上，就拆回普通 for 循环。可读性大于炫技。</li>\n</ul>\n<div class=\"note\"><b>为什么这课重要</b> · 你后面要做的所有数据处理题（清洗、过滤、聚合）都建立在\"SOQL 思维直接平移\"上。这是你相对其他转语言的人的独有优势，用足它。</div>",
+  "demo": "accounts = [\n    {\"name\": \"Acme\", \"amount\": 250},\n    {\"name\": \"Zeta\", \"amount\": 80},\n    {\"name\": \"Beta\", \"amount\": 120},\n]\n\n# SELECT name FROM accounts WHERE amount > 100\nhot = [a[\"name\"] for a in accounts if a[\"amount\"] > 100]\nprint(hot)\n\n# ... ORDER BY name\nprint(sorted(hot))\n\n# COUNT()\nprint(len(hot))\n\n# SELECT name, amount*2 —— 表达式可以随便算\nprint([(a[\"name\"], a[\"amount\"] * 2) for a in accounts])",
+  "task": {
+   "prompt": "写 <code>high_value_names(rows, threshold)</code>：<code>rows</code> 是 <code>{\"name\": …, \"amount\": …}</code> 的列表。<br>返回金额<b>大于</b> <code>threshold</code> 的名字列表，按名字升序。用推导式写。",
+   "starter": "def high_value_names(rows, threshold):\n    ...\n",
+   "tests": "R = [{\"name\": \"Zeta\", \"amount\": 80}, {\"name\": \"Acme\", \"amount\": 250}, {\"name\": \"Beta\", \"amount\": 120}]\ncheck_eq(\"过滤加排序\", lambda: high_value_names(R, 100), [\"Acme\", \"Beta\"])\ncheck_eq(\"都不满足\", lambda: high_value_names(R, 999), [])\ncheck_eq(\"边界不包含\", lambda: high_value_names(R, 250), [])\ncheck_eq(\"空输入\", lambda: high_value_names([], 0), [])",
+   "hints": [
+    "先写推导式：<code>[r[\"name\"] for r in rows if r[\"amount\"] > threshold]</code>。",
+    "排序包在外面：<code>sorted(...)</code> 返回新 list，正好当返回值。"
+   ],
+   "solution": "def high_value_names(rows, threshold):\n    return sorted(r[\"name\"] for r in rows if r[\"amount\"] > threshold)"
+  }
+ }
+]

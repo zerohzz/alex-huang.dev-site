@@ -79,10 +79,10 @@ a { color: var(--amber); }
 #rail.exam ~ #shell .nav[aria-current="true"] { border-left-color: var(--iris); }
 .nav .num { font-family: var(--f-mono); font-size: 10.5px; color: var(--faint); flex: none; width: 20px; }
 .nav[aria-current="true"] .num { color: var(--amber); }
-.nav .gl { font-family: var(--f-mono); flex: none; font-size: 12px; color: var(--faint); }
-.nav .gl.done { color: var(--mint); }
-.nav .gl.part { color: var(--amber); }
-.nav .gl.peek { color: var(--iris); }
+.nav .gl, .plan-block .gl { font-family: var(--f-mono); flex: none; font-size: 12px; color: var(--faint); }
+.nav .gl.done, .plan-block .gl.done { color: var(--mint); }
+.nav .gl.part, .plan-block .gl.part { color: var(--amber); }
+.nav .gl.peek, .plan-block .gl.peek { color: var(--iris); }
 .nav .tx { flex: 1; min-width: 0; }
 #reviewgroup { border-bottom: 1px solid var(--rule); background: var(--panel); }
 #reviewgroup .side-h b { color: var(--iris); }
@@ -126,6 +126,33 @@ hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 26px 0; }
 .stat .n { font-family: var(--f-mono); font-size: 26px; color: var(--amber); line-height: 1.2; }
 .stat .l { font-family: var(--f-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
 #sidetoggle { display: none; }
+
+/* ── Apex/Python 对照块（桥接课） ─────────────── */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 14px; }
+.cmp { border: 1px solid var(--rule); border-radius: 4px; background: var(--panel); overflow: hidden; min-width: 0; }
+.cmp-h {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--dim); padding: 6px 10px; border-bottom: 1px solid var(--rule); background: var(--gutter-bg);
+}
+.cmp pre {
+  margin: 0; padding: 10px 12px; font-family: var(--f-mono); font-size: 12px; line-height: 1.55;
+  overflow-x: auto; white-space: pre; color: var(--ink);
+}
+@media (max-width: 860px) {
+  .compare { grid-template-columns: 1fr; }
+}
+
+/* ── 计划视图 ─────────────────────────────────── */
+.plan-day.today { border-color: var(--amber); }
+.plan-blocks { display: flex; flex-direction: column; gap: 2px; padding: 8px 6px; }
+.plan-block {
+  display: flex; gap: 10px; align-items: baseline; width: 100%; text-align: left;
+  background: transparent; border: 0; color: var(--dim); padding: 6px 10px;
+  border-radius: 3px; font-size: 13.5px; line-height: 1.45;
+}
+.plan-block:hover { background: var(--panel-hi); color: var(--ink); }
+.plan-block .tx { flex: 1; min-width: 0; }
+.plan-block .num { font-family: var(--f-mono); font-size: 10.5px; color: var(--faint); flex: none; }
 
 /* ── panes & editor ───────────────────────────── */
 .pane { border: 1px solid var(--rule); border-radius: 4px; background: var(--panel); margin-bottom: 14px; overflow: hidden; }

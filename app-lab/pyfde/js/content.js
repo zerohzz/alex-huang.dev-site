@@ -16,18 +16,29 @@ async function getText(path) {
 }
 
 export async function loadContent() {
-  const [lessons, drills, exams, manifest, refHtml, prelude] = await Promise.all([
+  const [baseLessons, baseDrills, exams, manifest, refHtml, prelude,
+         bridgeLessons, l0Drills] = await Promise.all([
     getJson("content/lessons.json"),
     getJson("content/drills.json"),
     getJson("content/exams.json"),
     getJson("content/manifest.json"),
     getText("content/ref.html"),
     getText("content/prelude.py"),
+    getJson("content/foundation-lessons.json"),
+    getJson("content/foundation-drills.json"),
   ]);
+
+  // 版图从易到难：地基（桥接课 + L0）排在进阶内容前面。
+  const lessons = [
+    ...bridgeLessons.map((l) => ({ ...l, tier: "地基" })),
+    ...baseLessons.map((l) => ({ ...l, tier: "进阶" })),
+  ];
+  const drills = [...l0Drills, ...baseDrills];
 
   // meta["learn:l01"] = {cases}, meta["exam:e1:0"] = {cases, deps}
   const meta = {};
-  for (const row of manifest.exercises) {
+  const rows = [...manifest.exercises, ...(manifest.foundation?.exercises || [])];
+  for (const row of rows) {
     const mode = row.kind === "lesson" ? "learn" : row.kind;
     const key = row.stage == null ? `${mode}:${row.id}` : `${mode}:${row.id}:${row.stage}`;
     meta[key] = { cases: row.cases, deps: row.deps || [] };

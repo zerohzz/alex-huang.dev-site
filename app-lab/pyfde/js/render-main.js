@@ -9,6 +9,7 @@ import {
   stripHtml, paintStripRunning, paintStripIdle, paintStripResults, renderOutput,
 } from "./run-ui.js";
 import { startTimer, timerActive, paintClock } from "./timer.js";
+import { renderPlan } from "./render-plan.js";
 
 function countFallback(tests) {
   if (!tests) return 1;
@@ -21,8 +22,9 @@ function headerHtml(app, it, task) {
   const { state, content } = app;
   let html = "";
   if (state.mode === "learn") {
-    const n = content.lessons.indexOf(it) + 1;
-    html += `<div class="eyebrow"><span class="tag">教程 ${String(n).padStart(2, "0")}/12</span>` +
+    const group = content.lessons.filter((x) => x.tier === it.tier);
+    const n = group.indexOf(it) + 1;
+    html += `<div class="eyebrow"><span class="tag">${it.tier} ${String(n).padStart(2, "0")}/${group.length}</span>` +
       `<span>${esc(it.goal)}</span></div><h1>${esc(it.title)}</h1>` +
       `<div>${it.body}</div>` +
       `<h2>跑一遍这段</h2><p class="fine">改它，弄坏它，再修好。这比读十遍有用。</p>` +
@@ -77,6 +79,10 @@ export function renderMain(app) {
   const { state } = app;
   document.getElementById("rail").className = state.mode === "exam" ? "exam" : "";
 
+  if (state.mode === "plan") {
+    renderPlan(app);
+    return;
+  }
   if (state.mode === "ref") {
     main.innerHTML = app.content.refHtml;
     return;
